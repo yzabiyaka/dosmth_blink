@@ -21,5 +21,8 @@
   "homepage": "https://github.com/DoSomething/blink#readme",
   "dependencies": {
     "express": "^4.15.2"
+  },
+  "devDependencies": {
+    "@dosomething/eslint-config": "^2.0.0"
   }
 }
