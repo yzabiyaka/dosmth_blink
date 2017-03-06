@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/DoSomething/blink/issues"
   },
-  "homepage": "https://github.com/DoSomething/blink#readme"
+  "homepage": "https://github.com/DoSomething/blink#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
 }
