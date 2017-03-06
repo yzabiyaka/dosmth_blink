@@ -1,0 +1,8 @@
+---
+  extends: "@dosomething/eslint-config"
+  rules:
+    # We don't use babel here, so require 'use strict'.
+    # See https://git.io/vr6I0.
+    strict:
+      - 2
+      - "global"
