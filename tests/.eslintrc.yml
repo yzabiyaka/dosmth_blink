@@ -1,11 +1,5 @@
 ---
   # See https://github.com/avajs/eslint-plugin-ava#usage
-  root: true
-  env:
-    es6: true
-  parserOptions:
-    ecmaVersion: 2017
-    sourceType: module
   plugins:
     - ava
   rules:
@@ -37,3 +31,8 @@
     ava/use-t: error
     ava/use-test: error
     ava/use-true-false: error
+    # t variable is used for tests
+    id-length:
+      - error
+      - exceptions:
+        - t
