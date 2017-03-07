@@ -1,4 +1,5 @@
 ---
+  # See https://github.com/avajs/eslint-plugin-ava#usage
   root: true
   env:
     es6: true
