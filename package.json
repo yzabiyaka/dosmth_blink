@@ -24,6 +24,7 @@
     "express": "^4.15.2"
   },
   "devDependencies": {
-    "@dosomething/eslint-config": "^2.0.0"
+    "@dosomething/eslint-config": "^2.0.0",
+    "ava": "^0.18.2"
   }
 }
