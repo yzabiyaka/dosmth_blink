@@ -12,3 +12,5 @@ app.listen(3000, () => {
   // Todo: use better logging library
   console.log('Example app listening on port 3000!'); // eslint-disable-line no-console
 });
+
+module.exports = app;
