@@ -1,9 +1,9 @@
 'use strict';
 
 const test = require('ava');
-const should = require('chai').should();;
+const should = require('chai').should();
 const supertest = require('supertest');
-const app = require('../app')
+const app = require('../app');
 
 test('GET /', async (t) => {
   const res = await supertest(app).get('/');
