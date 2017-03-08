@@ -1,4 +1,5 @@
-# Blink [![wercker status](https://app.wercker.com/status/8b53bf996a3fb29015bf656b95aa1866/s/master "wercker status")](https://app.wercker.com/project/byKey/8b53bf996a3fb29015bf656b95aa1866)
+# Blink [![wercker status](https://app.wercker.com/status/8b53bf996a3fb29015bf656b95aa1866/s/master "wercker status")](https://app.wercker.com/project/byKey/8b53bf996a3fb29015bf656b95aa1866) [![codecov](https://codecov.io/gh/DoSomething/blink/branch/master/graph/badge.svg)](https://codecov.io/gh/DoSomething/blink)
+
 :postbox: The DoSomething.org Message Bus.
 
 ## Development
