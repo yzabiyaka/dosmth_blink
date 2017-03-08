@@ -3,3 +3,7 @@ build:
   steps:
     - npm-install
     - npm-test
+    - script:
+        name: report code coverage
+        code: |
+          npm run report-coverage
