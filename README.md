@@ -1,6 +1,15 @@
 # Blink
 :postbox: The DoSomething.org Message Bus.
 
+## Development
+### Requirements
+- [Node.js](https://nodejs.org/en/download/) v7.6+ for async/await support
+- [Yarn](https://yarnpkg.com/en/) is optional, but recommended
+
+### Installation
+1. Install dependencies `yarn install` or `npm install`
+2. Run `npm start` to start Express.js app
+
 ## Tests
 
 To execute code style checks and BDD tests, run:

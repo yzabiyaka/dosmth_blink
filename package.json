@@ -8,7 +8,8 @@
   "main": "app.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint && ava"
+    "test": "npm run lint && ava",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
