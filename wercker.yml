@@ -1,0 +1,5 @@
+box: node:7.7.1
+build:
+  steps:
+    - npm-install
+    - npm-test
