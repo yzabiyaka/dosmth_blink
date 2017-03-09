@@ -17,7 +17,11 @@ const LOGGER_TIMESTAMP = !(process.env.LOGGER_TIMESTAMP === 'false');
  * Dependencies initializations.
  */
 const app = express();
+// const apiRouter = express.Router();
 
+/**
+ * Setting app locals.
+ */
 // Logger:
 app.locals.logger = new winston.Logger({
   transports: [
@@ -32,13 +36,18 @@ app.locals.logger = new winston.Logger({
     new winston.transports.Console({ prettyPrint: true, colorize: true }),
   ],
 });
-// Just a shortcut.
 const logger = app.locals.logger;
 
+/**
+ * Initialize routing.
+ */
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hi, I\'m Blink!');
 });
 
+/**
+ * Listen.
+ */
 app.listen(LISTEN_PORT, () => {
   logger.info(`Blink is listening on port:${LISTEN_PORT} env:${app.get('env')}`);
 });

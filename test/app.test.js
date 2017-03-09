@@ -14,5 +14,5 @@ const app = require('../app');
 test('GET /', async () => {
   const res = await supertest(app).get('/');
   res.status.should.be.equal(200);
-  res.text.should.be.equal('Hello World!');
+  res.text.should.be.equal('Hi, I\'m Blink!');
 });
