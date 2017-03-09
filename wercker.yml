@@ -2,8 +2,9 @@ box: node:7.7.1
 build:
   steps:
     - npm-install
-    - npm-test
     - script:
-        name: report code coverage
-        code: |
-          npm run report-coverage
+        name: run tests with code coverage analysis
+        code: npm run test-with-coverage
+    - script:
+        name: publish coverage report to codecov
+        code: npm run publish-coverage-report

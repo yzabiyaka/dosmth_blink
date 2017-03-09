@@ -8,9 +8,10 @@
   "main": "app.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint && nyc ava",
+    "test": "npm run lint && ava",
     "start": "node app.js",
-    "report-coverage": "nyc report --reporter=lcov && codecov"
+    "test-with-coverage": "npm run lint && nyc ava",
+    "publish-coverage-report": "nyc report --reporter=lcov && codecov"
   },
   "repository": {
     "type": "git",
