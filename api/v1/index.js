@@ -13,14 +13,9 @@ const router = express.Router();
 /**
  * Routing.
  */
-// API Root
+// V1 Root
 router.get('/', (req, res) => {
-  res.json({
-    v1: '/api/v1',
-  });
+  res.json({});
 });
-
-// API Version 1
-router.use('/v1', require('./v1'));
 
 module.exports = router;
