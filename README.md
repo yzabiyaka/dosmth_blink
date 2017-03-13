@@ -11,6 +11,19 @@
 1. Install dependencies `yarn install` or `npm install`
 2. Run `npm start` to start Express.js app
 
+## Usage
+- `npm start`
+- Open `https://localhost:5050`
+
+## API Endpoints
+### Core
+| Endpoint                    | Description                 |
+| --------------------------- | --------------------------- |
+| `GET /`                     | Greetings                   |
+| `GET /api`                  | List available API versions |
+| `GET /api/v1`               | List V1 endpoints           |
+
+
 ## Tests
 
 To execute code style checks and BDD tests, run:
