@@ -13,7 +13,7 @@
 
 ## Usage
 - `npm start`
-- Open `https://localhost:5050`
+- Open `http://localhost:5050`
 
 ## API Endpoints
 ### Core
