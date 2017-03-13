@@ -17,7 +17,7 @@ const LOGGER_TIMESTAMP = !(process.env.LOGGER_TIMESTAMP === 'false');
  * Dependencies initializations.
  */
 const app = express();
-// const apiRouter = express.Router();
+// const apiV1Router = express.Router();
 
 /**
  * Setting app locals.
@@ -39,11 +39,16 @@ app.locals.logger = new winston.Logger({
 const logger = app.locals.logger;
 
 /**
- * Initialize routing.
+ * Routing.
  */
+// Root:
 app.get('/', (req, res) => {
   res.send('Hi, I\'m Blink!');
 });
+
+
+// Api root:
+app.use('/api', require('./api'));
 
 /**
  * Listen.
