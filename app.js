@@ -46,9 +46,12 @@ app.get('/', (req, res) => {
   res.send('Hi, I\'m Blink!');
 });
 
-
 // Api root:
 app.use('/api', require('./api'));
+
+// API Version 1
+app.use('/api/v1', require('./api/v1'));
+
 
 /**
  * Listen.
