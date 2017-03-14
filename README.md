@@ -10,8 +10,7 @@
 - [Yarn](https://yarnpkg.com/en/) is optional, but recommended
 
 #### Installation
-1. Install dependencies `yarn install` or `npm install`
-2. Run `npm start` to start Express.js app
+Install dependencies `yarn install` or `npm install`
 
 ## Usage
 - Launch RabbitMQ `docker-compose up`
