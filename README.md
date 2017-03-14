@@ -3,17 +3,24 @@
 :postbox: The DoSomething.org Message Bus.
 
 ## Development
-### Requirements
+#### Requirements
 - [Node.js](https://nodejs.org/en/download/) v7.6+ for async/await support
+- [Docker](https://www.docker.com/products/overview) with support
+  of Compose file [v3](https://docs.docker.com/compose/compose-file/#/versioning)
 - [Yarn](https://yarnpkg.com/en/) is optional, but recommended
 
-### Installation
-1. Install dependencies `yarn install` or `npm install`
-2. Run `npm start` to start Express.js app
+#### Installation
+Install dependencies `yarn install` or `npm install`
 
 ## Usage
+- Launch RabbitMQ `docker-compose up`
 - `npm start`
 - Open `http://localhost:5050`
+
+#### Available services
+- `localhost:5672`: RabbitMQ AMQP
+- [`localhost:15672`](http://localhost:15672): RabbitMQ management.
+  Username: `blink`, password: `blink`.
 
 ## API Endpoints
 ### Core
@@ -22,7 +29,6 @@
 | `GET /`                     | Greetings                   |
 | `GET /api`                  | List available API versions |
 | `GET /api/v1`               | List V1 endpoints           |
-
 
 ## Tests
 
@@ -39,3 +45,12 @@ BDD test coverage uses the following utilities:
 - [AVA](https://github.com/avajs/ava)
 - [Chai](http://chaijs.com/), BDD/should flavor
 - [Supertest](https://github.com/visionmedia/supertest)
+
+#### Code coverage
+
+```
+$ npm run test-with-coverage
+```
+
+- [NYC](https://github.com/istanbul/nyc)
+- [Codecov](https://codecov.io/)
