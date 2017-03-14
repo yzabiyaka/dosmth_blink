@@ -46,3 +46,12 @@ BDD test coverage uses the following utilities:
 - [AVA](https://github.com/avajs/ava)
 - [Chai](http://chaijs.com/), BDD/should flavor
 - [Supertest](https://github.com/visionmedia/supertest)
+
+#### Code coverage
+
+```
+$ npm run test-with-coverage
+```
+
+- [NYC](https://github.com/istanbul/nyc)
+- [Codecov](https://codecov.io/)
