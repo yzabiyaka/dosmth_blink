@@ -14,14 +14,14 @@
 2. Run `npm start` to start Express.js app
 
 ## Usage
-- Launch RabbitMQ: `docker-compose up`
+- Launch RabbitMQ `docker-compose up`
 - `npm start`
 - Open `http://localhost:5050`
 
 #### Available services
 - `localhost:5672`: RabbitMQ AMQP
 - [`localhost:15672`](http://localhost:15672): RabbitMQ management.
-  User and password are `dosomething`.
+  User is `blink`, password is `blink`.
 
 ## API Endpoints
 ### Core
