@@ -20,7 +20,7 @@ Install dependencies `yarn install` or `npm install`
 #### Available services
 - `localhost:5672`: RabbitMQ AMQP
 - [`localhost:15672`](http://localhost:15672): RabbitMQ management.
-  User is `blink`, password is `blink`.
+  Username: `blink`, password: `blink`.
 
 ## API Endpoints
 ### Core
