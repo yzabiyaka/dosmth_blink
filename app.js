@@ -9,8 +9,12 @@ const express = require('express');
  * Initialize Express.
  */
 const app = express();
-// Configure app though locals.
+
+// Setup locals variable in config/index.js.
 app.locals = require('./config');
+
+// Configure express app based on local configuration.
+app.set('env', app.locals.express.env);
 
 /**
  * Routing.
