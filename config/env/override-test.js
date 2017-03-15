@@ -10,6 +10,7 @@
 
 module.exports = (locals) => {
   // Randomize port for test runner.
-  // Port 0 means random port.
+  // Port 0 means random port:
+  // https://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback
   locals.express.port = 0;
 };
