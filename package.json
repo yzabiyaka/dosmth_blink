@@ -41,5 +41,10 @@
   },
   "ava": {
     "concurrency": 5
+  },
+  "nyc": {
+    "exclude": [
+      "config"
+    ]
   }
 }
