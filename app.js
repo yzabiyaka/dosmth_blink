@@ -4,6 +4,7 @@
  * Imports.
  */
 const express = require('express');
+const http = require('http');
 
 /**
  * Initialize Express.
@@ -31,10 +32,12 @@ app.use('/api', require('./api'));
 app.use('/api/v1', require('./api/v1'));
 
 /**
- * Listen.
+ * Create server.
  */
-app.listen(app.locals.express.port, () => {
-  app.locals.logger.info(`Blink is listening on port:${app.locals.express.port} env:${app.get('env')}`);
+const server = http.createServer(app);
+server.listen(app.locals.express.port, () => {
+  const address = server.address();
+  app.locals.logger.info(`Blink is listening on port:${address.port} env:${app.locals.express.env}`);
 });
 
 module.exports = app;
