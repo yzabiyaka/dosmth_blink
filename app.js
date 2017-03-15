@@ -4,39 +4,22 @@
  * Imports.
  */
 const express = require('express');
-const winston = require('winston');
+const http = require('http');
 
 /**
- * Constants declarations.
+ * Initializations.
  */
-const LISTEN_PORT = process.env.LISTEN_PORT || 5050;
-const LOGGER_LEVEL = process.env.LOGGER_LEVEL || 'info';
-const LOGGER_TIMESTAMP = !(process.env.LOGGER_TIMESTAMP === 'false');
+// Chdir to project root to ensure that relative paths work.
+process.chdir(__dirname);
 
-/**
- * Dependencies initializations.
- */
+// Express.
 const app = express();
-// const apiV1Router = express.Router();
 
-/**
- * Setting app locals.
- */
-// Logger:
-app.locals.logger = new winston.Logger({
-  transports: [
-    new winston.transports.Console({
-      prettyPrint: true,
-      colorize: true,
-      level: LOGGER_LEVEL,
-      timestamp: LOGGER_TIMESTAMP,
-    }),
-  ],
-  exceptionHandlers: [
-    new winston.transports.Console({ prettyPrint: true, colorize: true }),
-  ],
-});
-const logger = app.locals.logger;
+// Setup locals variable in config/index.js.
+app.locals = require('./config');
+
+// Setup express app based on local configuration.
+app.set('env', app.locals.express.env);
 
 /**
  * Routing.
@@ -52,12 +35,13 @@ app.use('/api', require('./api'));
 // API Version 1
 app.use('/api/v1', require('./api/v1'));
 
-
 /**
- * Listen.
+ * Create server.
  */
-app.listen(LISTEN_PORT, () => {
-  logger.info(`Blink is listening on port:${LISTEN_PORT} env:${app.get('env')}`);
+const server = http.createServer(app);
+server.listen(app.locals.express.port, () => {
+  const address = server.address();
+  app.locals.logger.info(`Blink is listening on port:${address.port} env:${app.locals.express.env}`);
 });
 
 module.exports = app;

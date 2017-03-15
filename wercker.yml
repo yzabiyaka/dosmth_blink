@@ -3,8 +3,8 @@ build:
   steps:
     - npm-install
     - script:
-        name: run tests with code coverage analysis
-        code: npm run test-with-coverage
+        name: run lint, BDD tests and code coverage
+        code: npm run all-tests
     - script:
         name: publish coverage report to codecov
         code: npm run publish-coverage-report
