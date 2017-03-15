@@ -32,16 +32,30 @@ Install dependencies `yarn install` or `npm install`
 
 ## Tests
 
-To execute code style checks and BDD tests, run:
+You can run all tests and checks at once:
 
 ```
-$ npm test
+$ npm run all-tests
+```
+
+Or execute them individually:
+
+#### Code style
+
+```
+$ npm run lint
 ```
 
 We follow [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript),
 with minor [DoSomething](https://github.com/DoSomething/eslint-config) adjustments.
 
-BDD test coverage uses the following utilities:
+#### BDD Tests
+
+```
+$ npm test
+```
+
+BDD test uses the following utilities:
 - [AVA](https://github.com/avajs/ava)
 - [Chai](http://chaijs.com/), BDD/should flavor
 - [Supertest](https://github.com/visionmedia/supertest)
@@ -49,7 +63,7 @@ BDD test coverage uses the following utilities:
 #### Code coverage
 
 ```
-$ npm run test-with-coverage
+$ npm coverage
 ```
 
 - [NYC](https://github.com/istanbul/nyc)
