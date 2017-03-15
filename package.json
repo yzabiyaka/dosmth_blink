@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "coverage": "NODE_ENV=test nyc ava",
     "all-tests": "npm run lint && npm run coverage",
+    "html-coverage-report": "nyc report --reporter=html",
     "publish-coverage-report": "nyc report --reporter=lcov && codecov"
   },
   "repository": {
