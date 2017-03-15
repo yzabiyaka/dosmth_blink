@@ -8,7 +8,7 @@
   "main": "app.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint && NODE_ENV=test ava",
+    "test": "NODE_ENV=test ava",
     "start": "node app.js",
     "test-with-coverage": "npm run lint && NODE_ENV=test nyc ava",
     "publish-coverage-report": "nyc report --reporter=lcov && codecov"
@@ -36,5 +36,8 @@
     "eslint": "^3.17.1",
     "eslint-plugin-ava": "^4.2.0",
     "supertest": "^3.0.0"
+  },
+  "ava": {
+    "concurrency": 5
   }
 }
