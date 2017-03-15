@@ -7,10 +7,11 @@
   },
   "main": "app.js",
   "scripts": {
-    "lint": "eslint .",
-    "test": "NODE_ENV=test ava",
     "start": "node app.js",
-    "test-with-coverage": "npm run lint && NODE_ENV=test nyc ava",
+    "test": "NODE_ENV=test ava",
+    "lint": "eslint .",
+    "coverage": "NODE_ENV=test nyc ava",
+    "all-tests": "npm run lint && npm run coverage",
     "publish-coverage-report": "nyc report --reporter=lcov && codecov"
   },
   "repository": {
