@@ -7,8 +7,13 @@ const express = require('express');
 const http = require('http');
 
 /**
- * Initialize Express.
+ * Initializations.
  */
+// Ensure we're in the project directory, so relative paths work as expected
+// no matter where we actually lift from.
+process.chdir(__dirname);
+
+// Express.
 const app = express();
 
 // Setup locals variable in config/index.js.
