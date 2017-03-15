@@ -9,8 +9,7 @@ const http = require('http');
 /**
  * Initializations.
  */
-// Ensure we're in the project directory, so relative paths work as expected
-// no matter where we actually lift from.
+// Chdir to project root to ensure that relative paths work.
 process.chdir(__dirname);
 
 // Express.
@@ -19,7 +18,7 @@ const app = express();
 // Setup locals variable in config/index.js.
 app.locals = require('./config');
 
-// Configure express app based on local configuration.
+// Setup express app based on local configuration.
 app.set('env', app.locals.express.env);
 
 /**
