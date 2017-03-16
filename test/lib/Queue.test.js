@@ -4,6 +4,7 @@
  * Imports.
  */
 const test = require('ava');
+require('chai').should();
 const Queue = require('../../lib/Queue');
 
 /**
