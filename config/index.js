@@ -8,6 +8,7 @@ const locals = {};
 // Logger
 locals.express = require('./express');
 locals.logger = require('./logger');
+locals.amqp = require('./amqp');
 
 // Require env-dependent configs
 const envConfigPath = `${__dirname}/env/override-${locals.express.env}.js`;

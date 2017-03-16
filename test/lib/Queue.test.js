@@ -6,6 +6,7 @@
 const test = require('ava');
 require('chai').should();
 const Queue = require('../../lib/Queue');
+const Exchange = require('../../lib/Exchange');
 
 /**
  * Test Queue superclass
@@ -30,7 +31,10 @@ test('Test RabbitMQ topology assertion', async () => {
 
   }
 
-  const tacoFactoryQ = new TacoFactoryQ();
+  const locals = require('../../config');
+  const tacoX = new Exchange(locals.amqp);
+
+  const tacoFactoryQ = new TacoFactoryQ(tacoX);
   tacoFactoryQ.should.be.an.instanceof(Queue);
 
   const connected = await tacoFactoryQ.setup();
