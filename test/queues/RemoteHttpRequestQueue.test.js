@@ -9,7 +9,7 @@ const Queue = require('../../lib/Queue');
 const RemoteHttpRequestQ = require('../../queues/RemoteHttpRequestQ');
 
 /**
- * Test Queue class
+ * Test RemoteHttpRequestQ class
  */
 test('RemoteHttpRequestQ', () => {
   const remoteHttpRequestQ = new RemoteHttpRequestQ();
