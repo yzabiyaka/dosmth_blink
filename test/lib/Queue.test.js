@@ -28,7 +28,7 @@ test('Queue superclass', () => {
 test('Test RabbitMQ topology assertion', async () => {
   class TacoFactoryQ extends Queue {
 
-  };
+  }
 
   const tacoFactoryQ = new TacoFactoryQ();
   tacoFactoryQ.should.be.an.instanceof(Queue);

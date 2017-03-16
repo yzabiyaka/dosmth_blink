@@ -36,3 +36,5 @@
       - error
       - exceptions:
         - t
+    # Support should constructs like result.should.be.true;
+    no-unused-expressions: 'off'
