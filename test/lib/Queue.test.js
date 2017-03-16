@@ -25,11 +25,14 @@ test('Queue superclass', () => {
  * Test that concrete Queue implementation would result in expected queues
  * in RabbitMQ.
  */
-test('Test RabbitMQ topology assertion', () => {
+test('Test RabbitMQ topology assertion', async () => {
   class TacoFactoryQ extends Queue {
 
   };
 
   const tacoFactoryQ = new TacoFactoryQ();
   tacoFactoryQ.should.be.an.instanceof(Queue);
+
+  const connected = await tacoFactoryQ.setup();
+  connected.should.be.true;
 });
