@@ -18,7 +18,7 @@ test('Queue superclass', () => {
   queue.should.respondTo('setup');
 
   queue.should.have.property('routes');
-  queue.routes.should.be.an('array');
+  queue.routes.should.be.an('array').and.have.length.at.least(1);
 });
 
 
