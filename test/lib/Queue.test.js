@@ -35,7 +35,7 @@ test('Test RabbitMQ topology assertion', async () => {
 
   const tacoFactoryQ = new TacoFactoryQ(tacoX);
   tacoFactoryQ.should.have.property('name');
-  tacoFactoryQ.name.should.be.equal('taco-factory-q');
+  tacoFactoryQ.name.should.be.equal('taco-factory');
 
   tacoFactoryQ.should.be.an.instanceof(Queue);
   const result = await tacoFactoryQ.setup();
