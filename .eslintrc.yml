@@ -6,7 +6,7 @@
     # Node requires 'use strict' to use built-in ES6 compatibility.
     # Use script source type, so lint doesn't throw error:
     # 'use strict' is unnecessary inside of modules.
-    sourceType: "script"
+    sourceType: script
     # Latest ECMA
     ecmaVersion: 2017
   rules:
@@ -15,3 +15,11 @@
     strict:
       - error
       - global
+    # Comma dangle in functions is not yet supported in Node 7
+    comma-dangle:
+      - error
+      - arrays: always-multiline
+        objects: always-multiline
+        imports: always-multiline
+        exports: always-multiline
+        functions: ignore
