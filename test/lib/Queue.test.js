@@ -27,16 +27,14 @@ test('Queue superclass', () => {
  * in RabbitMQ.
  */
 test('Test RabbitMQ topology assertion', async () => {
-  class TacoFactoryQ extends Queue {
-
-  }
+  class TacoFactoryQ extends Queue {}
 
   const locals = require('../../config');
   const tacoX = new Exchange(locals.amqp);
+  await tacoX.setup();
 
   const tacoFactoryQ = new TacoFactoryQ(tacoX);
   tacoFactoryQ.should.be.an.instanceof(Queue);
-
-  const connected = await tacoFactoryQ.setup();
-  connected.should.be.true;
+  const result = await tacoFactoryQ.setup();
+  result.should.be.true;
 });
