@@ -28,6 +28,7 @@
   "dependencies": {
     "amqp-uri": "^2.0.0",
     "amqplib": "^0.5.1",
+    "change-case": "^3.0.1",
     "express": "^4.15.2",
     "nyc": "^10.1.2",
     "winston": "^2.3.1"

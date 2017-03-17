@@ -6,5 +6,5 @@ module.exports = {
   host: process.env.BLINK_AMQP_HOST || 'localhost',
   port: process.env.BLINK_AMQP_PORT || '5672',
   vhost: process.env.BLINK_AMQP_VHOST || 'blink',
-  exchange: process.env.BLINK_AMQP_EXCHANGE || 'blinkX',
+  exchange: process.env.BLINK_AMQP_EXCHANGE || 'blink-x',
 };
