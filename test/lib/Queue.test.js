@@ -59,7 +59,7 @@ test('Test RabbitMQ topology assertion', async () => {
 
   // Test that the queue is binded to the exchange.
   const tacoFactoryBindings = await rabbit.getQueueBindings(tacoRecipesQ);
-  tacoFactoryBindings.should.have.length(2);
+  tacoFactoryBindings.should.be.an('array').and.have.length(2);
   // Specific route
   tacoFactoryBindings[0].should.have.property('routing_key', '*.mexican.food');
   tacoFactoryBindings[0].should.have.property('source', tacoX.name);
