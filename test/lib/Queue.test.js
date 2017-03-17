@@ -7,6 +7,7 @@ const test = require('ava');
 require('chai').should();
 const Queue = require('../../lib/Queue');
 const Exchange = require('../../lib/Exchange');
+const RabbitManagement = require('../../lib/RabbitManagement');
 
 /**
  * Test Queue superclass
@@ -40,4 +41,12 @@ test('Test RabbitMQ topology assertion', async () => {
   tacoFactoryQ.should.be.an.instanceof(Queue);
   const result = await tacoFactoryQ.setup();
   result.should.be.true;
+
+  // Test queue settings with RabbitMQ Management Plugin API.
+  const rabbit = new RabbitManagement(locals.amqpManagement);
+  const tacoFactoryInfo = await rabbit.getQueueInfo(tacoFactoryQ);
+  tacoFactoryInfo.should.have.property('name', 'taco-factory');
+  tacoFactoryInfo.should.have.property('durable', true);
+  tacoFactoryInfo.should.have.property('auto_delete', false);
+  tacoFactoryInfo.should.have.property('exclusive', false);
 });
