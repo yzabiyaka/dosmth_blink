@@ -68,5 +68,4 @@ test('Test RabbitMQ topology assertion', async () => {
   tacoFactoryBindings[1].should.have.property('routing_key', 'taco-recipes');
   tacoFactoryBindings[1].should.have.property('source', tacoX.name);
   tacoFactoryBindings[1].should.have.property('destination', 'taco-recipes');
-
 });
