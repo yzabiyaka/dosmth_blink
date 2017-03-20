@@ -29,24 +29,50 @@ test('RabbitManagement interface', () => {
  * Test RabbitManagement::getQueueInfo
  */
 test('RabbitManagement::getQueueInfo() fails with non-existent queues', async () => {
-  class ShouldFailQ extends Queue {}
+  class NotInitializedQ extends Queue {}
 
   // Local config
   const locals = require('../../config');
 
   // Real exchange for configuration.
   const tacoX = new Exchange(locals.amqp);
-  // Don't setup exchange to test it fail.
+  await tacoX.setup();
 
   // Fake queue not initialized in Rabbit.
-  const shouldFailQ = new ShouldFailQ(tacoX);
-  // Don't setup queue to test it fail.
+  const notInitializedQ = new NotInitializedQ(tacoX);
+  // Don't setup queue to test info request fail.
 
   // Rabbit management.
   const rabbit = new RabbitManagement(locals.amqpManagement);
 
   // Test request to fail.
-  const failedgetQueueInfo = rabbit.getQueueInfo(shouldFailQ);
+  const failedgetQueueInfo = rabbit.getQueueInfo(notInitializedQ);
   await failedgetQueueInfo.should.be.rejectedWith(Error, 'status code 404');
+});
+
+
+/**
+ * Test RabbitManagement::getQueueBindings
+ */
+test('RabbitManagement::getQueueBindings() fails with non-existent queues', async () => {
+  class NotBoundQ extends Queue {}
+
+  // Local config
+  const locals = require('../../config');
+
+  // Real exchange for configuration.
+  const tacoX = new Exchange(locals.amqp);
+  await tacoX.setup();
+
+  // Fake queue not initialized in Rabbit.
+  const notBoundQ = new NotBoundQ(tacoX);
+  // Don't setup queue to test binding to fail.
+
+  // Rabbit management.
+  const rabbit = new RabbitManagement(locals.amqpManagement);
+
+  // Test request to return 0 bindings.
+  const bindings = await rabbit.getQueueBindings(notBoundQ);
+  bindings.should.be.an('array').and.have.length(0);
 });
 
