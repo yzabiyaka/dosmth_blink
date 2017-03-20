@@ -6,8 +6,8 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const test = require('ava');
-const Queue = require('../../lib/Queue');
 const Exchange = require('../../lib/Exchange');
+const Queue = require('../../lib/Queue');
 const RabbitManagement = require('../../lib/RabbitManagement');
 
 // Chai setup.
@@ -47,7 +47,10 @@ test('RabbitManagement::getQueueInfo() fails with non-existent queues', async ()
 
   // Test request to fail.
   const failedgetQueueInfo = rabbit.getQueueInfo(notInitializedQ);
-  await failedgetQueueInfo.should.be.rejectedWith(Error, 'status code 404');
+  await failedgetQueueInfo.should.be.rejectedWith(
+    Error,
+    'Incorrect RabbitManagement::getQueueInfo() response for GET /queues/blink/not-initialized'
+  );
 });
 
 
