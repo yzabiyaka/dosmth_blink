@@ -38,6 +38,7 @@
     "@dosomething/eslint-config": "^2.0.0",
     "ava": "^0.18.2",
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "codecov": "^1.0.1",
     "eslint": "^3.17.1",
     "eslint-plugin-ava": "^4.2.0",
