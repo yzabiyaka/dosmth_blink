@@ -43,19 +43,11 @@ test('Exchange::setup() should fail with empty exchange name', async () => {
 
   // Initialize Exchange with incorrect settings.
   const tacoX = new Exchange(invalidExchangeSettings);
-  try {
-    const incorrectSetupResult = await tacoX.setup();
-  } catch (error) {
-    console.log(1);
-    console.log(error);
-  }
+  const incorrectSetupResult = tacoX.setup();
 
-  // await incorrectSetupResult.should.be.rejectedWith(
-  //   Error,
-  //   'Incorrect Exchange::setup() for Exchange ""'
-  // );
-
-
-
-  // No exchange name should result in an error.
+  // No exchange name should result in rejection from Exchange::setup() .
+  await incorrectSetupResult.should.be.rejectedWith(
+    Error,
+    'Incorrect Exchange::setup() response for Exchange ""'
+  );
 });
