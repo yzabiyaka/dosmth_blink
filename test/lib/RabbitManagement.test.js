@@ -35,11 +35,11 @@ test('RabbitManagement.getQueueInfo() fails with non-existent queues', async () 
   const locals = require('../../config');
 
   // Real exchange for configuration.
-  const tacoX = new Exchange(locals.amqp);
-  await tacoX.setup();
+  const testX = new Exchange(locals.amqp);
+  await testX.setup();
 
   // Fake queue not initialized in Rabbit.
-  const notInitializedQ = new NotInitializedQ(tacoX);
+  const notInitializedQ = new NotInitializedQ(testX);
   // Don't setup queue to test info request fail.
 
   // Rabbit management.
@@ -64,11 +64,11 @@ test('RabbitManagement.getQueueBindings() fails with non-existent queues', async
   const locals = require('../../config');
 
   // Real exchange for configuration.
-  const tacoX = new Exchange(locals.amqp);
-  await tacoX.setup();
+  const testX = new Exchange(locals.amqp);
+  await testX.setup();
 
   // Fake queue not initialized in Rabbit.
-  const notBoundQ = new NotBoundQ(tacoX);
+  const notBoundQ = new NotBoundQ(testX);
   // Don't setup queue to test binding to fail.
 
   // Rabbit management.

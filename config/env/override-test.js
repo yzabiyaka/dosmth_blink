@@ -16,5 +16,5 @@ module.exports = (locals) => {
 
   // Test exchange name.
   // TODO: Randomize exchange name.
-  locals.amqp.exchange = 'taco-test-x';
+  locals.amqp.exchange = 'test-x';
 };

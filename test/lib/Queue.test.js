@@ -41,10 +41,10 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   }
 
   const locals = require('../../config');
-  const tacoX = new Exchange(locals.amqp);
-  await tacoX.setup();
+  const testX = new Exchange(locals.amqp);
+  await testX.setup();
 
-  const testBindingQ = new TestBindingQ(tacoX);
+  const testBindingQ = new TestBindingQ(testX);
   testBindingQ.should.have.property('name');
   testBindingQ.name.should.be.equal('test-binding');
   // Direct + *.mexican.food
@@ -67,11 +67,11 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   testBindingQBindings.should.be.an('array').and.have.length(2);
   // Specific route
   testBindingQBindings[0].should.have.property('routing_key', '*.mexican.food');
-  testBindingQBindings[0].should.have.property('source', tacoX.name);
+  testBindingQBindings[0].should.have.property('source', 'test-x');
   testBindingQBindings[0].should.have.property('destination', 'test-binding');
   // Direct route
   testBindingQBindings[1].should.have.property('routing_key', 'test-binding');
-  testBindingQBindings[1].should.have.property('source', tacoX.name);
+  testBindingQBindings[1].should.have.property('source', 'test-x');
   testBindingQBindings[1].should.have.property('destination', 'test-binding');
 });
 
@@ -82,10 +82,10 @@ test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async
   class TestDirectPublishQ extends Queue {}
 
   const locals = require('../../config');
-  const tacoX = new Exchange(locals.amqp);
-  await tacoX.setup();
+  const testX = new Exchange(locals.amqp);
+  await testX.setup();
 
-  const testDirectPublishQ = new TestDirectPublishQ(tacoX);
+  const testDirectPublishQ = new TestDirectPublishQ(testX);
   await testDirectPublishQ.setup();
 
   // Purge queue in case it already exists.
@@ -108,10 +108,10 @@ test('Queue.purge(): Ensure incorrect queue purging fails', async () => {
   class TestIncorrectPurgeQ extends Queue {}
 
   const locals = require('../../config');
-  const tacoX = new Exchange(locals.amqp);
-  await tacoX.setup();
+  const testX = new Exchange(locals.amqp);
+  await testX.setup();
 
-  const testIncorrectPurgeQ = new TestIncorrectPurgeQ(tacoX);
+  const testIncorrectPurgeQ = new TestIncorrectPurgeQ(testX);
   // Don't setup queue to make sure Queue.purge() fails.
 
   // Purge queue in case it already exists.

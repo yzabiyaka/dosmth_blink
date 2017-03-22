@@ -19,9 +19,9 @@ chai.use(chaiAsPromised);
  */
 test('Exchange interface', () => {
   const locals = require('../../config');
-  const tacoX = new Exchange(locals.amqp);
-  tacoX.should.have.respondTo('setup');
-  tacoX.should.have.respondTo('assertQueue');
+  const testX = new Exchange(locals.amqp);
+  testX.should.have.respondTo('setup');
+  testX.should.have.respondTo('assertQueue');
 });
 
 /**
@@ -29,8 +29,8 @@ test('Exchange interface', () => {
  */
 test('Exchange.setup() should be able to connect to RabbitMQ', async () => {
   const locals = require('../../config');
-  const tacoX = new Exchange(locals.amqp);
-  const connected = await tacoX.setup();
+  const testX = new Exchange(locals.amqp);
+  const connected = await testX.setup();
   connected.should.be.true;
 });
 
@@ -44,8 +44,8 @@ test('Exchange.setup() should fail with empty exchange name', async () => {
   const invalidExchangeSettings = Object.assign({}, locals.amqp, { exchange: '' });
 
   // Initialize Exchange with incorrect settings.
-  const tacoX = new Exchange(invalidExchangeSettings);
-  const incorrectSetupResult = tacoX.setup();
+  const testX = new Exchange(invalidExchangeSettings);
+  const incorrectSetupResult = testX.setup();
 
   // No exchange name should result in rejection from Exchange.setup() .
   await incorrectSetupResult.should.be.rejectedWith(
@@ -62,11 +62,11 @@ test('Exchange.assertQueue() should fail with empty exchange name', async () => 
   class WrongNameQ extends Queue {}
 
   const locals = require('../../config');
-  const tacoX = new Exchange(locals.amqp);
-  await tacoX.setup();
+  const testX = new Exchange(locals.amqp);
+  await testX.setup();
 
   // Fake queue not initialized in Rabbit.
-  const wrongNameQ = new WrongNameQ(tacoX);
+  const wrongNameQ = new WrongNameQ(testX);
   // Override Queue name and watch setup fail.
   // Empty string would result in automatically generated queue name,
   // thus Queue.setup() method will fail.
