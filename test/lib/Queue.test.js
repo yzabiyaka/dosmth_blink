@@ -93,7 +93,7 @@ test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async
 
   // Publish test message to the queue.
   const testPayload = { passed: true };
-  const publishResult = await testDirectPublishQ.publish(testPayload);
+  const publishResult = testDirectPublishQ.publish(testPayload);
   publishResult.should.be.true;
 
   // Check message count with Queue purge.
