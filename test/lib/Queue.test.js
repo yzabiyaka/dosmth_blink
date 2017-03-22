@@ -14,8 +14,9 @@ const RabbitManagement = require('../../lib/RabbitManagement');
  */
 test('Queue superclass', () => {
   const queue = new Queue();
-  queue.should.respondTo('pub');
   queue.should.respondTo('setup');
+  queue.should.respondTo('publish');
+  queue.should.respondTo('purge');
 
   queue.should.have.property('routes');
   queue.routes.should.be.an('array').and.have.length.at.least(1);
@@ -67,4 +68,32 @@ test('Test RabbitMQ topology assertion', async () => {
   testBindingQBindings[1].should.have.property('routing_key', 'test-binding');
   testBindingQBindings[1].should.have.property('source', tacoX.name);
   testBindingQBindings[1].should.have.property('destination', 'test-binding');
+});
+
+/**
+ * Test Queue direct publishing
+ */
+test('Queue direct publishing', async () => {
+  class TestDirectPublishQ extends Queue {}
+
+  const locals = require('../../config');
+  const tacoX = new Exchange(locals.amqp);
+  await tacoX.setup();
+
+  const testDirectPublishQ = new TestDirectPublishQ(tacoX);
+  await testDirectPublishQ.setup();
+
+  // Purge queue in case it already exists.
+  await testDirectPublishQ.purge();
+
+  // Publish test message to the queue
+  const testPayload = { passed: true };
+  const result = await testDirectPublishQ.publish(testPayload);
+  result.should.be.true;
+
+  // Check ready messages count with RabbitMQ Management Plugin API.
+  const rabbit = new RabbitManagement(locals.amqpManagement);
+  const testDirectPublishQInfo = await rabbit.getQueueInfo(testDirectPublishQ);
+  // console.dir(testDirectPublishQInfo, { colors: true, showHidden: true });
+  testDirectPublishQInfo.messages.should.equal(1);
 });
