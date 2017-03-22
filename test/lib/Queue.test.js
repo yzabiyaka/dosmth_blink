@@ -3,16 +3,21 @@
 /**
  * Imports.
  */
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const test = require('ava');
-require('chai').should();
-const Queue = require('../../lib/Queue');
 const Exchange = require('../../lib/Exchange');
+const Queue = require('../../lib/Queue');
 const RabbitManagement = require('../../lib/RabbitManagement');
 
+// Chai setup.
+chai.should();
+chai.use(chaiAsPromised);
+
 /**
- * Test Queue superclass
+ * Test Queue interface
  */
-test('Queue superclass', () => {
+test('Queue interface', () => {
   const queue = new Queue();
   queue.should.respondTo('setup');
   queue.should.respondTo('publish');
@@ -27,7 +32,7 @@ test('Queue superclass', () => {
  * Test that concrete Queue implementation would result in expected queues
  * in RabbitMQ.
  */
-test('Test RabbitMQ topology assertion', async () => {
+test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   class TestBindingQ extends Queue {
     constructor(exchange) {
       super(exchange);
@@ -73,7 +78,7 @@ test('Test RabbitMQ topology assertion', async () => {
 /**
  * Test Queue direct publishing
  */
-test('Queue direct publishing', async () => {
+test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async () => {
   class TestDirectPublishQ extends Queue {}
 
   const locals = require('../../config');
@@ -94,4 +99,26 @@ test('Queue direct publishing', async () => {
   // Check message count with Queue purge.
   const purgeResult = await testDirectPublishQ.purge();
   purgeResult.should.equal(1);
+});
+
+
+/**
+ * Test purge method to fail
+ */
+test('Queue.purge(): Ensure incorrect queue purging fails', async () => {
+  class TestIncorrectPurgeQ extends Queue {}
+
+  const locals = require('../../config');
+  const tacoX = new Exchange(locals.amqp);
+  await tacoX.setup();
+
+  const testIncorrectPurgeQ = new TestIncorrectPurgeQ(tacoX);
+  // Don't setup queue to make sure Queue.purge() fails.
+
+  // Purge queue in case it already exists.
+  const purgeResult = testIncorrectPurgeQ.purge();
+  await purgeResult.should.be.rejectedWith(
+    Error,
+    'Queue.purge(): failed to purge queue "test-incorrect-purge"'
+  );
 });
