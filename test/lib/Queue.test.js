@@ -15,7 +15,6 @@ const RabbitManagement = require('../../lib/RabbitManagement');
 test('Queue superclass', () => {
   const queue = new Queue();
   queue.should.respondTo('pub');
-  queue.should.respondTo('sub');
   queue.should.respondTo('setup');
 
   queue.should.have.property('routes');
@@ -28,7 +27,7 @@ test('Queue superclass', () => {
  * in RabbitMQ.
  */
 test('Test RabbitMQ topology assertion', async () => {
-  class TacoRecipesQ extends Queue {
+  class TestBindingQ extends Queue {
     constructor(exchange) {
       super(exchange);
       this.routes.push('*.mexican.food');
@@ -39,33 +38,33 @@ test('Test RabbitMQ topology assertion', async () => {
   const tacoX = new Exchange(locals.amqp);
   await tacoX.setup();
 
-  const tacoRecipesQ = new TacoRecipesQ(tacoX);
-  tacoRecipesQ.should.have.property('name');
-  tacoRecipesQ.name.should.be.equal('taco-recipes');
+  const testBindingQ = new TestBindingQ(tacoX);
+  testBindingQ.should.have.property('name');
+  testBindingQ.name.should.be.equal('test-binding');
   // Direct + *.mexican.food
-  tacoRecipesQ.routes.length.should.equal(2);
+  testBindingQ.routes.length.should.equal(2);
 
-  tacoRecipesQ.should.be.an.instanceof(Queue);
-  const result = await tacoRecipesQ.setup();
+  testBindingQ.should.be.an.instanceof(Queue);
+  const result = await testBindingQ.setup();
   result.should.be.true;
 
   // Test queue settings with RabbitMQ Management Plugin API.
   const rabbit = new RabbitManagement(locals.amqpManagement);
-  const tacoRecipesQInfo = await rabbit.getQueueInfo(tacoRecipesQ);
-  tacoRecipesQInfo.should.have.property('name', 'taco-recipes');
-  tacoRecipesQInfo.should.have.property('durable', true);
-  tacoRecipesQInfo.should.have.property('auto_delete', false);
-  tacoRecipesQInfo.should.have.property('exclusive', false);
+  const testBindingQInfo = await rabbit.getQueueInfo(testBindingQ);
+  testBindingQInfo.should.have.property('name', 'test-binding');
+  testBindingQInfo.should.have.property('durable', true);
+  testBindingQInfo.should.have.property('auto_delete', false);
+  testBindingQInfo.should.have.property('exclusive', false);
 
   // Test that the queue is binded to the exchange.
-  const tacoRecipesQBindings = await rabbit.getQueueBindings(tacoRecipesQ);
-  tacoRecipesQBindings.should.be.an('array').and.have.length(2);
+  const testBindingQBindings = await rabbit.getQueueBindings(testBindingQ);
+  testBindingQBindings.should.be.an('array').and.have.length(2);
   // Specific route
-  tacoRecipesQBindings[0].should.have.property('routing_key', '*.mexican.food');
-  tacoRecipesQBindings[0].should.have.property('source', tacoX.name);
-  tacoRecipesQBindings[0].should.have.property('destination', 'taco-recipes');
+  testBindingQBindings[0].should.have.property('routing_key', '*.mexican.food');
+  testBindingQBindings[0].should.have.property('source', tacoX.name);
+  testBindingQBindings[0].should.have.property('destination', 'test-binding');
   // Direct route
-  tacoRecipesQBindings[1].should.have.property('routing_key', 'taco-recipes');
-  tacoRecipesQBindings[1].should.have.property('source', tacoX.name);
-  tacoRecipesQBindings[1].should.have.property('destination', 'taco-recipes');
+  testBindingQBindings[1].should.have.property('routing_key', 'test-binding');
+  testBindingQBindings[1].should.have.property('source', tacoX.name);
+  testBindingQBindings[1].should.have.property('destination', 'test-binding');
 });
