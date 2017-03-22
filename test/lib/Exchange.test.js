@@ -25,9 +25,9 @@ test('Exchange interface', () => {
 });
 
 /**
- * Exchange::setup() should be able to connect to RabbitMQ
+ * Exchange.setup() should be able to connect to RabbitMQ
  */
-test('Exchange::setup() should be able to connect to RabbitMQ', async () => {
+test('Exchange.setup() should be able to connect to RabbitMQ', async () => {
   const locals = require('../../config');
   const tacoX = new Exchange(locals.amqp);
   const connected = await tacoX.setup();
@@ -35,9 +35,9 @@ test('Exchange::setup() should be able to connect to RabbitMQ', async () => {
 });
 
 /**
- * Exchange::setup() should fail with empty exchange name
+ * Exchange.setup() should fail with empty exchange name
  */
-test('Exchange::setup() should fail with empty exchange name', async () => {
+test('Exchange.setup() should fail with empty exchange name', async () => {
   const locals = require('../../config');
 
   // Copy RabbitMQ settings, but override exchange with empty string.
@@ -47,7 +47,7 @@ test('Exchange::setup() should fail with empty exchange name', async () => {
   const tacoX = new Exchange(invalidExchangeSettings);
   const incorrectSetupResult = tacoX.setup();
 
-  // No exchange name should result in rejection from Exchange::setup() .
+  // No exchange name should result in rejection from Exchange.setup() .
   await incorrectSetupResult.should.be.rejectedWith(
     Error,
     'Exchange.setup(): Exchange assertion failed for ""'
@@ -56,9 +56,9 @@ test('Exchange::setup() should fail with empty exchange name', async () => {
 
 
 /**
- * Exchange::assertQueue() should fail with incorrect queueu name
+ * Exchange.assertQueue() should fail with incorrect queueu name
  */
-test('Exchange::assertQueue() should fail with empty exchange name', async () => {
+test('Exchange.assertQueue() should fail with empty exchange name', async () => {
   class WrongNameQ extends Queue {}
 
   const locals = require('../../config');

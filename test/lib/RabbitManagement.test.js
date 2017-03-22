@@ -26,9 +26,9 @@ test('RabbitManagement interface', () => {
 });
 
 /**
- * Test RabbitManagement::getQueueInfo
+ * Test RabbitManagement.getQueueInfo
  */
-test('RabbitManagement::getQueueInfo() fails with non-existent queues', async () => {
+test('RabbitManagement.getQueueInfo() fails with non-existent queues', async () => {
   class NotInitializedQ extends Queue {}
 
   // Local config
@@ -49,15 +49,15 @@ test('RabbitManagement::getQueueInfo() fails with non-existent queues', async ()
   const failedgetQueueInfo = rabbit.getQueueInfo(notInitializedQ);
   await failedgetQueueInfo.should.be.rejectedWith(
     Error,
-    'Incorrect RabbitManagement::getQueueInfo() response for GET /queues/blink/not-initialized'
+    'Incorrect RabbitManagement.getQueueInfo() response for GET /queues/blink/not-initialized'
   );
 });
 
 
 /**
- * Test RabbitManagement::getQueueBindings
+ * Test RabbitManagement.getQueueBindings
  */
-test('RabbitManagement::getQueueBindings() fails with non-existent queues', async () => {
+test('RabbitManagement.getQueueBindings() fails with non-existent queues', async () => {
   class NotBoundQ extends Queue {}
 
   // Local config
