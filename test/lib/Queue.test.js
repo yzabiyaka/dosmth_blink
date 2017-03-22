@@ -36,7 +36,7 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   class TestBindingQ extends Queue {
     constructor(exchange) {
       super(exchange);
-      this.routes.push('*.mexican.food');
+      this.routes.push('*.taco');
     }
   }
 
@@ -47,7 +47,7 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   const testBindingQ = new TestBindingQ(testX);
   testBindingQ.should.have.property('name');
   testBindingQ.name.should.be.equal('test-binding');
-  // Direct + *.mexican.food
+  // Direct + *.taco
   testBindingQ.routes.length.should.equal(2);
 
   testBindingQ.should.be.an.instanceof(Queue);
@@ -66,7 +66,7 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   const testBindingQBindings = await rabbit.getQueueBindings(testBindingQ);
   testBindingQBindings.should.be.an('array').and.have.length(2);
   // Specific route
-  testBindingQBindings[0].should.have.property('routing_key', '*.mexican.food');
+  testBindingQBindings[0].should.have.property('routing_key', '*.taco');
   testBindingQBindings[0].should.have.property('source', 'test-x');
   testBindingQBindings[0].should.have.property('destination', 'test-binding');
   // Direct route
