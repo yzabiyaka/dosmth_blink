@@ -86,14 +86,12 @@ test('Queue direct publishing', async () => {
   // Purge queue in case it already exists.
   await testDirectPublishQ.purge();
 
-  // Publish test message to the queue
+  // Publish test message to the queue.
   const testPayload = { passed: true };
-  const result = await testDirectPublishQ.publish(testPayload);
-  result.should.be.true;
+  const publishResult = await testDirectPublishQ.publish(testPayload);
+  publishResult.should.be.true;
 
-  // Check ready messages count with RabbitMQ Management Plugin API.
-  const rabbit = new RabbitManagement(locals.amqpManagement);
-  const testDirectPublishQInfo = await rabbit.getQueueInfo(testDirectPublishQ);
-  // console.dir(testDirectPublishQInfo, { colors: true, showHidden: true });
-  testDirectPublishQInfo.messages.should.equal(1);
+  // Check message count with Queue purge.
+  const purgeResult = await testDirectPublishQ.purge();
+  purgeResult.should.equal(1);
 });
