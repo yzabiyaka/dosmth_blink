@@ -25,9 +25,9 @@ test('Exchange interface', () => {
 });
 
 /**
- * Exchange.setup() should be able to connect to RabbitMQ
+ * Exchange.setup(): Test RabbitMQ connection
  */
-test('Exchange.setup() should be able to connect to RabbitMQ', async () => {
+test('Exchange.setup(): Test RabbitMQ connection', async () => {
   const locals = require('../../config');
   const testX = new Exchange(locals.amqp);
   const connected = await testX.setup();
@@ -35,9 +35,9 @@ test('Exchange.setup() should be able to connect to RabbitMQ', async () => {
 });
 
 /**
- * Exchange.setup() should fail with empty exchange name
+ * Exchange.setup(): Test exchange with empty name to fail
  */
-test('Exchange.setup() should fail with empty exchange name', async () => {
+test('Exchange.setup(): Test exchange with empty name to fail', async () => {
   const locals = require('../../config');
 
   // Copy RabbitMQ settings, but override exchange with empty string.
@@ -56,9 +56,9 @@ test('Exchange.setup() should fail with empty exchange name', async () => {
 
 
 /**
- * Exchange.assertQueue() should fail with incorrect queueu name
+ * Exchange.assertQueue(): Test queue with empty name to fail
  */
-test('Exchange.assertQueue() should fail with empty exchange name', async () => {
+test('Exchange.assertQueue(): Test queue with empty name to fail', async () => {
   class WrongNameQ extends Queue {}
 
   const locals = require('../../config');

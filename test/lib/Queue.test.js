@@ -15,9 +15,9 @@ chai.should();
 chai.use(chaiAsPromised);
 
 /**
- * Test Queue interface
+ * Queue: Test class interface
  */
-test('Queue interface', () => {
+test('Queue: Test class interface', () => {
   const queue = new Queue();
   queue.should.respondTo('setup');
   queue.should.respondTo('publish');
@@ -76,7 +76,7 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
 });
 
 /**
- * Test Queue direct publishing
+ * Queue.publish(), Queue.purge(): Test direct publishing and purging
  */
 test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async () => {
   class TestDirectPublishQ extends Queue {}
@@ -102,7 +102,7 @@ test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async
 });
 
 /**
- * Test purge method to fail
+ * Queue.purge(): Ensure incorrect queue purging fails
  */
 test('Queue.purge(): Ensure incorrect queue purging fails', async () => {
   class TestIncorrectPurgeQ extends Queue {}

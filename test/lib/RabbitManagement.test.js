@@ -17,7 +17,7 @@ chai.use(chaiAsPromised);
 /**
  * Test RabbitManagement interface
  */
-test('RabbitManagement interface', () => {
+test('RabbitManagement: Test class interface', () => {
   const locals = require('../../config');
   const rabbit = new RabbitManagement(locals.amqpManagement);
 
@@ -26,9 +26,9 @@ test('RabbitManagement interface', () => {
 });
 
 /**
- * Test RabbitManagement.getQueueInfo
+ * RabbitManagement.getQueueInfo(): Test Queue not found response
  */
-test('RabbitManagement.getQueueInfo() fails with non-existent queues', async () => {
+test('RabbitManagement.getQueueInfo(): Test Queue not found response', async () => {
   class NotInitializedQ extends Queue {}
 
   // Local config
@@ -55,9 +55,9 @@ test('RabbitManagement.getQueueInfo() fails with non-existent queues', async () 
 
 
 /**
- * Test RabbitManagement.getQueueBindings
+ * RabbitManagement.getQueueBindings(): Test response for not bound queues
  */
-test('RabbitManagement.getQueueBindings() fails with non-existent queues', async () => {
+test('RabbitManagement.getQueueBindings(): Test response for not bound queues', async () => {
   class NotBoundQ extends Queue {}
 
   // Local config
@@ -76,6 +76,6 @@ test('RabbitManagement.getQueueBindings() fails with non-existent queues', async
 
   // Test request to return 0 bindings.
   const bindings = await rabbit.getQueueBindings(notBoundQ);
-  bindings.should.be.an('array').and.have.length(0);
+  bindings.should.be.false;
 });
 
