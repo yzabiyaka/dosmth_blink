@@ -101,7 +101,6 @@ test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async
   purgeResult.should.equal(1);
 });
 
-
 /**
  * Test purge method to fail
  */
