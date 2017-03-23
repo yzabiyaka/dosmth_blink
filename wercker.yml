@@ -1,7 +1,20 @@
 box: node:7.7.1
+services:
+  - id: rabbitmq:management
+    env:
+      RABBITMQ_DEFAULT_USER: $BLINK_AMQP_USER
+      RABBITMQ_DEFAULT_PASS: $BLINK_AMQP_PASSWORD
+      RABBITMQ_DEFAULT_VHOST: $BLINK_AMQP_VHOST
 build:
   steps:
     - npm-install
+    - script:
+        name: link RabbitMQ service
+        code: |
+          export BLINK_AMQP_HOST=$RABBITMQ_PORT_5672_TCP_ADDR
+          export BLINK_AMQP_PORT=$RABBITMQ_PORT_5672_TCP_PORT
+          export BLINK_AMQP_MANAGEMENT_HOSTNAME=$RABBITMQ_PORT_15672_TCP_ADDR
+          export BLINK_AMQP_MANAGEMENT_PORT=$RABBITMQ_PORT_15672_TCP_PORT
     - script:
         name: run lint, BDD tests and code coverage
         code: npm run all-tests
