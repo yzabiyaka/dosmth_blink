@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
-    "node": ">=7.6.0"
+    "node": ">=7.7.4"
   },
   "scripts": {
     "test": "NODE_ENV=test ava",
@@ -27,9 +27,9 @@
   "dependencies": {
     "amqp-uri": "^2.0.0",
     "amqplib": "^0.5.1",
-    "axios": "^0.15.3",
     "change-case": "^3.0.1",
     "express": "^4.15.2",
+    "isomorphic-fetch": "^2.2.1",
     "nyc": "^10.1.2",
     "winston": "^2.3.1"
   },

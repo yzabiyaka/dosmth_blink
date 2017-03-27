@@ -2,6 +2,9 @@
   extends: "@dosomething/eslint-config"
   env:
     es6: true
+  globals:
+    # Support fetch mechanism through isomorphic-fetch module
+    fetch: true
   parserOptions:
     # Node requires 'use strict' to use built-in ES6 compatibility.
     # Use script source type, so lint doesn't throw error:

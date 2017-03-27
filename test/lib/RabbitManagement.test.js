@@ -46,8 +46,8 @@ test('RabbitManagement.getQueueInfo(): Test Queue not found response', async () 
   const rabbit = new RabbitManagement(locals.amqpManagement);
 
   // Test request to fail.
-  const failedgetQueueInfo = rabbit.getQueueInfo(notInitializedQ);
-  await failedgetQueueInfo.should.be.rejectedWith(
+  const failedGetQueueInfo = rabbit.getQueueInfo(notInitializedQ);
+  await failedGetQueueInfo.should.be.rejectedWith(
     Error,
     'Incorrect RabbitManagement.getQueueInfo() response for GET /queues/blink/not-initialized'
   );

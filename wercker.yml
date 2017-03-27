@@ -1,13 +1,18 @@
-box: node:7.7.1
+box: node:7.7.4
 services:
-  - id: rabbitmq:management
+  - id: rabbitmq:3.6.8-management
     env:
       RABBITMQ_DEFAULT_USER: $BLINK_AMQP_USER
       RABBITMQ_DEFAULT_PASS: $BLINK_AMQP_PASSWORD
       RABBITMQ_DEFAULT_VHOST: $BLINK_AMQP_VHOST
 build:
   steps:
-    - npm-install
+    - script:
+      name: set yarn cache
+      code: export YARN_CACHE=$WERCKER_CACHE_DIR/yarn
+    - script:
+      name: install dependencies
+      code: HOME=$YARN_CACHE yarn
     - script:
         name: link RabbitMQ service
         code: |
