@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
-    "node": ">=7.6.0"
+    "node": ">=7.7.3"
   },
   "scripts": {
     "test": "NODE_ENV=test ava",
