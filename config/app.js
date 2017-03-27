@@ -3,7 +3,7 @@
 // Initialize express.
 const config = {};
 
-// Port
-config.port = process.env.LISTEN_PORT || 5050;
+// Environment
+config.env = process.env.NODE_ENV || 'development';
 
 module.exports = config;

@@ -5,15 +5,14 @@
   "engines": {
     "node": ">=7.6.0"
   },
-  "main": "app.js",
   "scripts": {
-    "start": "node app.js",
     "test": "NODE_ENV=test ava",
     "lint": "eslint .",
     "coverage": "NODE_ENV=test nyc ava",
     "all-tests": "npm run lint && npm run coverage",
     "html-coverage-report": "nyc report --reporter=html",
-    "publish-coverage-report": "nyc report --reporter=lcov && codecov"
+    "publish-coverage-report": "nyc report --reporter=lcov && codecov",
+    "web": "node web/blinkWeb.js"
   },
   "repository": {
     "type": "git",

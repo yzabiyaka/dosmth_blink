@@ -5,6 +5,7 @@
  */
 const express = require('express');
 const http = require('http');
+const config = require('../config');
 
 /**
  * Initializations.
@@ -15,11 +16,11 @@ process.chdir(__dirname);
 // Express.
 const app = express();
 
-// Setup locals variable in config/index.js.
-app.locals = require('./config');
+// Save app config to express locals.
+app.locals = config;
 
 // Setup express app based on local configuration.
-app.set('env', app.locals.express.env);
+app.set('env', config.app.env);
 
 /**
  * Routing.
@@ -39,9 +40,9 @@ app.use('/api/v1', require('./api/v1'));
  * Create server.
  */
 const server = http.createServer(app);
-server.listen(app.locals.express.port, () => {
+server.listen(config.express.port, () => {
   const address = server.address();
-  app.locals.logger.info(`Blink is listening on port:${address.port} env:${app.locals.express.env}`);
+  config.logger.info(`Blink is listening on port:${address.port} env:${config.app.env}`);
 });
 
 module.exports = app;
