@@ -75,10 +75,7 @@ test('RabbitManagement.getQueueBindings(): Test response for not bound queues', 
   const rabbit = new RabbitManagement(locals.amqpManagement);
 
   // Test request to return 0 bindings.
-  const failedGetQueueBindings =  rabbit.getQueueBindings(notBoundQ);
-  await failedGetQueueBindings.should.be.rejectedWith(
-    Error,
-    'Incorrect RabbitManagement.getQueueBindings() response for GET /bindings/blink/e/test-x/q/not-bound'
-  );
+  const bindings = await rabbit.getQueueBindings(notBoundQ);
+  bindings.should.be.false;
 });
 
