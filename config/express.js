@@ -4,6 +4,6 @@
 const config = {};
 
 // Port
-config.port = process.env.LISTEN_PORT || 5050;
+config.port = process.env.PORT || 5050;
 
 module.exports = config;
