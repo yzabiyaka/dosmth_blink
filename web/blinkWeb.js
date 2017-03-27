@@ -16,7 +16,7 @@ process.chdir(__dirname);
 const app = express();
 
 // Setup locals variable in config/index.js.
-app.locals = require('./config');
+app.locals = require('../config');
 
 // Setup express app based on local configuration.
 app.set('env', app.locals.express.env);
