@@ -1,6 +1,6 @@
 box: node:7.7.4
 services:
-  - id: rabbitmq:management
+  - id: rabbitmq:3.6.8-management
     env:
       RABBITMQ_DEFAULT_USER: $BLINK_AMQP_USER
       RABBITMQ_DEFAULT_PASS: $BLINK_AMQP_PASSWORD
