@@ -1,0 +1,4 @@
+---
+  rules:
+    # Allow controllers methods to ommit static declaration requirement
+    class-methods-use-this: off

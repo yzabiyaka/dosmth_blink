@@ -31,7 +31,9 @@ const apiController = new ApiController(config);
 /**
  * Routing.
  */
-router.get('/', async ctx => ctx.body = 'Hi, I\'m Blink!');
+router.get('/', async (ctx) => {
+  ctx.body = 'Hi, I\'m Blink!';
+});
 router.get('apiRoot', '/api', apiController.bindTo('index'));
 router.get('v1', '/api/v1', apiController.bindTo('v1'));
 
