@@ -5,7 +5,7 @@ const WebController = require('../../lib/WebController');
 class ApiController extends WebController {
   async index(ctx) {
     ctx.body = {
-      v1: this.fullUrl('v1'),
+      v1: this.fullUrl('api.v1'),
     };
   }
 
