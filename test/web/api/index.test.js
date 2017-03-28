@@ -6,13 +6,13 @@
 const test = require('ava');
 const supertest = require('supertest');
 require('chai').should();
-const app = require('../../../web/blinkWeb');
+const blinkWeb = require('../../../web/blinkWeb');
 
 /**
  * Test /api.
  */
 test('GET /api should respond with JSON list of API versions', async () => {
-  const res = await supertest(app.callback()).get('/api');
+  const res = await supertest(blinkWeb.callback()).get('/api');
   res.status.should.be.equal(200);
 
   // Check response to be json

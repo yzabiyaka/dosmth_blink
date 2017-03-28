@@ -8,7 +8,7 @@ const config = {};
 // Logger
 config.app = require('./app');
 config.logger = require('./logger');
-config.express = require('./express');
+config.web = require('./web');
 config.amqp = require('./amqp');
 config.amqpManagement = require('./amqpManagement');
 

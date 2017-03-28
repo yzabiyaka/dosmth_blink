@@ -7,14 +7,14 @@
 - [Node.js](https://nodejs.org/en/download/) v7.6+ for async/await support
 - [Docker](https://www.docker.com/products/overview) with support
   of Compose file [v3](https://docs.docker.com/compose/compose-file/#/versioning)
-- [Yarn](https://yarnpkg.com/en/) is optional, but recommended
+- [Yarn](https://yarnpkg.com/en/)
 
 #### Installation
-Install dependencies `yarn install` or `npm install`
+Install dependencies `yarn install`
 
 ## Usage
 - Launch RabbitMQ `docker-compose up`
-- `npm start`
+- `yarn web`
 - Open `http://localhost:5050`
 
 #### Available services
@@ -35,7 +35,7 @@ Install dependencies `yarn install` or `npm install`
 You can run all tests and checks at once:
 
 ```
-$ npm run all-tests
+$ yarn all-tests
 ```
 
 Or execute them individually:
@@ -43,7 +43,7 @@ Or execute them individually:
 #### Code style
 
 ```
-$ npm run lint
+$ yarn lint
 ```
 
 We follow [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript),
@@ -52,7 +52,7 @@ with minor [DoSomething](https://github.com/DoSomething/eslint-config) adjustmen
 #### BDD Tests
 
 ```
-$ npm test
+$ yarn test
 ```
 
 BDD test uses the following utilities:
@@ -63,7 +63,7 @@ BDD test uses the following utilities:
 #### Code coverage
 
 ```
-$ npm coverage
+$ yarn coverage
 ```
 
 - [NYC](https://github.com/istanbul/nyc)

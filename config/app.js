@@ -1,6 +1,5 @@
 'use strict';
 
-// Initialize express.
 const config = {};
 
 // Environment

@@ -15,15 +15,15 @@ const Router = require('koa-router');
 process.chdir(__dirname);
 
 // Web server
-const app = new Koa();
+const blinkWeb = new Koa();
 const router = new Router();
 
-// Save app config to express locals.
+// Save app config to web server globals.
 // TODO: find a good way to inject configuration into objects.
 // app.locals = config;
 
-// Setup express app based on local configuration.
-app.env = config.app.env;
+// Setup web server env from local config.
+blinkWeb.env = config.app.env;
 
 /**
  * Routing.
@@ -38,21 +38,21 @@ router.get('/', async (ctx) => {
 router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
 router.use('/api/v1', apiV1Router.routes(), apiV1Router.allowedMethods());
 
-app
+blinkWeb
   .use(router.routes())
   .use(router.allowedMethods());
 
 /**
  * Create server.
  */
-const server = http.createServer(app.callback());
-server.listen(config.express.port, config.express.host, () => {
+const server = http.createServer(blinkWeb.callback());
+server.listen(config.web.port, config.web.bind_address, () => {
   const address = server.address();
   // Make sure random port setting gets overriden with actual resolved port.
-  config.express.port = address.port;
+  config.web.port = address.port;
   config.logger.info(
-    `Blink is listening on http://${config.express.host}:${config.express.port} env:${config.app.env}`
+    `Blink is listening on http://${config.web.hostname}:${config.web.port} env:${config.app.env}`
   );
 });
 
-module.exports = app;
+module.exports = blinkWeb;

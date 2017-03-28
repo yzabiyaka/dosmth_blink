@@ -12,7 +12,7 @@ module.exports = (config) => {
   // Randomize port for test runner.
   // Port 0 means random port:
   // https://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback
-  config.express.port = 0;
+  config.web.port = 0;
 
   // Test exchange name.
   // TODO: Randomize exchange name.
