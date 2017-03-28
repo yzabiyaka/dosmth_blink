@@ -19,6 +19,7 @@ const app = new Koa();
 const router = new Router();
 
 // Save app config to express locals.
+// TODO: find a good way to inject configuration into objects.
 // app.locals = config;
 
 // Setup express app based on local configuration.
