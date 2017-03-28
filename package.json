@@ -30,7 +30,7 @@
     "change-case": "^3.0.1",
     "express": "^4.15.2",
     "isomorphic-fetch": "^2.2.1",
-    "nyc": "^10.1.2",
+    "nyc": "^10.2.0",
     "winston": "^2.3.1"
   },
   "devDependencies": {
@@ -38,8 +38,8 @@
     "ava": "^0.18.2",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "codecov": "^1.0.1",
-    "eslint": "^3.17.1",
+    "codecov": "^2.1.0",
+    "eslint": "^3.18.0",
     "eslint-plugin-ava": "^4.2.0",
     "supertest": "^3.0.0"
   },
