@@ -32,11 +32,13 @@ router.get('/', async (ctx) => {
   ctx.body = 'Hi, I\'m Blink!'
 });
 
-// // Api root:
-// app.use('/api', require('./api'));
+// Api root:
+const apiRouter = require('./api');
+router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
 
-// // API Version 1
-// app.use('/api/v1', require('./api/v1'));
+// API Version 1
+const apiV1Router = require('./api/v1');
+router.use('/api/v1', apiV1Router.routes(), apiV1Router.allowedMethods());
 
 app
   .use(router.routes())

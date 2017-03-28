@@ -3,21 +3,22 @@
 /**
  * Imports.
  */
-const express = require('express');
+const Router = require('koa-router');
+
 
 /**
  * Dependencies initializations.
  */
-const router = express.Router();
+const router = new Router();
 
 /**
  * Routing.
  */
 // API Root
-router.get('/', (req, res) => {
-  res.json({
+router.get('/', async (ctx) => {
+  ctx.body = {
     v1: '/api/v1',
-  });
+  };
 });
 
 module.exports = router;
