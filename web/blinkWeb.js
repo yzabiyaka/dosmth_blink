@@ -3,9 +3,10 @@
 /**
  * Imports.
  */
-const express = require('express');
-const http = require('http');
 const config = require('../config');
+const http = require('http');
+const Koa = require('koa');
+const Router = require('koa-router');
 
 /**
  * Initializations.
@@ -13,36 +14,45 @@ const config = require('../config');
 // Chdir to project root to ensure that relative paths work.
 process.chdir(__dirname);
 
-// Express.
-const app = express();
+// Web server
+const app = new Koa();
+const router = new Router();
 
 // Save app config to express locals.
-app.locals = config;
+// TODO: find a good way to inject configuration into objects.
+// app.locals = config;
 
 // Setup express app based on local configuration.
-app.set('env', config.app.env);
+app.env = config.app.env;
 
 /**
  * Routing.
  */
+const apiRouter = require('./api');
+const apiV1Router = require('./api/v1');
+
 // Root:
-app.get('/', (req, res) => {
-  res.send('Hi, I\'m Blink!');
+router.get('/', async (ctx) => {
+  ctx.body = 'Hi, I\'m Blink!';
 });
+router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
+router.use('/api/v1', apiV1Router.routes(), apiV1Router.allowedMethods());
 
-// Api root:
-app.use('/api', require('./api'));
-
-// API Version 1
-app.use('/api/v1', require('./api/v1'));
+app
+  .use(router.routes())
+  .use(router.allowedMethods());
 
 /**
  * Create server.
  */
-const server = http.createServer(app);
-server.listen(config.express.port, () => {
+const server = http.createServer(app.callback());
+server.listen(config.express.port, config.express.host, () => {
   const address = server.address();
-  config.logger.info(`Blink is listening on port:${address.port} env:${config.app.env}`);
+  // Make sure random port setting gets overriden with actual resolved port.
+  config.express.port = address.port;
+  config.logger.info(
+    `Blink is listening on http://${config.express.host}:${config.express.port} env:${config.app.env}`
+  );
 });
 
 module.exports = app;
