@@ -12,7 +12,7 @@ const app = require('../../../../web/blinkWeb');
  * Test /api/v1.
  */
 test('GET /api/v1 should list available endpoints', async () => {
-  const res = await supertest(app).get('/api/v1');
+  const res = await supertest(app.callback()).get('/api/v1');
   res.status.should.be.equal(200);
 
   // Check response to be json

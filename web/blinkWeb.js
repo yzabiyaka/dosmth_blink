@@ -3,9 +3,10 @@
 /**
  * Imports.
  */
-const express = require('express');
-const http = require('http');
 const config = require('../config');
+const http = require('http');
+const Koa = require('koa');
+const Router = require('koa-router');
 
 /**
  * Initializations.
@@ -13,33 +14,38 @@ const config = require('../config');
 // Chdir to project root to ensure that relative paths work.
 process.chdir(__dirname);
 
-// Express.
-const app = express();
+// Web server
+const app = new Koa();
+const router = new Router();
 
 // Save app config to express locals.
-app.locals = config;
+// app.locals = config;
 
 // Setup express app based on local configuration.
-app.set('env', config.app.env);
+app.env = config.app.env;
 
 /**
  * Routing.
  */
 // Root:
-app.get('/', (req, res) => {
-  res.send('Hi, I\'m Blink!');
+router.get('/', async (ctx) => {
+  ctx.body = 'Hi, I\'m Blink!'
 });
 
-// Api root:
-app.use('/api', require('./api'));
+// // Api root:
+// app.use('/api', require('./api'));
 
-// API Version 1
-app.use('/api/v1', require('./api/v1'));
+// // API Version 1
+// app.use('/api/v1', require('./api/v1'));
+
+app
+  .use(router.routes())
+  .use(router.allowedMethods());
 
 /**
  * Create server.
  */
-const server = http.createServer(app);
+const server = http.createServer(app.callback());
 server.listen(config.express.port, config.express.host, () => {
   const address = server.address();
   // Make sure random port setting gets overriden with actual resolved port.
