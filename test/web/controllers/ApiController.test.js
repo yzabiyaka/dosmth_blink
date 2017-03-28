@@ -23,3 +23,17 @@ test('GET /api should respond with JSON list of API versions', async () => {
   res.body.should.have.property('v1');
   res.body.v1.should.match(/\/api\/v1$/);
 });
+
+/**
+ * Test /api/v1.
+ */
+test('GET /api/v1 should list available endpoints', async () => {
+  const res = await supertest(blinkWeb.callback()).get('/api/v1');
+  res.status.should.be.equal(200);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+
+  // No endpoints to test now.
+});

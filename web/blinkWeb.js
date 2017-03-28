@@ -7,6 +7,7 @@ const config = require('../config');
 const http = require('http');
 const Koa = require('koa');
 const Router = require('koa-router');
+const ApiController = require('./controllers/ApiController');
 
 /**
  * Initializations.
@@ -28,15 +29,11 @@ blinkWeb.env = config.app.env;
 /**
  * Routing.
  */
-const apiRouter = require('./api');
-const apiV1Router = require('./api/v1');
-
-// Root:
 router.get('/', async (ctx) => {
   ctx.body = 'Hi, I\'m Blink!';
 });
-router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
-router.use('/api/v1', apiV1Router.routes(), apiV1Router.allowedMethods());
+router.get('/api', ApiController.index);
+router.get('/api/v1', ApiController.v1);
 
 blinkWeb
   .use(router.routes())
