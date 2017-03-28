@@ -1,13 +1,15 @@
 'use strict';
 
-class ApiController {
-  static async index(ctx) {
+const WebController = require('../../lib/WebController');
+
+class ApiController extends WebController {
+ async index(ctx) {
     ctx.body = {
-      v1: '/api/v1',
+      v1: this.fullUrl('v1'),
     };
   }
 
-  static async v1(ctx) {
+ async v1(ctx) {
     ctx.body = {};
   }
 }

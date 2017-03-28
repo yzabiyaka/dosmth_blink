@@ -18,22 +18,22 @@ process.chdir(__dirname);
 // Web server
 const blinkWeb = new Koa();
 const router = new Router();
-
-// Save app config to web server globals.
-// TODO: find a good way to inject configuration into objects.
-// app.locals = config;
+config.router = router;
 
 // Setup web server env from local config.
 blinkWeb.env = config.app.env;
 
 /**
+ * Initialize all controllers.
+ */
+const apiController = new ApiController(config);
+
+/**
  * Routing.
  */
-router.get('/', async (ctx) => {
-  ctx.body = 'Hi, I\'m Blink!';
-});
-router.get('/api', ApiController.index);
-router.get('/api/v1', ApiController.v1);
+router.get('/', async ctx => ctx.body = 'Hi, I\'m Blink!');
+router.get('apiRoot', '/api', apiController.bindTo('index'));
+router.get('v1', '/api/v1', apiController.bindTo('v1'));
 
 blinkWeb
   .use(router.routes())
