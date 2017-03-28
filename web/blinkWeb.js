@@ -27,17 +27,14 @@ app.env = config.app.env;
 /**
  * Routing.
  */
+const apiRouter = require('./api');
+const apiV1Router = require('./api/v1');
+
 // Root:
 router.get('/', async (ctx) => {
-  ctx.body = 'Hi, I\'m Blink!'
+  ctx.body = 'Hi, I\'m Blink!';
 });
-
-// Api root:
-const apiRouter = require('./api');
 router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
-
-// API Version 1
-const apiV1Router = require('./api/v1');
 router.use('/api/v1', apiV1Router.routes(), apiV1Router.allowedMethods());
 
 app
