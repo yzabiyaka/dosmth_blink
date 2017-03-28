@@ -40,9 +40,13 @@ app.use('/api/v1', require('./api/v1'));
  * Create server.
  */
 const server = http.createServer(app);
-server.listen(config.express.port, () => {
+server.listen(config.express.port, config.express.host, () => {
   const address = server.address();
-  config.logger.info(`Blink is listening on port:${address.port} env:${config.app.env}`);
+  // Make sure random port setting gets overriden with actual resolved port.
+  config.express.port = address.port;
+  config.logger.info(
+    `Blink is listening on http://${config.express.host}:${config.express.port} env:${config.app.env}`
+  );
 });
 
 module.exports = app;
