@@ -45,12 +45,12 @@ blinkWeb
  * Create server.
  */
 const server = http.createServer(blinkWeb.callback());
-server.listen(config.web.port, config.web.bind_address, () => {
+server.listen(config.web.bind_port, config.web.bind_address, () => {
   const address = server.address();
   // Make sure random port setting gets overriden with actual resolved port.
-  config.web.port = address.port;
+  config.web.bind_port = address.port;
   config.logger.info(
-    `Blink is listening on http://${config.web.hostname}:${config.web.port} env:${config.app.env}`
+    `Blink is listening on http://${config.web.hostname}:${config.web.bind_port} env:${config.app.env}`
   );
 });
 
