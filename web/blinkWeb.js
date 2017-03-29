@@ -34,8 +34,8 @@ const apiController = new ApiController(config);
 router.get('/', async (ctx) => {
   ctx.body = 'Hi, I\'m Blink!';
 });
-router.get('api.index', '/api', apiController.bindTo('index'));
-router.get('api.v1', '/api/v1', apiController.bindTo('v1'));
+router.get('api.index', '/api', apiController.index);
+router.get('api.v1', '/api/v1', apiController.v1);
 
 blinkWeb
   .use(router.routes())
