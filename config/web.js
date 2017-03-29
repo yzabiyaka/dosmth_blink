@@ -10,5 +10,7 @@ config.port = process.env.BLINK_WEB_PORT || process.env.PORT || 5050;
 config.bind_address = process.env.BLINK_WEB_BIND_ADDRESS || '';
 // Base URI.
 config.hostname = process.env.BLINK_WEB_HOSTNAME || 'localhost';
+// Http protocol
+config.protocol = process.env.BLINK_WEB_PROTOCOL || 'http';
 
 module.exports = config;

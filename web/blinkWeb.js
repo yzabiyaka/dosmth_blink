@@ -7,6 +7,7 @@ const config = require('../config');
 const http = require('http');
 const Koa = require('koa');
 const Router = require('koa-router');
+const ApiController = require('./controllers/ApiController');
 
 /**
  * Initializations.
@@ -17,26 +18,24 @@ process.chdir(__dirname);
 // Web server
 const blinkWeb = new Koa();
 const router = new Router();
-
-// Save app config to web server globals.
-// TODO: find a good way to inject configuration into objects.
-// app.locals = config;
+config.router = router;
 
 // Setup web server env from local config.
 blinkWeb.env = config.app.env;
 
 /**
+ * Initialize all controllers.
+ */
+const apiController = new ApiController(config);
+
+/**
  * Routing.
  */
-const apiRouter = require('./api');
-const apiV1Router = require('./api/v1');
-
-// Root:
 router.get('/', async (ctx) => {
   ctx.body = 'Hi, I\'m Blink!';
 });
-router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
-router.use('/api/v1', apiV1Router.routes(), apiV1Router.allowedMethods());
+router.get('api.index', '/api', apiController.index);
+router.get('api.v1', '/api/v1', apiController.v1);
 
 blinkWeb
   .use(router.routes())
