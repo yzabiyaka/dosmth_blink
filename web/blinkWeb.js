@@ -8,6 +8,7 @@ const http = require('http');
 const Koa = require('koa');
 const Router = require('koa-router');
 const ApiController = require('./controllers/ApiController');
+const ToolsController = require('./controllers/ToolsController');
 
 /**
  * Initializations.
@@ -27,6 +28,7 @@ blinkWeb.env = config.app.env;
  * Initialize all controllers.
  */
 const apiController = new ApiController(config);
+const toolsController = new ToolsController(config);
 
 /**
  * Routing.
@@ -36,6 +38,7 @@ router.get('/', async (ctx) => {
 });
 router.get('api.index', '/api', apiController.index);
 router.get('api.v1', '/api/v1', apiController.v1);
+router.get('api.v1.tools', '/api/v1/tools', toolsController.index);
 
 blinkWeb
   .use(router.routes())

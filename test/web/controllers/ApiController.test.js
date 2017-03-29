@@ -36,4 +36,6 @@ test('GET /api/v1 should list available endpoints', async () => {
   res.header['content-type'].should.match(/json/);
 
   // No endpoints to test now.
+  res.body.should.have.property('tools');
+  res.body.tools.should.match(/\/api\/v1\/tools$/);
 });
