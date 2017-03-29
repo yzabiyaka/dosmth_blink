@@ -68,7 +68,7 @@ test('WebController.fullUrl(): Test ommitting port 80', () => {
   config.router = router;
 
   // Expected port
-  config.web.port = 80;
+  config.web.port = '80';
 
   const testController = new TestController(config);
   router.get('test.route', '/test', testController.index);
