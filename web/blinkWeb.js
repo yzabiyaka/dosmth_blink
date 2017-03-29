@@ -50,7 +50,7 @@ server.listen(config.web.bind_port, config.web.bind_address, () => {
   // Make sure random port setting gets overriden with actual resolved port.
   config.web.bind_port = address.port;
   config.logger.info(
-    `Blink is listening on http://${config.web.hostname}:${config.web.port} env:${config.app.env}`
+    `Blink is listening on http://${config.web.hostname}:${config.web.bind_port} env:${config.app.env}`
   );
 });
 
