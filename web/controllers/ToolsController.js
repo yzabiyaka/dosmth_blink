@@ -7,6 +7,7 @@ class ToolsController extends WebController {
     super(...args);
     // Bind web methods to object context so they can be passed to router.
     this.index = this.index.bind(this);
+    this.fetch = this.fetch.bind(this);
   }
 
   async index(ctx) {
@@ -16,8 +17,14 @@ class ToolsController extends WebController {
   }
 
   async fetch(ctx) {
+    try {
+      const msg = new FetchMessage(ctx.request.body);
+    } catch (error) {
+      this.sendError(ctx, error);
+      return;
+    }
     console.dir(ctx.request.body, { colors: true, showHidden: true });
-    WebController.replyOK(ctx);
+    this.sendOK(ctx);
   }
 }
 

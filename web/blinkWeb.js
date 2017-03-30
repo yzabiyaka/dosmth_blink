@@ -8,6 +8,7 @@ const config = require('../config');
 const http = require('http');
 const Koa = require('koa');
 const Router = require('koa-router');
+const uuidV4 = require('uuid/v4');
 const ApiController = require('./controllers/ApiController');
 const ToolsController = require('./controllers/ToolsController');
 
@@ -19,7 +20,17 @@ process.chdir(__dirname);
 
 // Web server
 const blinkWeb = new Koa();
+
+// Setup web middleware.
 blinkWeb.use(bodyParser());
+
+// Set context id.
+blinkWeb.use(async (ctx, next) => {
+  ctx.id = ctx.id || uuidV4();
+  await next();
+  ctx.set('X-Request-Id', ctx.id);
+})
+
 const router = new Router();
 config.router = router;
 
