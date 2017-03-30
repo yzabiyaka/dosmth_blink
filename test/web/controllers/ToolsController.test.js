@@ -19,7 +19,9 @@ test('GET /api/v1/tools should respond with JSON list available tools', async ()
   res.header.should.have.property('content-type');
   res.header['content-type'].should.match(/json/);
 
-  // No endpoints to test now.
+  // Check response.
+  res.body.should.have.property('fetch');
+  res.body.fetch.should.match(/\/api\/v1\/tools\/fetch$/);
 });
 
 /**
@@ -48,5 +50,6 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
 
   // Check response.
   res.body.should.have.property('statusCode', 200);
+  res.body.should.have.property('queued', true);
   res.body.should.have.property('message', 'OK');
 });

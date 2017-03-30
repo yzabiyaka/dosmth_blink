@@ -10,11 +10,18 @@ class ToolsController extends WebController {
   }
 
   async index(ctx) {
-    ctx.body = {};
+    ctx.body = {
+      fetch: this.fullUrl('api.v1.tools.fetch'),
+    };
   }
 
   async fetch(ctx) {
-    ctx.body = {};
+    ctx.body = {
+      statusCode: 200,
+      queued: true,
+      message: 'OK',
+    };
+    return;
   }
 }
 
