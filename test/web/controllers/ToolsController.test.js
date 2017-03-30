@@ -79,8 +79,12 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
   // Check that the message is queued.
   const config = require('../../../config');
   const rabbit = new RabbitManagement(config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('fetch', 2);
+  const messages = await rabbit.getMessagesFrom('fetch', 1);
   messages.should.be.an('array').and.to.have.lengthOf(1);
+
   messages[0].should.have.property('payload');
-  messages[0].payload.should.be.eql(data);
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+  messageData.data.should.be.eql(data);
 });

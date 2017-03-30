@@ -21,6 +21,8 @@ class ToolsController extends WebController {
     try {
       const fetchMessage = FetchMessage.fromCtx(ctx);
       fetchMessage.validate();
+      const fetchQ = await this.initializer.getFetchQ();
+      fetchQ.publish(fetchMessage);
     } catch (error) {
       this.sendError(ctx, error);
       return;
