@@ -46,24 +46,11 @@ test('RabbitManagement.getQueueInfo(): Test Queue not found response', async () 
  * RabbitManagement.getQueueBindings(): Test response for not bound queues
  */
 test('RabbitManagement.getQueueBindings(): Test response for not bound queues', async () => {
-  class NotBoundQ extends Queue {}
-
   // Local config
-  const locals = require('../../config');
-
-  // Real exchange for configuration.
-  const testX = new Exchange(locals.amqp);
-  await testX.setup();
-
-  // Fake queue not initialized in Rabbit.
-  const notBoundQ = new NotBoundQ(testX);
-  // Don't setup queue to test binding to fail.
-
-  // Rabbit management.
-  const rabbit = new RabbitManagement(locals.amqpManagement);
+  const config = require('../../config');
+  const rabbit = new RabbitManagement(config.amqpManagement);
 
   // Test request to return 0 bindings.
-  const bindings = await rabbit.getQueueBindings(notBoundQ);
+  const bindings = await rabbit.getQueueBindings('not-bound-queue', config.amqp.exchange);
   bindings.should.be.false;
 });
-

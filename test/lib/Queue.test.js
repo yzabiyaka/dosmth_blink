@@ -63,7 +63,10 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   testBindingQInfo.should.have.property('exclusive', false);
 
   // Test that the queue is binded to the exchange.
-  const testBindingQBindings = await rabbit.getQueueBindings(testBindingQ);
+  const testBindingQBindings = await rabbit.getQueueBindings(
+    testBindingQ.name,
+    testBindingQ.exchange.name
+  );
   testBindingQBindings.should.be.an('array').and.have.length(2);
   // Specific route
   testBindingQBindings[0].should.have.property('routing_key', '*.taco');
