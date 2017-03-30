@@ -12,6 +12,10 @@ class ToolsController extends WebController {
   async index(ctx) {
     ctx.body = {};
   }
+
+  async fetch(ctx) {
+    ctx.body = {};
+  }
 }
 
 module.exports = ToolsController;

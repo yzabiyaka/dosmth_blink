@@ -39,6 +39,7 @@ router.get('/', async (ctx) => {
 router.get('api.index', '/api', apiController.index);
 router.get('api.v1', '/api/v1', apiController.v1);
 router.get('api.v1.tools', '/api/v1/tools', toolsController.index);
+router.post('api.v1.tools.fetch', '/api/v1/tools', toolsController.fetch);
 
 blinkWeb
   .use(router.routes())
