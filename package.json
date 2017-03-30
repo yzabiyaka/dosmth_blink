@@ -30,6 +30,7 @@
     "change-case": "^3.0.1",
     "isomorphic-fetch": "^2.2.1",
     "koa": "next",
+    "koa-bodyparser": "^4.2.0",
     "koa-router": "next",
     "nyc": "^10.2.0",
     "winston": "^2.3.1"

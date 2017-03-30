@@ -11,6 +11,7 @@ class ApiController extends WebController {
   }
 
   async index(ctx) {
+    console.dir(ctx.request.body, { colors: true, showHidden: true });
     ctx.body = {
       v1: this.fullUrl('api.v1'),
     };

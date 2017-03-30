@@ -3,6 +3,7 @@
 /**
  * Imports.
  */
+const bodyParser = require('koa-bodyparser');
 const config = require('../config');
 const http = require('http');
 const Koa = require('koa');
@@ -18,6 +19,7 @@ process.chdir(__dirname);
 
 // Web server
 const blinkWeb = new Koa();
+blinkWeb.use(bodyParser());
 const router = new Router();
 config.router = router;
 

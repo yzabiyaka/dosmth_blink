@@ -16,11 +16,8 @@ class ToolsController extends WebController {
   }
 
   async fetch(ctx) {
-    ctx.body = {
-      statusCode: 200,
-      queued: true,
-      message: 'OK',
-    };
+    console.dir(ctx.request.body, { colors: true, showHidden: true });
+    WebController.replyOK(ctx);
     return;
   }
 }
