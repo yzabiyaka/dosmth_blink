@@ -8,8 +8,6 @@ const supertest = require('supertest');
 require('chai').should();
 
 const blinkWeb = require('../../../web/blinkWeb');
-const Exchange = require('../../../lib/Exchange');
-const FetchQ = require('../../../queues/FetchQ');
 const RabbitManagement = require('../../../lib/RabbitManagement');
 
 

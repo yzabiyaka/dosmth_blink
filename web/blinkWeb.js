@@ -11,6 +11,7 @@ const Router = require('koa-router');
 const uuidV4 = require('uuid/v4');
 const ApiController = require('./controllers/ApiController');
 const ToolsController = require('./controllers/ToolsController');
+const Initializer = require('../lib/Initializer');
 
 /**
  * Initializations.
@@ -31,14 +32,19 @@ blinkWeb.use(async (ctx, next) => {
   ctx.set('X-Request-Id', ctx.id);
 });
 
-const router = new Router();
-config.router = router;
-
 // Setup web server env from local config.
 blinkWeb.env = config.app.env;
 
+// Setup dependencies.
+const router = new Router();
+config.router = router;
+config.initializer = new Initializer(config);
+
+config.initializer.getExchange();
+config.initializer.getFetchQ();
+
 /**
- * Initialize all controllers.
+ * Initialize all web controllers.
  */
 const apiController = new ApiController(config);
 const toolsController = new ToolsController(config);
