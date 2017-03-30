@@ -18,7 +18,6 @@ class ToolsController extends WebController {
   async fetch(ctx) {
     console.dir(ctx.request.body, { colors: true, showHidden: true });
     WebController.replyOK(ctx);
-    return;
   }
 }
 

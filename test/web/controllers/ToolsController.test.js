@@ -38,7 +38,7 @@ test('GET /api/v1/tools/fetch should validate incoming parameters', async () => 
   res.header['content-type'].should.match(/json/);
 
   // Check response.
-  res.body.should.have.property('error', "validation_failed");
+  res.body.should.have.property('error', 'validation_failed');
   res.body.should.have.property('ok', false);
   res.body.should.have.property('message');
   res.body.should.have.property('hint');
@@ -56,9 +56,9 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
       options: {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-      }
+      },
     });
 
   const res = await req;
