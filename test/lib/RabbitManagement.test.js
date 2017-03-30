@@ -29,24 +29,12 @@ test('RabbitManagement: Test class interface', () => {
  * RabbitManagement.getQueueInfo(): Test Queue not found response
  */
 test('RabbitManagement.getQueueInfo(): Test Queue not found response', async () => {
-  class NotInitializedQ extends Queue {}
-
   // Local config
-  const locals = require('../../config');
-
-  // Real exchange for configuration.
-  const testX = new Exchange(locals.amqp);
-  await testX.setup();
-
-  // Fake queue not initialized in Rabbit.
-  const notInitializedQ = new NotInitializedQ(testX);
-  // Don't setup queue to test info request fail.
-
-  // Rabbit management.
-  const rabbit = new RabbitManagement(locals.amqpManagement);
+  const config = require('../../config');
+  const rabbit = new RabbitManagement(config.amqpManagement);
 
   // Test request to fail.
-  const failedGetQueueInfo = rabbit.getQueueInfo(notInitializedQ);
+  const failedGetQueueInfo = rabbit.getQueueInfo('not-initialized');
   await failedGetQueueInfo.should.be.rejectedWith(
     Error,
     'Incorrect RabbitManagement.getQueueInfo() response for GET /queues/blink/not-initialized'

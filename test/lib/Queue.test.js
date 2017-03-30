@@ -56,7 +56,7 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
 
   // Test queue settings with RabbitMQ Management Plugin API.
   const rabbit = new RabbitManagement(locals.amqpManagement);
-  const testBindingQInfo = await rabbit.getQueueInfo(testBindingQ);
+  const testBindingQInfo = await rabbit.getQueueInfo(testBindingQ.name);
   testBindingQInfo.should.have.property('name', 'test-binding');
   testBindingQInfo.should.have.property('durable', true);
   testBindingQInfo.should.have.property('auto_delete', false);
