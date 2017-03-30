@@ -1,10 +1,10 @@
 'use strict';
 
-const BlinkError = require('./BlinkError')
+const BlinkError = require('./BlinkError');
 
 class ValidationError extends BlinkError {
   constructor(fields) {
-    super("Data validation failed");
+    super('Data validation failed');
     this.fields = fields;
   }
 }
