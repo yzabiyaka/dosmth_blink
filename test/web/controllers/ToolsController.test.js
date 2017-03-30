@@ -49,7 +49,7 @@ test('GET /api/v1/tools/fetch should validate incoming parameters', async () => 
  * Test /api/v1/tools/fetch
  */
 test('GET /api/v1/tools/fetch should publish message to fetch queue', async () => {
-  const req = supertest(blinkWeb.callback())
+  const res = await supertest(blinkWeb.callback())
     .post('/api/v1/tools/fetch')
     .send({
       url: 'http://localhost/api/v1',
@@ -60,8 +60,6 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
         },
       },
     });
-
-  const res = await req;
 
   res.status.should.be.equal(200);
 

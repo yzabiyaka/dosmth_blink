@@ -1,5 +1,6 @@
 'use strict';
 
+const FetchMessage = require('../../messages/FetchMessage');
 const WebController = require('../../lib/WebController');
 
 class ToolsController extends WebController {
@@ -18,12 +19,12 @@ class ToolsController extends WebController {
 
   async fetch(ctx) {
     try {
-      const msg = new FetchMessage(ctx.request.body);
+      const fetchMessage = FetchMessage.fromCtx(ctx);
+      fetchMessage.validate();
     } catch (error) {
       this.sendError(ctx, error);
       return;
     }
-    console.dir(ctx.request.body, { colors: true, showHidden: true });
     this.sendOK(ctx);
   }
 }

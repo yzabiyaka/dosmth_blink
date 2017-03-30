@@ -29,7 +29,7 @@ blinkWeb.use(async (ctx, next) => {
   ctx.id = ctx.id || uuidV4();
   await next();
   ctx.set('X-Request-Id', ctx.id);
-})
+});
 
 const router = new Router();
 config.router = router;
