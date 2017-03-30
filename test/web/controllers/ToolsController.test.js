@@ -9,7 +9,9 @@ require('chai').should();
 
 const blinkWeb = require('../../../web/blinkWeb');
 const Exchange = require('../../../lib/Exchange');
+const FetchQ = require('../../../queues/FetchQ');
 const RabbitManagement = require('../../../lib/RabbitManagement');
+
 
 /**
  * Test /api/v1/tools
@@ -52,6 +54,14 @@ test('GET /api/v1/tools/fetch should validate incoming parameters', async () => 
  * Test /api/v1/tools/fetch
  */
 test('GET /api/v1/tools/fetch should publish message to fetch queue', async () => {
+  // Setup Queue and Exchange
+  const config = require('../../../config');
+  const testX = new Exchange(config.amqp);
+  await testX.setup();
+  const fetchQ = new FetchQ(testX);
+  await fetchQ.setup();
+  await fetchQ.purge();
+
   const data = {
     url: 'http://localhost/api/v1',
     options: {
@@ -75,15 +85,10 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
   // Check response.
   res.body.should.have.property('ok', true);
 
-  // Setup Queue and Exchange
-  const config = require('../../../config');
-  const testX = new Exchange(config.amqp);
-  await testX.setup();
-  const fetchQ = new FetchQ(testX);
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(config.amqpManagement);
-  const messages = await rabbit.getAllMessages(fetchQ);
+  const messages = await rabbit.getMessagesFrom(fetchQ, 2);
   messages.should.be.an('array').and.to.have.lengthOf(1);
   messages[0].should.have.property('payload');
   messages[0].payload.should.be.eql(data);
