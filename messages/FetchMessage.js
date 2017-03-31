@@ -1,5 +1,7 @@
 'use strict';
 
+const Joi = require('joi');
+
 const Message = require('../lib/Message');
 
 class FetchMessage extends Message {
@@ -8,11 +10,10 @@ class FetchMessage extends Message {
     super(...args);
 
     // Data validation rules.
-    this.constraints = {
-      url: {
-        presence: true,
-      },
-    };
+    this.schema = Joi.object().keys({
+      url: Joi.string().required(),
+      options: Joi.object(),
+    });
   }
 
   static fromCtx(ctx) {

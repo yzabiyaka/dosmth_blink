@@ -3,9 +3,8 @@
 const BlinkError = require('./BlinkError');
 
 class ValidationError extends BlinkError {
-  constructor(fields) {
-    super('Data validation failed');
-    this.fields = fields;
+  constructor(error) {
+    super(error.message);
   }
 }
 

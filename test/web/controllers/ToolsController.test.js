@@ -32,11 +32,11 @@ test('GET /api/v1/tools should respond with JSON list available tools', async ()
  */
 test('GET /api/v1/tools/fetch should validate incoming parameters', async () => {
   const res = await supertest(blinkWeb.callback())
+    .post('/api/v1/tools/fetch')
     .send({
       // Send no url param and incorrect options param.
       options: 42,
     });
-    .post('/api/v1/tools/fetch');
 
   res.status.should.be.equal(422);
 
@@ -47,9 +47,7 @@ test('GET /api/v1/tools/fetch should validate incoming parameters', async () => 
   // Check response.
   res.body.should.have.property('error', 'validation_failed');
   res.body.should.have.property('ok', false);
-  res.body.should.have.property('message');
-  res.body.should.have.property('hint');
-  res.body.should.have.property('fields');
+  res.body.should.have.property('message').and.to.have.string('"url" is required');
 });
 
 /**
