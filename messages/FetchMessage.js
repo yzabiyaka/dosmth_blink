@@ -4,6 +4,8 @@ const Joi = require('joi');
 
 const Message = require('../lib/Message');
 
+// TODO: url whitelist
+// TODO: authentication
 class FetchMessage extends Message {
 
   constructor(...args) {
