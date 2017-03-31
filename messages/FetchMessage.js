@@ -24,7 +24,7 @@ class FetchMessage extends Message {
     const fetchMessage = new FetchMessage({
       data: ctx.request.body,
       meta: {
-        request_id: ctx.request.id,
+        request_id: ctx.id,
       },
     });
     return fetchMessage;
