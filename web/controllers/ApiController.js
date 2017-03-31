@@ -17,7 +17,9 @@ class ApiController extends WebController {
   }
 
   async v1(ctx) {
-    ctx.body = {};
+    ctx.body = {
+      tools: this.fullUrl('api.v1.tools'),
+    };
   }
 }
 

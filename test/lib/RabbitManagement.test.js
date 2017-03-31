@@ -6,8 +6,6 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const test = require('ava');
-const Exchange = require('../../lib/Exchange');
-const Queue = require('../../lib/Queue');
 const RabbitManagement = require('../../lib/RabbitManagement');
 
 // Chai setup.
@@ -29,24 +27,12 @@ test('RabbitManagement: Test class interface', () => {
  * RabbitManagement.getQueueInfo(): Test Queue not found response
  */
 test('RabbitManagement.getQueueInfo(): Test Queue not found response', async () => {
-  class NotInitializedQ extends Queue {}
-
   // Local config
-  const locals = require('../../config');
-
-  // Real exchange for configuration.
-  const testX = new Exchange(locals.amqp);
-  await testX.setup();
-
-  // Fake queue not initialized in Rabbit.
-  const notInitializedQ = new NotInitializedQ(testX);
-  // Don't setup queue to test info request fail.
-
-  // Rabbit management.
-  const rabbit = new RabbitManagement(locals.amqpManagement);
+  const config = require('../../config');
+  const rabbit = new RabbitManagement(config.amqpManagement);
 
   // Test request to fail.
-  const failedGetQueueInfo = rabbit.getQueueInfo(notInitializedQ);
+  const failedGetQueueInfo = rabbit.getQueueInfo('not-initialized');
   await failedGetQueueInfo.should.be.rejectedWith(
     Error,
     'Incorrect RabbitManagement.getQueueInfo() response for GET /queues/blink/not-initialized'
@@ -58,24 +44,11 @@ test('RabbitManagement.getQueueInfo(): Test Queue not found response', async () 
  * RabbitManagement.getQueueBindings(): Test response for not bound queues
  */
 test('RabbitManagement.getQueueBindings(): Test response for not bound queues', async () => {
-  class NotBoundQ extends Queue {}
-
   // Local config
-  const locals = require('../../config');
-
-  // Real exchange for configuration.
-  const testX = new Exchange(locals.amqp);
-  await testX.setup();
-
-  // Fake queue not initialized in Rabbit.
-  const notBoundQ = new NotBoundQ(testX);
-  // Don't setup queue to test binding to fail.
-
-  // Rabbit management.
-  const rabbit = new RabbitManagement(locals.amqpManagement);
+  const config = require('../../config');
+  const rabbit = new RabbitManagement(config.amqpManagement);
 
   // Test request to return 0 bindings.
-  const bindings = await rabbit.getQueueBindings(notBoundQ);
+  const bindings = await rabbit.getQueueBindings('not-bound-queue', config.amqp.exchange);
   bindings.should.be.false;
 });
-

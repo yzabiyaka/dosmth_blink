@@ -7,6 +7,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const test = require('ava');
 const Exchange = require('../../lib/Exchange');
+const Message = require('../../lib/Message');
 const Queue = require('../../lib/Queue');
 const RabbitManagement = require('../../lib/RabbitManagement');
 
@@ -56,14 +57,17 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
 
   // Test queue settings with RabbitMQ Management Plugin API.
   const rabbit = new RabbitManagement(locals.amqpManagement);
-  const testBindingQInfo = await rabbit.getQueueInfo(testBindingQ);
+  const testBindingQInfo = await rabbit.getQueueInfo(testBindingQ.name);
   testBindingQInfo.should.have.property('name', 'test-binding');
   testBindingQInfo.should.have.property('durable', true);
   testBindingQInfo.should.have.property('auto_delete', false);
   testBindingQInfo.should.have.property('exclusive', false);
 
   // Test that the queue is binded to the exchange.
-  const testBindingQBindings = await rabbit.getQueueBindings(testBindingQ);
+  const testBindingQBindings = await rabbit.getQueueBindings(
+    testBindingQ.name,
+    testBindingQ.exchange.name
+  );
   testBindingQBindings.should.be.an('array').and.have.length(2);
   // Specific route
   testBindingQBindings[0].should.have.property('routing_key', '*.taco');
@@ -92,8 +96,8 @@ test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async
   await testDirectPublishQ.purge();
 
   // Publish test message to the queue.
-  const testPayload = { passed: true };
-  const publishResult = testDirectPublishQ.publish(testPayload);
+  const testMessage = new Message({ passed: true });
+  const publishResult = testDirectPublishQ.publish(testMessage);
   publishResult.should.be.true;
 
   // Check message count with Queue purge.
