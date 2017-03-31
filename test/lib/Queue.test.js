@@ -7,6 +7,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const test = require('ava');
 const Exchange = require('../../lib/Exchange');
+const Message = require('../../lib/Message');
 const Queue = require('../../lib/Queue');
 const RabbitManagement = require('../../lib/RabbitManagement');
 
@@ -95,8 +96,8 @@ test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async
   await testDirectPublishQ.purge();
 
   // Publish test message to the queue.
-  const testPayload = { passed: true };
-  const publishResult = testDirectPublishQ.publish(testPayload);
+  const testMessage = new Message({ passed: true });
+  const publishResult = testDirectPublishQ.publish(testMessage);
   publishResult.should.be.true;
 
   // Check message count with Queue purge.
