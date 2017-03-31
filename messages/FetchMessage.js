@@ -19,6 +19,8 @@ class FetchMessage extends Message {
   }
 
   static fromCtx(ctx) {
+    // TODO: save more metadata
+    // TODO: metadata parse helper
     const fetchMessage = new FetchMessage({
       data: ctx.request.body,
       meta: {
