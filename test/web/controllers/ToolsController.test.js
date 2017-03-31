@@ -31,8 +31,12 @@ test('GET /api/v1/tools should respond with JSON list available tools', async ()
  * Test /api/v1/tools/fetch
  */
 test('GET /api/v1/tools/fetch should validate incoming parameters', async () => {
-  // Post with no data.
-  const res = await supertest(blinkWeb.callback()).post('/api/v1/tools/fetch');
+  const res = await supertest(blinkWeb.callback())
+    .send({
+      // Send no url param and incorrect options param.
+      options: 42,
+    });
+    .post('/api/v1/tools/fetch');
 
   res.status.should.be.equal(422);
 
