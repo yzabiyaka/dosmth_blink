@@ -9,6 +9,8 @@ class FetchQ extends Queue {
 
   processIncomingMessage(incomingMessage) {
     const fetchMessage = FetchMessage.fromIncomingMessage(incomingMessage);
+    fetchMessage.validate();
+    console.dir(fetchMessage.payload.data, { colors: true, showHidden: true });
   }
 
 }
