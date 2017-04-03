@@ -23,4 +23,4 @@ process.chdir(__dirname);
 config.initializer = new Initializer(config);
 config.initializer.getFetchQ().then((queue) => {
   queue.startConsuming();
-})
+});
