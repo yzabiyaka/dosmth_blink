@@ -24,6 +24,12 @@ class ToolsController extends WebController {
       const fetchQ = await this.initializer.getFetchQ();
       fetchQ.publish(fetchMessage);
     } catch (error) {
+      if (error instanceof ValidationError) {
+        // Machine-readable error code.
+        ctx.body.error = 'validation_failed';
+        ctx.body.message = error.message;
+        ctx.status = 422;
+      }
       this.sendError(ctx, error);
       return;
     }
