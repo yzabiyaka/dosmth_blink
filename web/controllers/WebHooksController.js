@@ -1,6 +1,6 @@
 'use strict';
 
-// const FetchMessage = require('../../messages/FetchMessage');
+const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const WebController = require('../../lib/WebController');
 
 class WebHooksController extends WebController {
@@ -18,15 +18,15 @@ class WebHooksController extends WebController {
   }
 
   async customerio(ctx) {
-    // try {
-    //   const fetchMessage = FetchMessage.fromCtx(ctx);
-    //   fetchMessage.validate();
-    //   const fetchQ = await this.initializer.getFetchQ();
-    //   fetchQ.publish(fetchMessage);
-    // } catch (error) {
-    //   this.sendError(ctx, error);
-    //   return;
-    // }
+    try {
+      const customerIoWebhookMessage = CustomerIoWebhookMessage.fromCtx(ctx);
+      customerIoWebhookMessage.validate();
+      // const fetchQ = await this.initializer.getFetchQ();
+      // fetchQ.publish(fetchMessage);
+    } catch (error) {
+      this.sendError(ctx, error);
+      return;
+    }
     this.sendOK(ctx);
   }
 }
