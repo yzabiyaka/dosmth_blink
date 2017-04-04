@@ -1,6 +1,6 @@
 'use strict';
 
-const FetchMessage = require('../../messages/FetchMessage');
+// const FetchMessage = require('../../messages/FetchMessage');
 const WebController = require('../../lib/WebController');
 
 class WebHooksController extends WebController {

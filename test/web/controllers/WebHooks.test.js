@@ -31,7 +31,7 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
  */
 test('GET /api/v1/webhooks/customerio should publish message to customer-io queue', async () => {
   const data = {
-    test: true
+    test: true,
   };
 
   const res = await supertest(blinkWeb.callback())
