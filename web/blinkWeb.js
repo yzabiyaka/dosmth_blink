@@ -61,7 +61,8 @@ router.get('api.index', '/api', apiController.index);
 router.get('api.v1', '/api/v1', apiController.v1);
 router.get('api.v1.tools', '/api/v1/tools', toolsController.index);
 router.post('api.v1.tools.fetch', '/api/v1/tools/fetch', toolsController.fetch);
-router.post('api.v1.webhooks', '/api/v1/webhooks', webHooksController.index);
+router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksController.index);
+router.post('api.v1.webhooks.customerio', '/api/v1/webhooks/customerio', webHooksController.customerio);
 
 blinkWeb
   .use(router.routes())
