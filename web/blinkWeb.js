@@ -43,6 +43,7 @@ config.initializer = new Initializer(config);
 
 config.initializer.getExchange();
 config.initializer.getFetchQ();
+config.initializer.getCustomerIoWebhookQ();
 
 /**
  * Initialize all web controllers.

@@ -21,8 +21,8 @@ class WebHooksController extends WebController {
     try {
       const customerIoWebhookMessage = CustomerIoWebhookMessage.fromCtx(ctx);
       customerIoWebhookMessage.validate();
-      // const fetchQ = await this.initializer.getFetchQ();
-      // fetchQ.publish(fetchMessage);
+      const customerIoWebhookQ = await this.initializer.getCustomerIoWebhookQ();
+      customerIoWebhookQ.publish(customerIoWebhookMessage);
     } catch (error) {
       this.sendError(ctx, error);
       return;
