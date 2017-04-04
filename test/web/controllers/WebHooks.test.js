@@ -32,17 +32,17 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
  */
 test('GET /api/v1/webhooks/customerio should publish message to customer-io queue', async () => {
   const data = {
-    'data': {
-      'campaign_id': '0',
-      'customer_id': 'example_customer',
-      'email_address': 'example@customer.io',
-      'email_id': 'example_email',
-      'subject': 'Example Email',
-      'template_id': '0'
+    data: {
+      campaign_id: '0',
+      customer_id: 'example_customer',
+      email_address: 'example@customer.io',
+      email_id: 'example_email',
+      subject: 'Example Email',
+      template_id: '0',
     },
-    'event_id': 'abc123',
-    'event_type': 'example_webhook',
-    'timestamp': 1491337360
+    event_id: 'abc123',
+    event_type: 'example_webhook',
+    timestamp: 1491337360,
   };
 
   const res = await supertest(blinkWeb.callback())
