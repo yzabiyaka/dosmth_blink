@@ -38,4 +38,6 @@ test('GET /api/v1 should list available endpoints', async () => {
   // Check response to inclue expected endpoints
   res.body.should.have.property('tools');
   res.body.tools.should.match(/\/api\/v1\/tools$/);
+  res.body.should.have.property('webhooks');
+  res.body.webhooks.should.match(/\/api\/v1\/webhooks$/);
 });
