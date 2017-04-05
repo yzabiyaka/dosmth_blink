@@ -39,6 +39,7 @@ class FetchMessage extends Message {
       data: payload.data,
       meta: payload.meta,
     });
+    fetchMessage.fields = incomingMessage.fields;
     return fetchMessage;
   }
 
