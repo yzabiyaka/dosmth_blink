@@ -11,6 +11,7 @@ const Router = require('koa-router');
 const uuidV4 = require('uuid/v4');
 const ApiController = require('./controllers/ApiController');
 const ToolsController = require('./controllers/ToolsController');
+const WebHooksController = require('./controllers/WebHooksController');
 const Initializer = require('../lib/Initializer');
 
 /**
@@ -42,12 +43,14 @@ config.initializer = new Initializer(config);
 
 config.initializer.getExchange();
 config.initializer.getFetchQ();
+config.initializer.getCustomerIoWebhookQ();
 
 /**
  * Initialize all web controllers.
  */
 const apiController = new ApiController(config);
 const toolsController = new ToolsController(config);
+const webHooksController = new WebHooksController(config);
 
 /**
  * Routing.
@@ -59,6 +62,8 @@ router.get('api.index', '/api', apiController.index);
 router.get('api.v1', '/api/v1', apiController.v1);
 router.get('api.v1.tools', '/api/v1/tools', toolsController.index);
 router.post('api.v1.tools.fetch', '/api/v1/tools/fetch', toolsController.fetch);
+router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksController.index);
+router.post('api.v1.webhooks.customerio', '/api/v1/webhooks/customerio', webHooksController.customerio);
 
 blinkWeb
   .use(router.routes())
