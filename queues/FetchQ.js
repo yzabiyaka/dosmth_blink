@@ -5,12 +5,11 @@ const FetchMessage = require('../messages/FetchMessage');
 
 class FetchQ extends Queue {
 
-
-
   processIncomingMessage(incomingMessage) {
     const fetchMessage = FetchMessage.fromIncomingMessage(incomingMessage);
     fetchMessage.validate();
-    console.dir(fetchMessage.payload.data, { colors: true, showHidden: true });
+    // TODO: print message metadata
+    this.logger.info('Message validated');
   }
 
 }
