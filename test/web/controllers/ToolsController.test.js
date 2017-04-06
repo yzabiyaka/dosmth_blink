@@ -15,7 +15,10 @@ const RabbitManagement = require('../../../lib/RabbitManagement');
  * Test /api/v1/tools
  */
 test('GET /api/v1/tools should respond with JSON list available tools', async () => {
-  const res = await supertest(blinkWeb.callback()).get('/api/v1/tools');
+  const config = require('../../../config');
+  const res = await supertest(blinkWeb.callback())
+    .get('/api/v1/tools')
+    .auth(config.app.auth.name, config.app.auth.password);
   res.status.should.be.equal(200);
 
   // Check response to be json
@@ -31,12 +34,14 @@ test('GET /api/v1/tools should respond with JSON list available tools', async ()
  * Test /api/v1/tools/fetch
  */
 test('GET /api/v1/tools/fetch should validate incoming parameters', async () => {
+  const config = require('../../../config');
   const res = await supertest(blinkWeb.callback())
     .post('/api/v1/tools/fetch')
     .send({
       // Send no url param and incorrect options param.
       options: 42,
-    });
+    })
+    .auth(config.app.auth.name, config.app.auth.password);
 
   res.status.should.be.equal(422);
 
@@ -54,6 +59,7 @@ test('GET /api/v1/tools/fetch should validate incoming parameters', async () => 
  * Test /api/v1/tools/fetch
  */
 test('GET /api/v1/tools/fetch should publish message to fetch queue', async () => {
+  const config = require('../../../config');
   const data = {
     url: 'https://httpbin.org/post',
     options: {
@@ -70,6 +76,7 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
 
   const res = await supertest(blinkWeb.callback())
     .post('/api/v1/tools/fetch')
+    .auth(config.app.auth.name, config.app.auth.password)
     .send(data);
 
   res.status.should.be.equal(200);
@@ -83,7 +90,6 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
 
 
   // Check that the message is queued.
-  const config = require('../../../config');
   const rabbit = new RabbitManagement(config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
   const messages = await rabbit.getMessagesFrom('fetch', 1);

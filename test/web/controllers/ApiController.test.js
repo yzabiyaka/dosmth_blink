@@ -12,7 +12,10 @@ const blinkWeb = require('../../../web/blinkWeb');
  * Test /api.
  */
 test('GET /api should respond with JSON list of API versions', async () => {
-  const res = await supertest(blinkWeb.callback()).get('/api');
+  const config = require('../../../config');
+  const res = await supertest(blinkWeb.callback())
+    .get('/api')
+    .auth(config.app.auth.name, config.app.auth.password);
   res.status.should.be.equal(200);
 
   // Check response to be json
@@ -28,7 +31,10 @@ test('GET /api should respond with JSON list of API versions', async () => {
  * Test /api/v1.
  */
 test('GET /api/v1 should list available endpoints', async () => {
-  const res = await supertest(blinkWeb.callback()).get('/api/v1');
+  const config = require('../../../config');
+  const res = await supertest(blinkWeb.callback())
+    .get('/api/v1')
+    .auth(config.app.auth.name, config.app.auth.password);
   res.status.should.be.equal(200);
 
   // Check response to be json

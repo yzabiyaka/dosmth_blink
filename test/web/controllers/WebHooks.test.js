@@ -15,7 +15,10 @@ const RabbitManagement = require('../../../lib/RabbitManagement');
  * Test /api/v1/webhooks
  */
 test('GET /api/v1/webhooks should respond with JSON list available webhooks', async () => {
-  const res = await supertest(blinkWeb.callback()).get('/api/v1/webhooks');
+  const config = require('../../../config');
+  const res = await supertest(blinkWeb.callback())
+    .get('/api/v1/webhooks')
+    .auth(config.app.auth.name, config.app.auth.password);
   res.status.should.be.equal(200);
 
   // Check response to be json
@@ -31,6 +34,8 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
  * Test /api/v1/webhooks/customerio
  */
 test('GET /api/v1/webhooks/customerio should publish message to customer-io queue', async () => {
+  const config = require('../../../config');
+
   const data = {
     data: {
       campaign_id: '0',
@@ -47,6 +52,7 @@ test('GET /api/v1/webhooks/customerio should publish message to customer-io queu
 
   const res = await supertest(blinkWeb.callback())
     .post('/api/v1/webhooks/customerio')
+    .auth(config.app.auth.name, config.app.auth.password)
     .send(data);
 
   res.status.should.be.equal(200);
@@ -59,7 +65,6 @@ test('GET /api/v1/webhooks/customerio should publish message to customer-io queu
   res.body.should.have.property('ok', true);
 
   // Check that the message is queued.
-  const config = require('../../../config');
   const rabbit = new RabbitManagement(config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
   const messages = await rabbit.getMessagesFrom('customer-io-webhook', 1);
