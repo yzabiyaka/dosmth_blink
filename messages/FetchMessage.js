@@ -30,6 +30,19 @@ class FetchMessage extends Message {
     return fetchMessage;
   }
 
+  static fromIncomingMessage(incomingMessage) {
+    const payload = this.parseIncomingPayload(incomingMessage);
+
+    // TODO: save more metadata
+    // TODO: metadata parse helper
+    const fetchMessage = new FetchMessage({
+      data: payload.data,
+      meta: payload.meta,
+    });
+    fetchMessage.fields = incomingMessage.fields;
+    return fetchMessage;
+  }
+
 }
 
 module.exports = FetchMessage;

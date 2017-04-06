@@ -55,12 +55,16 @@ test('GET /api/v1/tools/fetch should validate incoming parameters', async () => 
  */
 test('GET /api/v1/tools/fetch should publish message to fetch queue', async () => {
   const data = {
-    url: 'http://localhost/api/v1',
+    url: 'https://httpbin.org/post',
     options: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        name: 'Blink',
+        login: 'blink',
+      }),
     },
   };
 

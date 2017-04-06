@@ -12,7 +12,8 @@
     "all-tests": "npm run lint && npm run coverage",
     "html-coverage-report": "nyc report --reporter=html",
     "publish-coverage-report": "nyc report --reporter=lcov && codecov",
-    "web": "node web/blinkWeb.js"
+    "web": "node web/blinkWeb.js",
+    "worker": "node blinkWorker.js"
   },
   "repository": {
     "type": "git",
