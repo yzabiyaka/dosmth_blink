@@ -17,8 +17,7 @@ class FetchQ extends Queue {
     const { url, options } = fetchMessage.payload.data;
     try {
       const response = await fetch(url, options);
-      console.dir(result, { colors: true, showHidden: true });
-      this.logger.info(`FetchQ.process() | ${fetchMessage.payload.meta.id} | ${response.status}`)
+      this.logger.info(`FetchQ.process() | ${fetchMessage.payload.meta.id} | ${response.status} ${response.statusText}`)
       this.ack(fetchMessage);
     } catch (error) {
       // Todo: retry
