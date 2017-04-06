@@ -31,7 +31,7 @@
     "change-case": "^3.0.1",
     "isomorphic-fetch": "^2.2.1",
     "joi": "^10.3.3",
-    "koa": "next",
+    "koa": "^2.2.0",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "next",
     "nyc": "^10.2.0",
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@dosomething/eslint-config": "^2.0.0",
-    "ava": "^0.18.2",
+    "ava": "^0.19.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "codecov": "^2.1.0",
