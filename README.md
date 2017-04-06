@@ -1,4 +1,4 @@
-# Blink [![wercker status](https://app.wercker.com/status/8b53bf996a3fb29015bf656b95aa1866/s/master "wercker status")](https://app.wercker.com/project/byKey/8b53bf996a3fb29015bf656b95aa1866) [![codecov](https://codecov.io/gh/DoSomething/blink/branch/master/graph/badge.svg)](https://codecov.io/gh/DoSomething/blink)
+# Blink [![wercker status](https://app.wercker.com/status/8b53bf996a3fb29015bf656b95aa1866/s/master "wercker status")](https://app.wercker.com/project/byKey/8b53bf996a3fb29015bf656b95aa1866) [![codecov](https://codecov.io/gh/DoSomething/blink/branch/master/graph/badge.svg)](https://codecov.io/gh/DoSomething/blink) [![dependencies Status](https://david-dm.org/DoSomething/blink/status.svg)](https://david-dm.org/DoSomething/blink) [![devDependencies Status](https://david-dm.org/DoSomething/blink/dev-status.svg)](https://david-dm.org/DoSomething/blink?type=dev)
 
 :postbox: The DoSomething.org Message Bus.
 
