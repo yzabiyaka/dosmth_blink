@@ -2,8 +2,8 @@
 
 const changeCase = require('change-case');
 
-const MessageParsingError = require('../errors/MessageParsingError');
-const MessageValidationError = require('../errors/MessageValidationError');
+const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
+const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 
 class Queue {
   constructor(exchange, logger = false) {
@@ -72,7 +72,7 @@ class Queue {
 
   async consumeIncomingMessage(incomingMessage) {
     try {
-      // Will throw MessageValidationError when not valid.
+      // Will throw MessageValidationBlinkError when not valid.
       const validMessage = this.validateIncomingMessage(incomingMessage);
       // TODO: print message metadata
       this.logger.info(`Message valid | ${validMessage.payload.meta.id}`);
@@ -83,9 +83,9 @@ class Queue {
         this.logger.info(`Message not processed | ${validMessage.payload.meta.id}`);
       }
     } catch (error) {
-      if (error instanceof MessageParsingError) {
+      if (error instanceof MessageParsingBlinkError) {
         this.logger.error(`Queue ${this.name}: can't parse payload, reason: "${error}", payload: "${error.rawPayload}"`);
-      } else if (error instanceof MessageValidationError) {
+      } else if (error instanceof MessageValidationBlinkError) {
         this.logger.error(`Queue ${this.name}: message validation error: "${error}", payload: "${error.payload}"`);
       } else {
         this.logger.error(`Queue ${this.name} uncaught exception ${error}`);

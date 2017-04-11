@@ -3,10 +3,11 @@
 /**
  * Imports.
  */
+const test = require('ava');
 const chai = require('chai');
 const Router = require('koa-router');
-const test = require('ava');
-const WebController = require('../../lib/WebController');
+
+const WebController = require('../../../src/web/controllers/WebController');
 
 
 // Chai setup.
@@ -16,7 +17,7 @@ chai.should();
  * WebController class interface
  */
 test('WebController interface', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const web = new WebController(config);
   web.should.have.respondTo('fullUrl');
 });
@@ -36,7 +37,7 @@ test('WebController.fullUrl(): Test generating urls for controller methods', () 
     }
   }
 
-  const config = require('../../config');
+  const config = require('../../../config');
   const router = new Router();
   config.router = router;
 
@@ -63,7 +64,7 @@ test('WebController.fullUrl(): Test ommitting port 80', () => {
     }
   }
 
-  const config = require('../../config');
+  const config = require('../../../config');
   const router = new Router();
   config.router = router;
 

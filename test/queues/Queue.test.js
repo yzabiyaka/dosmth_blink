@@ -3,13 +3,14 @@
 /**
  * Imports.
  */
+const test = require('ava');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const test = require('ava');
-const Exchange = require('../../lib/Exchange');
-const Message = require('../../lib/Message');
-const Queue = require('../../lib/Queue');
-const RabbitManagement = require('../../lib/RabbitManagement');
+
+const Exchange = require('../../src/lib/Exchange');
+const RabbitManagement = require('../../src/lib/RabbitManagement');
+const Message = require('../../src/messages/Message');
+const Queue = require('../../src/queues/Queue');
 
 // Chai setup.
 chai.should();

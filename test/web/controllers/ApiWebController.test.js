@@ -4,9 +4,10 @@
  * Imports.
  */
 const test = require('ava');
-const supertest = require('supertest');
 require('chai').should();
-const blinkWeb = require('../../../web/blinkWeb');
+const supertest = require('supertest');
+
+const blinkWeb = require('../../../src/web/blinkWeb');
 
 /**
  * Test /api.

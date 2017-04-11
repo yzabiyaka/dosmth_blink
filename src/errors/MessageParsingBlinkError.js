@@ -2,11 +2,11 @@
 
 const BlinkError = require('./BlinkError');
 
-class MessageParsingError extends BlinkError {
+class MessageParsingBlinkError extends BlinkError {
   constructor(error, rawPayload) {
     super(error.message);
     super.rawPayload = rawPayload;
   }
 }
 
-module.exports = MessageParsingError;
+module.exports = MessageParsingBlinkError;

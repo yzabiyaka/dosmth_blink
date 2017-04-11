@@ -1,8 +1,9 @@
 'use strict';
 
-const Queue = require('../lib/Queue');
-const FetchMessage = require('../messages/FetchMessage');
 require('isomorphic-fetch');
+
+const FetchMessage = require('../messages/FetchMessage');
+const Queue = require('./Queue');
 
 class FetchQ extends Queue {
 
@@ -10,7 +11,7 @@ class FetchQ extends Queue {
   // eslint-disable-next-line class-methods-use-this
   validateIncomingMessage(incomingMessage) {
     const fetchMessage = FetchMessage.fromIncomingMessage(incomingMessage);
-    // Will throw MessageValidationError when not valid.
+    // Will throw MessageValidationBlinkError when not valid.
     fetchMessage.validate();
     return fetchMessage;
   }

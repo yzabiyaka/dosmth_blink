@@ -4,7 +4,7 @@
  * Imports.
  */
 const config = require('./config');
-const Initializer = require('./lib/Initializer');
+const Initializer = require('./src/lib/Initializer');
 
 /**
  * Initializations.

@@ -3,11 +3,12 @@
 /**
  * Imports.
  */
+const test = require('ava');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const test = require('ava');
-const Exchange = require('../../lib/Exchange');
-const Queue = require('../../lib/Queue');
+
+const Exchange = require('../../src/lib/Exchange');
+const Queue = require('../../src/queues/Queue');
 
 
 // Chai setup.

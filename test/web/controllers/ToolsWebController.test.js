@@ -4,11 +4,11 @@
  * Imports.
  */
 const test = require('ava');
-const supertest = require('supertest');
 require('chai').should();
+const supertest = require('supertest');
 
-const blinkWeb = require('../../../web/blinkWeb');
-const RabbitManagement = require('../../../lib/RabbitManagement');
+const RabbitManagement = require('../../../src/lib/RabbitManagement');
+const blinkWeb = require('../../../src/web/blinkWeb');
 
 
 /**
