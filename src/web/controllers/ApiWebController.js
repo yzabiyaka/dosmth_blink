@@ -1,8 +1,8 @@
 'use strict';
 
-const WebController = require('../../lib/WebController');
+const WebController = require('./WebController');
 
-class ApiController extends WebController {
+class ApiWebController extends WebController {
   constructor(...args) {
     super(...args);
     // Bind web methods to object context so they can be passed to router.
@@ -24,4 +24,4 @@ class ApiController extends WebController {
   }
 }
 
-module.exports = ApiController;
+module.exports = ApiWebController;

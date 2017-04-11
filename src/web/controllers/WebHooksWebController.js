@@ -1,9 +1,9 @@
 'use strict';
 
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
-const WebController = require('../../lib/WebController');
+const WebController = require('./WebController');
 
-class WebHooksController extends WebController {
+class WebHooksWebController extends WebController {
   constructor(...args) {
     super(...args);
     // Bind web methods to object context so they can be passed to router.
@@ -31,4 +31,4 @@ class WebHooksController extends WebController {
   }
 }
 
-module.exports = WebHooksController;
+module.exports = WebHooksWebController;

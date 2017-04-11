@@ -1,9 +1,9 @@
 'use strict';
 
 const FetchMessage = require('../../messages/FetchMessage');
-const WebController = require('../../lib/WebController');
+const WebController = require('./WebController');
 
-class ToolsController extends WebController {
+class ToolsWebController extends WebController {
   constructor(...args) {
     super(...args);
     // Bind web methods to object context so they can be passed to router.
@@ -31,4 +31,4 @@ class ToolsController extends WebController {
   }
 }
 
-module.exports = ToolsController;
+module.exports = ToolsWebController;

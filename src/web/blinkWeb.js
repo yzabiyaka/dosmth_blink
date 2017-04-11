@@ -10,11 +10,11 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const uuidV4 = require('uuid/v4');
 
-const ApiController = require('./controllers/ApiController');
+const ApiWebController = require('./controllers/ApiWebController');
 const config = require('../config');
 const Initializer = require('../lib/Initializer');
-const ToolsController = require('./controllers/ToolsController');
-const WebHooksController = require('./controllers/WebHooksController');
+const ToolsWebController = require('./controllers/ToolsWebController');
+const WebHooksWebController = require('./controllers/WebHooksWebController');
 
 /**
  * Initializations.
@@ -70,9 +70,9 @@ config.initializer.getCustomerIoWebhookQ();
 /**
  * Initialize all web controllers.
  */
-const apiController = new ApiController(config);
-const toolsController = new ToolsController(config);
-const webHooksController = new WebHooksController(config);
+const apiWebController = new ApiWebController(config);
+const toolsWebController = new ToolsWebController(config);
+const webHooksWebController = new WebHooksWebController(config);
 
 /**
  * Routing.
@@ -80,12 +80,12 @@ const webHooksController = new WebHooksController(config);
 router.get('/', async (ctx) => {
   ctx.body = 'Hi, I\'m Blink!';
 });
-router.get('api.index', '/api', apiController.index);
-router.get('api.v1', '/api/v1', apiController.v1);
-router.get('api.v1.tools', '/api/v1/tools', toolsController.index);
-router.post('api.v1.tools.fetch', '/api/v1/tools/fetch', toolsController.fetch);
-router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksController.index);
-router.post('api.v1.webhooks.customerio', '/api/v1/webhooks/customerio', webHooksController.customerio);
+router.get('api.index', '/api', apiWebController.index);
+router.get('api.v1', '/api/v1', ApiWebController.v1);
+router.get('api.v1.tools', '/api/v1/tools', toolsWebController.index);
+router.post('api.v1.tools.fetch', '/api/v1/tools/fetch', toolsWebController.fetch);
+router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);
+router.post('api.v1.webhooks.customerio', '/api/v1/webhooks/customerio', webHooksWebController.customerio);
 
 blinkWeb
   .use(router.routes())

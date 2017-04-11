@@ -6,7 +6,7 @@
 const chai = require('chai');
 const Router = require('koa-router');
 const test = require('ava');
-const WebController = require('../../lib/WebController');
+const WebController = require('../../../src/web/controllers/WebController');
 
 
 // Chai setup.
