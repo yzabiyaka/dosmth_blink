@@ -2,7 +2,8 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const Blink = require('./src/Blink.js');
+const BlinkWeb = require('./src/blink/BlinkWeb.js');
+const BlinkWorker = require('./src/blink/BlinkWorker.js');
 const config = require('./config');
 
 // ------- Args parse ----------------------------------------------------------
@@ -13,15 +14,16 @@ const workerName = process.argv[3];
 
 // ------- Bootstrap -----------------------------------------------------------
 
-const blink = new Blink(config);
-
+let blink;
 switch (bootstrapLevel) {
   case 'web':
-    blink.bootstrapWeb();
+    blink = new BlinkWeb(config);
     break;
   case 'worker':
-    blink.bootstrapWorker(workerName);
+    blink = new BlinkWorker(config, workerName);
     break;
   default:
     // Shouldn't happen
 }
+
+blink.bootstrap();

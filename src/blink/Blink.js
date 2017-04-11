@@ -1,35 +1,17 @@
 'use strict';
 
-const Exchange = require('./lib/Exchange');
-const CustomerIoWebhookQ = require('./queues/CustomerIoWebhookQ');
-const FetchQ = require('./queues/FetchQ');
+const Exchange = require('../lib/Exchange');
+const CustomerIoWebhookQ = require('../queues/CustomerIoWebhookQ');
+const FetchQ = require('../queues/FetchQ');
 
 class Blink {
   constructor(config) {
     this.config = config;
-    this.initialized = false;
     this.exchange = false;
     this.queues = [];
   }
 
-  async bootstrapWeb() {
-    await this.initialSetup();
-    // TODO: start web
-    this.config.logger.info('bootstrapWeb');
-  }
-
-  async bootstrapWorker(name) {
-    await this.initialSetup();
-    // TODO: run worker
-    this.config.logger.info(`bootstrapWorker: ${name}`);
-  }
-
-  async initialSetup() {
-    if (this.initialized) {
-      // TODO: warning
-      return false;
-    }
-
+  async bootstrap() {
     try {
       // Initialize and setup exchange.
       this.exchange = await this.initExchange();
@@ -46,7 +28,6 @@ class Blink {
       // TODO: make sure everything dies
     }
 
-    // Setup all queues.
     return true;
   }
 
