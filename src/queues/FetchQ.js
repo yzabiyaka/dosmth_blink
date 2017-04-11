@@ -1,8 +1,9 @@
 'use strict';
 
-const Queue = require('./Queue');
-const FetchMessage = require('../messages/FetchMessage');
 require('isomorphic-fetch');
+
+const FetchMessage = require('../messages/FetchMessage');
+const Queue = require('./Queue');
 
 class FetchQ extends Queue {
 

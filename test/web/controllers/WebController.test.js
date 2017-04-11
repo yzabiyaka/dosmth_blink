@@ -3,9 +3,10 @@
 /**
  * Imports.
  */
+const test = require('ava');
 const chai = require('chai');
 const Router = require('koa-router');
-const test = require('ava');
+
 const WebController = require('../../../src/web/controllers/WebController');
 
 

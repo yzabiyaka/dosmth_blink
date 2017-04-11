@@ -3,8 +3,8 @@
 const Joi = require('joi');
 const uuidV4 = require('uuid/v4');
 
-const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
+const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 
 class Message {
 

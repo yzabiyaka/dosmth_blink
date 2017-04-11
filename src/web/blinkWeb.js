@@ -3,16 +3,16 @@
 /**
  * Imports.
  */
-const auth = require('koa-basic-auth');
-const bodyParser = require('koa-bodyparser');
 const http = require('http');
 const Koa = require('koa');
+const auth = require('koa-basic-auth');
+const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
 const uuidV4 = require('uuid/v4');
 
-const ApiWebController = require('./controllers/ApiWebController');
 const config = require('../../config');
 const Initializer = require('../lib/Initializer');
+const ApiWebController = require('./controllers/ApiWebController');
 const ToolsWebController = require('./controllers/ToolsWebController');
 const WebHooksWebController = require('./controllers/WebHooksWebController');
 

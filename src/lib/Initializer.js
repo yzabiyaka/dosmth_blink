@@ -1,8 +1,8 @@
 'use strict';
 
-const Exchange = require('./Exchange');
-const FetchQ = require('../queues/FetchQ');
 const CustomerIoWebhookQ = require('../queues/CustomerIoWebhookQ');
+const FetchQ = require('../queues/FetchQ');
+const Exchange = require('./Exchange');
 
 // TODO: Think of better alternative for Initializer class
 class Initializer {

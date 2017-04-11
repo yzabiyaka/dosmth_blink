@@ -1,7 +1,7 @@
 'use strict';
 
-const amqp = require('amqplib');
 const amqpUri = require('amqp-uri');
+const amqp = require('amqplib');
 
 class Exchange {
   constructor(options) {
