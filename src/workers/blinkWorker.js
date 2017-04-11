@@ -3,8 +3,8 @@
 /**
  * Imports.
  */
-const config = require('./config');
-const Initializer = require('./src/lib/Initializer');
+const config = require('../../config');
+const Initializer = require('../lib/Initializer');
 
 /**
  * Initializations.
