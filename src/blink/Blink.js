@@ -14,14 +14,13 @@ class Blink {
   async bootstrap() {
     try {
       // Initialize and setup exchange.
-      this.exchange = await this.initExchange();
+      this.exchange = await this.setupExchange();
 
       // Initialize and setup all available queues.
-      this.queues = await this.initQueues([
+      this.queues = await this.setupQueues([
         CustomerIoWebhookQ,
         FetchQ,
       ]);
-      // this.queues = await this.initExchange();
     } catch (error) {
       this.config.logger.error(`Blink bootrstrap failed: ${error}`);
       throw error;
@@ -31,24 +30,27 @@ class Blink {
     return true;
   }
 
-  async initExchange() {
+  async setupExchange() {
     const exchange = new Exchange(this.config.amqp);
     await exchange.setup();
     return exchange;
   }
 
-  async initQueues(queueClasses) {
-    const queuePromises = queueClasses.map(async (queueClass, i) => {
-      const queueObject = new queueClasses[i](this.exchange, this.config.logger);
+  async setupQueues(queueClasses) {
+    const queueMappingPromises = queueClasses.map(async (queueClass, i) => {
+      const queue = new queueClasses[i](this.exchange, this.config.logger);
       // Assert Rabbit Topology.
-      await queueObject.setup();
+      await queue.setup();
       // Return an item of 2D array for further map transformation.
-      return [queueClass, queueObject];
+      return [queueClass, queue];
     });
+
+    // Wait for all queues to be set;
+    const queueMapping = await Promise.all(queueMappingPromises);
 
     // Map constructor to transforms a 2D key-value Array into a map.
     // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#Relation_with_Array_objects
-    return new Map(await Promise.all(queuePromises));
+    return new Map(queueMapping);
   }
 }
 

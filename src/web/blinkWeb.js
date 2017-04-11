@@ -77,9 +77,8 @@ const webHooksWebController = new WebHooksWebController(config);
 /**
  * Routing.
  */
-router.get('/', async (ctx) => {
-  ctx.body = 'Hi, I\'m Blink!';
-});
+router.get('/', apiWebController.welcome);
+router.get('api.v1', '/api/v1', apiWebController.v1);
 router.get('api.index', '/api', apiWebController.index);
 router.get('api.v1', '/api/v1', apiWebController.v1);
 router.get('api.v1.tools', '/api/v1/tools', toolsWebController.index);
