@@ -81,7 +81,7 @@ router.get('/', async (ctx) => {
   ctx.body = 'Hi, I\'m Blink!';
 });
 router.get('api.index', '/api', apiWebController.index);
-router.get('api.v1', '/api/v1', ApiWebController.v1);
+router.get('api.v1', '/api/v1', apiWebController.v1);
 router.get('api.v1.tools', '/api/v1/tools', toolsWebController.index);
 router.post('api.v1.tools.fetch', '/api/v1/tools/fetch', toolsWebController.fetch);
 router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);
