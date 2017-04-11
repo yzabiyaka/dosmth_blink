@@ -16,7 +16,7 @@ chai.should();
  * WebController class interface
  */
 test('WebController interface', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const web = new WebController(config);
   web.should.have.respondTo('fullUrl');
 });
@@ -36,7 +36,7 @@ test('WebController.fullUrl(): Test generating urls for controller methods', () 
     }
   }
 
-  const config = require('../../config');
+  const config = require('../../../config');
   const router = new Router();
   config.router = router;
 
@@ -63,7 +63,7 @@ test('WebController.fullUrl(): Test ommitting port 80', () => {
     }
   }
 
-  const config = require('../../config');
+  const config = require('../../../config');
   const router = new Router();
   config.router = router;
 

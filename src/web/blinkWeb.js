@@ -11,7 +11,7 @@ const Router = require('koa-router');
 const uuidV4 = require('uuid/v4');
 
 const ApiWebController = require('./controllers/ApiWebController');
-const config = require('../config');
+const config = require('../../config');
 const Initializer = require('../lib/Initializer');
 const ToolsWebController = require('./controllers/ToolsWebController');
 const WebHooksWebController = require('./controllers/WebHooksWebController');
