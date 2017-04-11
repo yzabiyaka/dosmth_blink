@@ -1,6 +1,6 @@
 'use strict';
 
-const Queue = require('../lib/Queue');
+const Queue = require('./Queue');
 const FetchMessage = require('../messages/FetchMessage');
 require('isomorphic-fetch');
 

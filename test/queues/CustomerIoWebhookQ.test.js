@@ -5,8 +5,8 @@
  */
 const test = require('ava');
 require('chai').should();
-const Queue = require('../../lib/Queue');
-const CustomerIoWebhookQ = require('../../queues/CustomerIoWebhookQ');
+const Queue = require('../../src/queues/Queue');
+const CustomerIoWebhookQ = require('../../src/queues/CustomerIoWebhookQ');
 
 /**
  * Test CustomerIoWebhookQ class
