@@ -2,7 +2,7 @@
 
 const URL = require('url');
 
-const MessageValidationError = require('../errors/MessageValidationError');
+const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 
 class WebController {
   constructor({ logger, router, web, initializer }) {
@@ -45,7 +45,7 @@ class WebController {
     };
 
     // Check error type.
-    if (error instanceof MessageValidationError) {
+    if (error instanceof MessageValidationBlinkError) {
       // Machine-readable error code.
       ctx.body.error = 'validation_failed';
       ctx.body.message = error.message;

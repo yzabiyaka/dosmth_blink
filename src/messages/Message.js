@@ -3,8 +3,8 @@
 const Joi = require('joi');
 const uuidV4 = require('uuid/v4');
 
-const MessageValidationError = require('../errors/MessageValidationError');
-const MessageParsingError = require('../errors/MessageParsingError');
+const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
+const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
 class Message {
 
@@ -23,7 +23,7 @@ class Message {
   validate() {
     const { error } = Joi.validate(this.payload.data, this.schema || {});
     if (error) {
-      throw new MessageValidationError(error, this.toString());
+      throw new MessageValidationBlinkError(error, this.toString());
     }
     return true;
   }
@@ -34,7 +34,7 @@ class Message {
     try {
       payload = JSON.parse(rawPayload);
     } catch (error) {
-      throw new MessageParsingError(error, rawPayload);
+      throw new MessageParsingBlinkError(error, rawPayload);
     }
     return payload;
   }

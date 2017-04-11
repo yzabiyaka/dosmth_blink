@@ -7,7 +7,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const test = require('ava');
 const Exchange = require('../../lib/Exchange');
-const Message = require('../../lib/Message');
+const Message = require('../../src/messages/Message');
 const Queue = require('../../lib/Queue');
 const RabbitManagement = require('../../lib/RabbitManagement');
 

@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 
-const Message = require('../lib/Message');
+const Message = require('./Message');
 
 // TODO: url whitelist
 // TODO: authentication

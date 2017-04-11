@@ -10,7 +10,7 @@ class FetchQ extends Queue {
   // eslint-disable-next-line class-methods-use-this
   validateIncomingMessage(incomingMessage) {
     const fetchMessage = FetchMessage.fromIncomingMessage(incomingMessage);
-    // Will throw MessageValidationError when not valid.
+    // Will throw MessageValidationBlinkError when not valid.
     fetchMessage.validate();
     return fetchMessage;
   }
