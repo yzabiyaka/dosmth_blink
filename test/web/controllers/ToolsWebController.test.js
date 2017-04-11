@@ -7,7 +7,7 @@ const test = require('ava');
 const supertest = require('supertest');
 require('chai').should();
 
-const blinkWeb = require('../../../web/blinkWeb');
+const blinkWeb = require('../../../src/web/blinkWeb');
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
 
 
