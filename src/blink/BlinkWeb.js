@@ -27,10 +27,10 @@ class BlinkWeb extends Blink {
     ]);
 
     // Define routing.
-    this.router = this.initRouter();
+    this.web.router = this.initRouter();
 
     // Configure web sever.
-    this.web.server = this.initWebServer();
+    this.web.app = this.initWebApp();
   }
 
   initRouter() {
@@ -67,50 +67,56 @@ class BlinkWeb extends Blink {
     return controllerMapping;
   }
 
-  initWebServer() {
-    const server = new Koa();
+  initWebApp() {
+    const app = new Koa();
 
-    // Setup web server env from local config.
+    // Setup web app env from local config.
     // https://github.com/koajs/koa/blob/master/docs/api/index.md#settings
-    server.env = this.config.app.env;
+    app.env = this.config.app.env;
 
     // -------- Setup web middleware --------
     // Parse incoming request bodies in a middleware before your handlers,
     // available under the req.body property.
-    server.use(bodyParser());
+    app.use(bodyParser());
 
     // Generate unique request id.
-    server.use(generateRequestId);
+    app.use(generateRequestId);
 
     // Basic Authentication:
     // Custom 401 handling.
     // https://github.com/koajs/basic-auth#example
-    server.use(basicAuthCustom401);
+    app.use(basicAuthCustom401);
     // Enable auth.
-    server.use(auth({
+    app.use(auth({
       name: this.config.app.auth.name,
       pass: this.config.app.auth.password,
     }));
 
     // Inject Koa Router routes and allowed methods.
-    server.use(this.router.routes());
-    server.use(this.router.allowedMethods());
-    return server;
+    app.use(this.web.router.routes());
+    app.use(this.web.router.allowedMethods());
+    return app;
   }
 
   async bootstrap() {
     await super.bootstrap();
-
-    const server = http.createServer(this.web.server.callback());
-    server.listen(this.config.web.bind_port, this.config.web.bind_address, () => {
-      const address = server.address();
-      // Make sure random port setting gets overriden with actual resolved port.
-      this.config.web.bind_port = address.port;
-      this.config.logger.info(
-        `Blink is listening on http://${this.config.web.hostname}:${this.config.web.port} env:${this.config.app.env}`
-      );
-    });
+    // Start HTTP server
+    this.web.server = http.createServer(this.web.app.callback());
+    this.web.server.listen(
+      this.config.web.bind_port,
+      this.config.web.bind_address,
+      () => {
+        const address = this.web.server.address();
+        // Make sure random port setting gets overriden with actual resolved port.
+        this.config.web.bind_port = address.port;
+        this.config.logger.info(
+          `Blink is listening on http://${this.config.web.hostname}:${this.config.web.port} env:${this.config.app.env}`
+        );
+      }
+    );
+    // TODO: HTTPS?
   }
+
 }
 
 module.exports = BlinkWeb;
