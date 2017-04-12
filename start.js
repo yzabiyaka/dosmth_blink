@@ -26,4 +26,4 @@ switch (bootstrapLevel) {
     // Shouldn't happen
 }
 
-blink.bootstrap();
+blink.start();

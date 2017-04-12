@@ -13,7 +13,7 @@ class Blink {
     this.queues = [];
   }
 
-  async bootstrap() {
+  async start() {
     try {
       // Initialize and setup exchange.
       this.exchange = await this.setupExchange();

@@ -98,8 +98,8 @@ class BlinkWeb extends Blink {
     return app;
   }
 
-  async bootstrap() {
-    await super.bootstrap();
+  async start() {
+    await super.start();
     // Start HTTP server
     this.web.server = http.createServer(this.web.app.callback());
     this.web.server.listen(

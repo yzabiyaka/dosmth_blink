@@ -8,9 +8,9 @@ class BlinkWorker extends Blink {
     this.workerName = workerName;
   }
 
-  async bootstrap() {
-    await super.bootstrap();
-    this.config.logger.info(`bootstrapWorker: ${this.name}`);
+  async start() {
+    await super.start();
+    this.config.logger.info(`start: ${this.name}`);
   }
 }
 
