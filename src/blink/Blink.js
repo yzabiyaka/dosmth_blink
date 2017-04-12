@@ -1,5 +1,7 @@
 'use strict';
 
+const changeCase = require('change-case');
+
 const Exchange = require('../lib/Exchange');
 const CustomerIoWebhookQ = require('../queues/CustomerIoWebhookQ');
 const FetchQ = require('../queues/FetchQ');
@@ -41,16 +43,21 @@ class Blink {
       const queue = new queueClasses[i](this.exchange, this.config.logger);
       // Assert Rabbit Topology.
       await queue.setup();
-      // Return an item of 2D array for further map transformation.
-      return [queueClass, queue];
+      const mappingKey = changeCase.camelCase(queueClass.name);
+      // Return an item of 2D array for further transformation.
+      return [mappingKey, queue];
     });
 
-    // Wait for all queues to be set;
-    const queueMapping = await Promise.all(queueMappingPromises);
+    // Wait for all queues to be set.
+    const queueMappingArray = await Promise.all(queueMappingPromises);
 
-    // Map constructor to transforms a 2D key-value Array into a map.
-    // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#Relation_with_Array_objects
-    return new Map(queueMapping);
+    // Transform resolved promises array to an object.
+    const queueMapping = {};
+    queueMappingArray.forEach((mapping) => {
+      const [ key, value ] = mapping;
+      queueMapping[key] = value;
+    })
+    return queueMapping;
   }
 }
 
