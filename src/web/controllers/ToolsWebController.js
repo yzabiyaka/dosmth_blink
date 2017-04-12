@@ -21,7 +21,7 @@ class ToolsWebController extends WebController {
     try {
       const fetchMessage = FetchMessage.fromCtx(ctx);
       fetchMessage.validate();
-      const fetchQ = await this.initializer.getFetchQ();
+      const { fetchQ } = this.blink.queues;
       fetchQ.publish(fetchMessage);
     } catch (error) {
       this.sendError(ctx, error);

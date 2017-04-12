@@ -5,11 +5,10 @@ const URL = require('url');
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 
 class WebController {
-  constructor({ logger, router, web, initializer }) {
-    this.logger = logger;
-    this.router = router;
-    this.web = web;
-    this.initializer = initializer;
+  constructor(blink) {
+    this.logger = blink.config.logger;
+    this.web = blink.config.web;
+    this.blink = blink;
   }
 
   /**
@@ -27,7 +26,7 @@ class WebController {
       protocol: this.web.protocol,
       hostname: this.web.hostname,
       port,
-      pathname: this.router.url(name),
+      pathname: this.blink.web.router.url(name),
     });
   }
 
