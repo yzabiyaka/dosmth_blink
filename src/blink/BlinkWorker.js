@@ -10,7 +10,7 @@ class BlinkWorker extends Blink {
 
   async start() {
     await super.start();
-    this.config.logger.info(`start: ${this.name}`);
+    this.config.logger.info(`start: ${this.workerName}`);
   }
 }
 
