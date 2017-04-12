@@ -16,6 +16,7 @@ let blink;
 // TODO: list workers
 yargs
   .usage('Usage: node $0 <command>')
+  .version(packageJson.version)
   .command({
     command: 'web',
     desc: 'Start a web app',
@@ -30,7 +31,6 @@ yargs
       blink = new BlinkWorker(config, argv.name);
     }
   })
-  .version(packageJson.version)
   .demandCommand(1, 'Please provide a valid command')
   .help()
   .argv;

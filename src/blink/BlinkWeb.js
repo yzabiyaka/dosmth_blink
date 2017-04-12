@@ -60,7 +60,7 @@ class BlinkWeb extends Blink {
       const controller = new controllerClasses[i](this);
       // Use camelcased controller name as a map key.
       const mappingKey = changeCase.camelCase(controllerClass.name);
-      // Return an item of 2D array for further map transformation.
+      // Add worker to mapping
       controllerMapping[mappingKey] = controller;
 
     });
