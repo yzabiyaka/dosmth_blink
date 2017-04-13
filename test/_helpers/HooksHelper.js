@@ -19,6 +19,6 @@ class HooksHelper {
     t.context.config = false;
   }
 
-};
+}
 
 module.exports = HooksHelper;
