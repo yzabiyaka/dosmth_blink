@@ -1,24 +1,40 @@
 'use strict';
 
-/**
- * Imports.
- */
+// ------- Imports -------------------------------------------------------------
+
 const test = require('ava');
-require('chai').should();
+const chai = require('chai');
 const supertest = require('supertest');
 
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
-const blinkWeb = require('../../../src/web/blinkWeb');
+const BlinkWebApp = require('../../../src/app/BlinkWebApp.js');
 
+// ------- Init ----------------------------------------------------------------
+
+chai.should();
+
+test.beforeEach(async (t) => {
+  t.context.config = require('../../../config');
+  t.context.blink = new BlinkWebApp(t.context.config);
+  await t.context.blink.start();
+  t.context.supertest = supertest(t.context.blink.web.app.callback());
+});
+
+test.afterEach(async (t) => {
+  await t.context.blink.stop();
+  t.context.supertest = false;
+  t.context.config = false;
+});
+
+// ------- Tests ---------------------------------------------------------------
 
 /**
- * Test /api/v1/tools
+ * GET /api/v1/tools
  */
-test('GET /api/v1/tools should respond with JSON list available tools', async () => {
-  const config = require('../../../config');
-  const res = await supertest(blinkWeb.callback())
-    .get('/api/v1/tools')
-    .auth(config.app.auth.name, config.app.auth.password);
+test('GET /api/v1/tools should respond with JSON list available tools', async (t) => {
+  const res = await t.context.supertest.get('/api/v1/tools')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
+
   res.status.should.be.equal(200);
 
   // Check response to be json
@@ -31,17 +47,15 @@ test('GET /api/v1/tools should respond with JSON list available tools', async ()
 });
 
 /**
- * Test /api/v1/tools/fetch
+ * POST /api/v1/tools/fetch
  */
-test('GET /api/v1/tools/fetch should validate incoming parameters', async () => {
-  const config = require('../../../config');
-  const res = await supertest(blinkWeb.callback())
-    .post('/api/v1/tools/fetch')
+test('POST /api/v1/tools/fetch should validate incoming parameters', async (t) => {
+  const res = await t.context.supertest.post('/api/v1/tools/fetch')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send({
       // Send no url param and incorrect options param.
       options: 42,
-    })
-    .auth(config.app.auth.name, config.app.auth.password);
+    });
 
   res.status.should.be.equal(422);
 
@@ -56,10 +70,9 @@ test('GET /api/v1/tools/fetch should validate incoming parameters', async () => 
 });
 
 /**
- * Test /api/v1/tools/fetch
+ * POST /api/v1/tools/fetch
  */
-test('GET /api/v1/tools/fetch should publish message to fetch queue', async () => {
-  const config = require('../../../config');
+test('GET /api/v1/tools/fetch should publish message to fetch queue', async (t) => {
   const data = {
     url: 'https://httpbin.org/post',
     options: {
@@ -74,9 +87,8 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
     },
   };
 
-  const res = await supertest(blinkWeb.callback())
-    .post('/api/v1/tools/fetch')
-    .auth(config.app.auth.name, config.app.auth.password)
+  const res = await t.context.supertest.post('/api/v1/tools/fetch')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
   res.status.should.be.equal(200);
@@ -90,7 +102,7 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
 
 
   // Check that the message is queued.
-  const rabbit = new RabbitManagement(config.amqpManagement);
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
   const messages = await rabbit.getMessagesFrom('fetch', 1);
   messages.should.be.an('array').and.to.have.lengthOf(1);
@@ -101,3 +113,5 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async () =
   messageData.should.have.property('data');
   messageData.data.should.be.eql(data);
 });
+
+// ------- End -----------------------------------------------------------------

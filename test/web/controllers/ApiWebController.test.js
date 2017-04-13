@@ -6,7 +6,6 @@ const test = require('ava');
 const chai = require('chai');
 const supertest = require('supertest');
 
-const config = require('../../../config');
 const BlinkWebApp = require('../../../src/app/BlinkWebApp.js');
 
 // ------- Init ----------------------------------------------------------------
@@ -14,7 +13,8 @@ const BlinkWebApp = require('../../../src/app/BlinkWebApp.js');
 chai.should();
 
 test.beforeEach(async (t) => {
-  t.context.blink = new BlinkWebApp(config);
+  t.context.config = require('../../../config');
+  t.context.blink = new BlinkWebApp(t.context.config);
   await t.context.blink.start();
   t.context.supertest = supertest(t.context.blink.web.app.callback());
 });
@@ -22,27 +22,28 @@ test.beforeEach(async (t) => {
 test.afterEach(async (t) => {
   await t.context.blink.stop();
   t.context.supertest = false;
+  t.context.config = false;
 });
 
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * Test GET /.
+ * GET /
  */
 test('GET / should be polite', async (t) => {
   const res = await t.context.supertest.get('/')
-    .auth(config.app.auth.name, config.app.auth.password);
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
 
   res.status.should.be.equal(200);
   res.text.should.be.equal('Hi, I\'m Blink!');
 });
 
 /**
- * Test /api.
+ * GET /api
  */
 test('GET /api should respond with JSON list of API versions', async (t) => {
   const res = await t.context.supertest.get('/api')
-    .auth(config.app.auth.name, config.app.auth.password);
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
 
   res.status.should.be.equal(200);
 
@@ -56,11 +57,11 @@ test('GET /api should respond with JSON list of API versions', async (t) => {
 });
 
 /**
- * Test /api/v1.
+ * GET /api/v1
  */
 test('GET /api/v1 should list available endpoints', async (t) => {
   const res = await t.context.supertest.get('/api/v1')
-    .auth(config.app.auth.name, config.app.auth.password);
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
 
   res.status.should.be.equal(200);
 

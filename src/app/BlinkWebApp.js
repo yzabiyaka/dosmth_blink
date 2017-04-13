@@ -117,8 +117,9 @@ class BlinkWebApp extends BlinkApp {
 
   async stop() {
     await super.stop();
+    const address = this.web.server.address();
     this.web.server.close(() => {
-      this.config.logger.info(`Blink Web is stopped http://${this.config.web.hostname}:${this.config.web.port} env:${this.config.app.env}.`);
+      this.config.logger.info(`Blink Web is stopped http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}.`);
     });
   }
 
