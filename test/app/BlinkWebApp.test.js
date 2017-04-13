@@ -14,10 +14,10 @@ chai.should();
 /**
  * GET /
  */
-test.skip('GET / should turn down anonymous requests', async () => {
-  const res = await supertest(blinkWeb.callback()).get('/');
-  res.status.should.be.equal(401);
-  res.text.should.be.have.string('Don\'t blink');
+test.skip('GET / should turn down anonymous requests', () => {
+  // const res = await supertest(blinkWeb.callback()).get('/');
+  // res.status.should.be.equal(401);
+  // res.text.should.be.have.string('Don\'t blink');
 });
 
 // ------- End -----------------------------------------------------------------
