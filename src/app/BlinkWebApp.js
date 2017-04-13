@@ -9,12 +9,12 @@ const Router = require('koa-router');
 
 const basicAuthCustom401 = require('../web/middleware/basicAuthCustom401');
 const generateRequestId = require('../web/middleware/generateRequestId');
-const Blink = require('./Blink');
+const BlinkApp = require('./BlinkApp');
 const ApiWebController = require('../web/controllers/ApiWebController');
 const ToolsWebController = require('../web/controllers/ToolsWebController');
 const WebHooksWebController = require('../web/controllers/WebHooksWebController');
 
-class BlinkWeb extends Blink {
+class BlinkWebApp extends BlinkApp {
   constructor(config) {
     super(config);
     this.web = {};
@@ -119,4 +119,4 @@ class BlinkWeb extends Blink {
 
 }
 
-module.exports = BlinkWeb;
+module.exports = BlinkWebApp;

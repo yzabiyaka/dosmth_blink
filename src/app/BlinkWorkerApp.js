@@ -2,13 +2,13 @@
 
 const BlinkError = require('../errors/BlinkError');
 const FetchWorker = require('../workers/FetchWorker');
-const Blink = require('./Blink');
+const BlinkApp = require('./BlinkApp');
 
-class BlinkWorker extends Blink {
+class BlinkWorkerApp extends BlinkApp {
   constructor(config, name) {
     super(config);
 
-    const workersMapping = BlinkWorker.getAvailableWorkers();
+    const workersMapping = BlinkWorkerApp.getAvailableWorkers();
     if (!workersMapping[name]) {
       throw new BlinkError(`Worker ${name} is not found`);
     }
@@ -31,4 +31,4 @@ class BlinkWorker extends Blink {
   }
 }
 
-module.exports = BlinkWorker;
+module.exports = BlinkWorkerApp;

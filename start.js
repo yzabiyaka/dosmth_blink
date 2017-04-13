@@ -6,12 +6,12 @@ const yargs = require('yargs');
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const BlinkWeb = require('./src/blink/BlinkWeb.js');
-const BlinkWorker = require('./src/blink/BlinkWorker.js');
+const BlinkWebApp = require('./src/app/BlinkWebApp.js');
+const BlinkWorkerApp = require('./src/app/BlinkWorkerApp.js');
 
 // ------- Args parse ----------------------------------------------------------
 
-let blink;
+let blinkApp;
 
 // TODO: list workers
 yargs
@@ -21,14 +21,14 @@ yargs
     command: 'web',
     desc: 'Start a web app',
     handler: (argv) => {
-      blink = new BlinkWeb(config);
+      blinkApp = new BlinkWebApp(config);
     }
   })
   .command({
     command: 'worker <name>',
     desc: 'Start worker with the given name',
     handler: (argv) => {
-      blink = new BlinkWorker(config, argv.name);
+      blinkApp = new BlinkWorkerApp(config, argv.name);
     }
   })
   .demandCommand(1, 'Please provide a valid command')
@@ -37,4 +37,4 @@ yargs
 
 // ------- App bootstrap -------------------------------------------------------
 
-blink.start();
+blinkApp.start();

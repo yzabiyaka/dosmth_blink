@@ -6,7 +6,7 @@ const Exchange = require('../lib/Exchange');
 const CustomerIoWebhookQ = require('../queues/CustomerIoWebhookQ');
 const FetchQ = require('../queues/FetchQ');
 
-class Blink {
+class BlinkApp {
   constructor(config) {
     this.config = config;
     this.exchange = false;
@@ -61,4 +61,4 @@ class Blink {
   }
 }
 
-module.exports = Blink;
+module.exports = BlinkApp;
