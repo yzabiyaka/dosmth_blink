@@ -38,14 +38,6 @@ class Queue {
     return this.exchange.publish(this.name, message);
   }
 
-  subscribe(callback) {
-    this.channel.consume(this.name, (rabbitMessage) => {
-      const message = this.messageClass.fromRabbitMessage(rabbitMessage);
-      message.validate();
-      callback(message);
-    });
-  }
-
   nack(message) {
     this.channel.reject(message, false);
   }
@@ -68,6 +60,57 @@ class Queue {
       throw new Error(`Queue.purge(): failed to purge queue "${this.name}": ${error.message}`);
     }
     return result.messageCount;
+  }
+
+  subscribe(callback) {
+    this.channel.consume(this.name, (rabbitMessage) => {
+      // Make sure nothing is thrown from here, it will kill the channel.
+      const message = this.processRawMessage(rabbitMessage);
+      if (!message) {
+        return false;
+      }
+      try {
+        callback(message);
+      } catch (error) {
+        // TODO: better logging
+        this.logger.error(`Queue ${this.name} uncaught message processing exception ${error}`);
+        // TODO: send to dead letters?
+        this.nack(message);
+      }
+    });
+  }
+
+  processRawMessage(rabbitMessage) {
+    let message;
+
+    // Transform raw to Message object.
+    try {
+      message = this.messageClass.fromRabbitMessage(rabbitMessage);
+    } catch (error) {
+      if (error instanceof MessageParsingBlinkError) {
+        this.logger.error(`Queue ${this.name}: can't parse payload, reason: "${error}", payload: "${error.rawPayload}"`);
+      } else {
+        this.logger.error(`Queue ${this.name} unknown message parsing error ${error}`);
+      }
+      this.nack(rabbitMessage);
+      return false;
+    }
+
+    // Validate payload.
+    try {
+      message.validate();
+    } catch (error) {
+      if (error instanceof MessageValidationBlinkError) {
+        this.logger.error(`Queue ${this.name}: message validation error: "${error}", payload: "${error.payload}"`);
+      } else {
+        this.logger.error(`Queue ${this.name} unknown message validation error ${error}`);
+      }
+      this.nack(message);
+      return false;
+    }
+
+    this.logger.info(`Message valid | ${message.payload.meta.id}`);
+    return message;
   }
 
 }
