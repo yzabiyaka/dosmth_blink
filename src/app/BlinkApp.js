@@ -14,6 +14,7 @@ class BlinkApp {
   }
 
   async start() {
+    // TODO: log.
     try {
       // Initialize and setup exchange.
       this.exchange = await this.setupExchange();
@@ -29,6 +30,14 @@ class BlinkApp {
       // TODO: make sure everything dies
     }
 
+    return true;
+  }
+
+  async stop() {
+    // TODO: log.
+    this.queues = [];
+    this.exchange.channel.close();
+    this.exchange = false;
     return true;
   }
 

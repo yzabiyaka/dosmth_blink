@@ -106,14 +106,20 @@ class BlinkWebApp extends BlinkApp {
       this.config.web.bind_address,
       () => {
         const address = this.web.server.address();
-        // Make sure random port setting gets overriden with actual resolved port.
-        this.config.web.bind_port = address.port;
+        // TODO: Make sure random port setting gets overriden with actual resolved port.
         this.config.logger.info(
-          `Blink is listening on http://${this.config.web.hostname}:${this.config.web.port} env:${this.config.app.env}`
+          `Blink Web is listening on http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}`
         );
       }
     );
     // TODO: HTTPS?
+  }
+
+  async stop() {
+    await super.stop();
+    this.web.server.close(() => {
+      this.config.logger.info(`Blink Web is stopped http://${this.config.web.hostname}:${this.config.web.port} env:${this.config.app.env}.`);
+    });
   }
 
 }
