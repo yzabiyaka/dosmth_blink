@@ -39,7 +39,11 @@ class Queue {
   }
 
   subscribe(callback) {
-    this.channel.consume(this.name, callback);
+    this.channel.consume(this.name, (rabbitMessage) => {
+      const message = this.messageClass.fromRabbitMessage(rabbitMessage);
+      message.validate();
+      callback(message);
+    });
   }
 
   nack(message) {
