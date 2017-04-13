@@ -12,7 +12,7 @@ const Queue = require('../../src/queues/Queue');
 /**
  * Test FetchQ class
  */
-test('FetchQ', () => {
+test.skip('FetchQ', () => {
   const fetchQ = new FetchQ();
   fetchQ.should.be.an.instanceof(Queue);
 });

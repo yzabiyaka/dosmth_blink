@@ -19,7 +19,7 @@ chai.use(chaiAsPromised);
 /**
  * Queue: Test class interface
  */
-test('Queue: Test class interface', () => {
+test.skip('Queue: Test class interface', () => {
   const queue = new Queue();
   queue.should.respondTo('setup');
   queue.should.respondTo('publish');
@@ -34,7 +34,7 @@ test('Queue: Test class interface', () => {
  * Test that concrete Queue implementation would result in expected queues
  * in RabbitMQ.
  */
-test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
+test.skip('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   class TestBindingQ extends Queue {
     constructor(exchange) {
       super(exchange);
@@ -83,7 +83,7 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async () => {
 /**
  * Queue.publish(), Queue.purge(): Test direct publishing and purging
  */
-test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async () => {
+test.skip('Queue.publish(), Queue.purge(): Test direct publishing and purging', async () => {
   class TestDirectPublishQ extends Queue {}
 
   const locals = require('../../config');
@@ -109,7 +109,7 @@ test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async
 /**
  * Queue.purge(): Ensure incorrect queue purging fails
  */
-test('Queue.purge(): Ensure incorrect queue purging fails', async () => {
+test.skip('Queue.purge(): Ensure incorrect queue purging fails', async () => {
   class TestIncorrectPurgeQ extends Queue {}
 
   const locals = require('../../config');

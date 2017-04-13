@@ -12,7 +12,7 @@ const Queue = require('../../src/queues/Queue');
 /**
  * Test CustomerIoWebhookQ class
  */
-test('CustomerIoWebhookQ', () => {
+test.skip('CustomerIoWebhookQ', () => {
   const customerIoWebhookQ = new CustomerIoWebhookQ();
   customerIoWebhookQ.should.be.an.instanceof(Queue);
 });

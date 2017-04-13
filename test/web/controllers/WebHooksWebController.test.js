@@ -6,7 +6,7 @@ const test = require('ava');
 const chai = require('chai');
 
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
-const HooksHelper = require('../../_helpers/HooksHelper');
+const HooksHelper = require('../../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
