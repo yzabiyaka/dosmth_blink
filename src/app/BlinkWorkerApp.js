@@ -27,7 +27,7 @@ class BlinkWorkerApp extends BlinkApp {
   static getAvailableWorkers() {
     return {
       fetch: FetchWorker,
-    }
+    };
   }
 }
 

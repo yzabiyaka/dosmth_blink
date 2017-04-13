@@ -73,10 +73,15 @@ class Queue {
         callback(message);
       } catch (error) {
         // TODO: better logging
-        this.logger.error(`Queue ${this.name} uncaught message processing exception ${error}`);
+        this.logger.error(`Queue ${this.name}: Message not processed ${message.payload.meta.id} | uncaught message processing exception ${error}`);
         // TODO: send to dead letters?
         this.nack(message);
+        return false;
       }
+
+      // TODO: Ack here depending on rejection exception?
+      this.logger.info(`Message processed | ${message.payload.meta.id}`);
+      return true;
     });
   }
 

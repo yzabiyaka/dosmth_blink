@@ -54,9 +54,9 @@ class BlinkApp {
     // Transform resolved promises array to an object.
     const queueMapping = {};
     queueMappingArray.forEach((mapping) => {
-      const [ key, value ] = mapping;
+      const [key, value] = mapping;
       queueMapping[key] = value;
-    })
+    });
     return queueMapping;
   }
 }

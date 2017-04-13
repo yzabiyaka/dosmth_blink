@@ -54,7 +54,7 @@ class BlinkWebApp extends BlinkApp {
   }
 
   initControllers(controllerClasses) {
-    const controllerMapping = {}
+    const controllerMapping = {};
     controllerClasses.forEach((controllerClass, i) => {
       // Construct new controller.
       const controller = new controllerClasses[i](this);
@@ -62,7 +62,6 @@ class BlinkWebApp extends BlinkApp {
       const mappingKey = changeCase.camelCase(controllerClass.name);
       // Add worker to mapping
       controllerMapping[mappingKey] = controller;
-
     });
     return controllerMapping;
   }

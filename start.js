@@ -11,30 +11,29 @@ const BlinkWorkerApp = require('./src/app/BlinkWorkerApp.js');
 
 // ------- Args parse ----------------------------------------------------------
 
-let blinkApp;
-
 // TODO: list workers
-yargs
+const argv = yargs
   .usage('Usage: node $0 <command>')
   .version(packageJson.version)
-  .command({
-    command: 'web',
-    desc: 'Start a web app',
-    handler: (argv) => {
-      blinkApp = new BlinkWebApp(config);
-    }
-  })
-  .command({
-    command: 'worker <name>',
-    desc: 'Start worker with the given name',
-    handler: (argv) => {
-      blinkApp = new BlinkWorkerApp(config, argv.name);
-    }
-  })
+  .command('web', 'Start a web app')
+  .command('worker <name>', 'Start worker with the given name')
   .demandCommand(1, 'Please provide a valid command')
   .help()
   .argv;
 
 // ------- App bootstrap -------------------------------------------------------
+
+let blinkApp;
+const [command] = argv._;
+switch (command) {
+  case 'web':
+    blinkApp = new BlinkWebApp(config);
+    break;
+  case 'worker':
+    blinkApp = new BlinkWorkerApp(config, argv.name);
+    break;
+  default:
+    throw new Error('Argument parsing integrity violation');
+}
 
 blinkApp.start();
