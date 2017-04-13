@@ -13,12 +13,15 @@ class BlinkWorker extends Blink {
       throw new BlinkError(`Worker ${name} is not found`);
     }
     this.worker = new workersMapping[name](this);
+    // TODO: figure out worker names
+    this.workerNname = name;
   }
 
   async start() {
     await super.start();
-    this.config.logger.info(`start: ${this.workerName}`);
-    this.worker.startConsuming();
+    this.config.logger.info(`starting worker: ${this.workerNname}`);
+    this.worker.setup();
+    this.worker.perform();
   }
 
   static getAvailableWorkers() {

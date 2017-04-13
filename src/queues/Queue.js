@@ -8,6 +8,7 @@ const MessageValidationBlinkError = require('../errors/MessageValidationBlinkErr
 class Queue {
   constructor(exchange, logger = false) {
     this.exchange = exchange;
+    this.channel = exchange.channel;
 
     // Transforms Queue class name:
     // - Removes conventional Q at the end
@@ -27,14 +28,26 @@ class Queue {
   }
 
   async setup() {
-    return this.exchange.assertQueue(this);
+    return this.exchange.setupQueue(this);
   }
 
   /**
    * Send a single message to the queue bypassing routing.
    */
-  publish(payload) {
-    return this.exchange.publishDirect(this, payload);
+  publish(message) {
+    return this.exchange.publish(this.name, message);
+  }
+
+  subscribe(callback) {
+    this.channel.consume(this.name, callback);
+  }
+
+  nack(message) {
+    this.channel.reject(message, false);
+  }
+
+  ack(message) {
+    this.channel.ack(message);
   }
 
   /**
@@ -45,20 +58,12 @@ class Queue {
   async purge() {
     let result;
     try {
-      result = await this.exchange.channel.purgeQueue(this.name);
+      result = await this.channel.purgeQueue(this.name);
     } catch (error) {
       // Wrap HTTP exceptions in meaningful response.
       throw new Error(`Queue.purge(): failed to purge queue "${this.name}": ${error.message}`);
     }
     return result.messageCount;
-  }
-
-  nack(message) {
-    this.exchange.channel.reject(message, false);
-  }
-
-  ack(message) {
-    this.exchange.channel.ack(message);
   }
 
 }
