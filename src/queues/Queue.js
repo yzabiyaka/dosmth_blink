@@ -24,9 +24,6 @@ class Queue {
     if (logger) {
       this.logger = logger;
     }
-
-    // Bind process method to queue context
-    this.consumeIncomingMessage = this.consumeIncomingMessage.bind(this);
   }
 
   async setup() {
