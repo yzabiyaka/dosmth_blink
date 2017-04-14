@@ -21,7 +21,7 @@ class WebHooksWebController extends WebController {
     try {
       const customerIoWebhookMessage = CustomerIoWebhookMessage.fromCtx(ctx);
       customerIoWebhookMessage.validate();
-      const customerIoWebhookQ = await this.initializer.getCustomerIoWebhookQ();
+      const { customerIoWebhookQ } = this.blink.queues;
       customerIoWebhookQ.publish(customerIoWebhookMessage);
     } catch (error) {
       this.sendError(ctx, error);

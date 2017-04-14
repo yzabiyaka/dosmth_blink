@@ -8,6 +8,11 @@ class ApiWebController extends WebController {
     // Bind web methods to object context so they can be passed to router.
     this.index = this.index.bind(this);
     this.v1 = this.v1.bind(this);
+    this.welcome = this.welcome.bind(this);
+  }
+
+  async welcome(ctx) {
+    ctx.body = 'Hi, I\'m Blink!';
   }
 
   async index(ctx) {

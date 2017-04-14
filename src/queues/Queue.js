@@ -8,6 +8,7 @@ const MessageValidationBlinkError = require('../errors/MessageValidationBlinkErr
 class Queue {
   constructor(exchange, logger = false) {
     this.exchange = exchange;
+    this.channel = exchange.channel;
 
     // Transforms Queue class name:
     // - Removes conventional Q at the end
@@ -24,20 +25,25 @@ class Queue {
     if (logger) {
       this.logger = logger;
     }
-
-    // Bind process method to queue context
-    this.consumeIncomingMessage = this.consumeIncomingMessage.bind(this);
   }
 
   async setup() {
-    return this.exchange.assertQueue(this);
+    return this.exchange.setupQueue(this);
   }
 
   /**
    * Send a single message to the queue bypassing routing.
    */
-  publish(payload) {
-    return this.exchange.publishDirect(this, payload);
+  publish(message) {
+    return this.exchange.publish(this.name, message);
+  }
+
+  nack(message) {
+    this.channel.reject(message, false);
+  }
+
+  ack(message) {
+    this.channel.ack(message);
   }
 
   /**
@@ -48,7 +54,7 @@ class Queue {
   async purge() {
     let result;
     try {
-      result = await this.exchange.channel.purgeQueue(this.name);
+      result = await this.channel.purgeQueue(this.name);
     } catch (error) {
       // Wrap HTTP exceptions in meaningful response.
       throw new Error(`Queue.purge(): failed to purge queue "${this.name}": ${error.message}`);
@@ -56,46 +62,61 @@ class Queue {
     return result.messageCount;
   }
 
-  startConsuming() {
-    // TODO: generate consumer tag
-    this.logger.info(`Listening for messages in "${this.name}" queue`);
-    this.exchange.channel.consume(this.name, this.consumeIncomingMessage);
-  }
-
-  nack(message) {
-    this.exchange.channel.reject(message, false);
-  }
-
-  ack(message) {
-    this.exchange.channel.ack(message);
-  }
-
-  async consumeIncomingMessage(incomingMessage) {
-    try {
-      // Will throw MessageValidationBlinkError when not valid.
-      const validMessage = this.validateIncomingMessage(incomingMessage);
-      // TODO: print message metadata
-      this.logger.info(`Message valid | ${validMessage.payload.meta.id}`);
-      const processResult = await this.process(validMessage);
-      if (processResult) {
-        this.logger.info(`Message processed | ${validMessage.payload.meta.id}`);
-      } else {
-        this.logger.info(`Message not processed | ${validMessage.payload.meta.id}`);
+  subscribe(callback) {
+    this.channel.consume(this.name, (rabbitMessage) => {
+      // Make sure nothing is thrown from here, it will kill the channel.
+      const message = this.processRawMessage(rabbitMessage);
+      if (!message) {
+        return false;
       }
+      try {
+        callback(message);
+      } catch (error) {
+        // TODO: better logging
+        this.logger.error(`Queue ${this.name}: Message not processed ${message.payload.meta.id} | uncaught message processing exception ${error}`);
+        // TODO: send to dead letters?
+        this.nack(message);
+        return false;
+      }
+
+      // TODO: Ack here depending on rejection exception?
+      this.logger.info(`Message processed | ${message.payload.meta.id}`);
+      return true;
+    });
+  }
+
+  processRawMessage(rabbitMessage) {
+    let message;
+
+    // Transform raw to Message object.
+    try {
+      message = this.messageClass.fromRabbitMessage(rabbitMessage);
     } catch (error) {
       if (error instanceof MessageParsingBlinkError) {
         this.logger.error(`Queue ${this.name}: can't parse payload, reason: "${error}", payload: "${error.rawPayload}"`);
-      } else if (error instanceof MessageValidationBlinkError) {
+      } else {
+        this.logger.error(`Queue ${this.name} unknown message parsing error ${error}`);
+      }
+      this.nack(rabbitMessage);
+      return false;
+    }
+
+    // Validate payload.
+    try {
+      message.validate();
+    } catch (error) {
+      if (error instanceof MessageValidationBlinkError) {
         this.logger.error(`Queue ${this.name}: message validation error: "${error}", payload: "${error.payload}"`);
       } else {
-        this.logger.error(`Queue ${this.name} uncaught exception ${error}`);
+        this.logger.error(`Queue ${this.name} unknown message validation error ${error}`);
       }
-
-      // TODO: send to dead letters?
-      this.nack(incomingMessage);
+      this.nack(message);
+      return false;
     }
-  }
 
+    this.logger.info(`Message valid | ${message.payload.meta.id}`);
+    return message;
+  }
 
 }
 

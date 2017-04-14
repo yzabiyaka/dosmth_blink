@@ -3,7 +3,7 @@
   "version": "1.0.0-alpha",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
-    "node": ">=7.7.4"
+    "node": "7.7.4"
   },
   "scripts": {
     "test": "NODE_ENV=test ava",
@@ -12,8 +12,8 @@
     "all-tests": "npm run lint && npm run coverage",
     "html-coverage-report": "nyc report --reporter=html",
     "publish-coverage-report": "nyc report --reporter=lcov && codecov",
-    "web": "node web/blinkWeb.js",
-    "worker": "node blinkWorker.js"
+    "web": "node start.js web",
+    "worker": "node start.js worker"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,8 @@
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.1.1",
     "uuid": "^3.0.1",
-    "winston": "^2.3.1"
+    "winston": "^2.3.1",
+    "yargs": "^7.0.2"
   },
   "devDependencies": {
     "@dosomething/eslint-config": "^2.0.0",

@@ -30,8 +30,8 @@ class FetchMessage extends Message {
     return fetchMessage;
   }
 
-  static fromIncomingMessage(incomingMessage) {
-    const payload = this.parseIncomingPayload(incomingMessage);
+  static fromRabbitMessage(rabbitMessage) {
+    const payload = this.parseIncomingPayload(rabbitMessage);
 
     // TODO: save more metadata
     // TODO: metadata parse helper
@@ -39,7 +39,7 @@ class FetchMessage extends Message {
       data: payload.data,
       meta: payload.meta,
     });
-    fetchMessage.fields = incomingMessage.fields;
+    fetchMessage.fields = rabbitMessage.fields;
     return fetchMessage;
   }
 

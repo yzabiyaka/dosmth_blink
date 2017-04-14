@@ -1,22 +1,38 @@
 'use strict';
 
-/**
- * Imports.
- */
+// ------- Imports -------------------------------------------------------------
+
 const test = require('ava');
-require('chai').should();
-const supertest = require('supertest');
+const chai = require('chai');
 
-const blinkWeb = require('../../../src/web/blinkWeb');
+const HooksHelper = require('../../helpers/HooksHelper');
+
+// ------- Init ----------------------------------------------------------------
+
+chai.should();
+test.beforeEach(HooksHelper.startBlinkWebApp);
+test.afterEach(HooksHelper.stopBlinkWebApp);
+
+// ------- Tests ---------------------------------------------------------------
 
 /**
- * Test /api.
+ * GET /
  */
-test('GET /api should respond with JSON list of API versions', async () => {
-  const config = require('../../../config');
-  const res = await supertest(blinkWeb.callback())
-    .get('/api')
-    .auth(config.app.auth.name, config.app.auth.password);
+test('GET / should be polite', async (t) => {
+  const res = await t.context.supertest.get('/')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
+
+  res.status.should.be.equal(200);
+  res.text.should.be.equal('Hi, I\'m Blink!');
+});
+
+/**
+ * GET /api
+ */
+test('GET /api should respond with JSON list of API versions', async (t) => {
+  const res = await t.context.supertest.get('/api')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
+
   res.status.should.be.equal(200);
 
   // Check response to be json
@@ -29,13 +45,12 @@ test('GET /api should respond with JSON list of API versions', async () => {
 });
 
 /**
- * Test /api/v1.
+ * GET /api/v1
  */
-test('GET /api/v1 should list available endpoints', async () => {
-  const config = require('../../../config');
-  const res = await supertest(blinkWeb.callback())
-    .get('/api/v1')
-    .auth(config.app.auth.name, config.app.auth.password);
+test('GET /api/v1 should list available endpoints', async (t) => {
+  const res = await t.context.supertest.get('/api/v1')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
+
   res.status.should.be.equal(200);
 
   // Check response to be json
@@ -48,3 +63,5 @@ test('GET /api/v1 should list available endpoints', async () => {
   res.body.should.have.property('webhooks');
   res.body.webhooks.should.match(/\/api\/v1\/webhooks$/);
 });
+
+// ------- End -----------------------------------------------------------------

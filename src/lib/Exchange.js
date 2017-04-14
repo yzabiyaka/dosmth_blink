@@ -40,7 +40,7 @@ class Exchange {
     return response.exchange === this.options.exchange;
   }
 
-  async assertQueue(queue) {
+  async setupQueue(queue) {
     const assertResponse = await this.channel.assertQueue(queue.name);
 
     // Rabbit echoes queue name on successful result.
@@ -59,11 +59,6 @@ class Exchange {
     // Resolves to true after all promises are fulfilled.
     await Promise.all(bindPromises);
     return true;
-  }
-
-  publishDirect(queue, message) {
-    // Queues are bound to exchange with their name
-    return this.publish(queue.name, message);
   }
 
   publish(routingKey, message) {
