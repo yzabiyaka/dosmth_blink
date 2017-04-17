@@ -18,9 +18,9 @@ winston.configure({
         const message = [];
         if (LOGGER_TIMESTAMP) {
           message.push(new Date().toISOString());
+          // TODO: log dyno name
+          message.push('app[]:');
         }
-        // TODO: log dyno name
-        message.push('app[]:');
         message.push(`at=${options.level}`);
         // TODO: get from config
         message.push('application=blink');
