@@ -1,5 +1,7 @@
 'use strict';
 
+const logger = require('winston');
+
 const BlinkError = require('../errors/BlinkError');
 const FetchWorker = require('../workers/FetchWorker');
 const BlinkApp = require('./BlinkApp');
@@ -19,7 +21,7 @@ class BlinkWorkerApp extends BlinkApp {
 
   async start() {
     await super.start();
-    this.config.logger.info(`starting worker: ${this.workerNname}`);
+    logger.info(`starting worker: ${this.workerNname}`);
     this.worker.setup();
     this.worker.perform();
   }

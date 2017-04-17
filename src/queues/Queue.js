@@ -1,12 +1,13 @@
 'use strict';
 
 const changeCase = require('change-case');
+const logger = require('winston');
 
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 
 class Queue {
-  constructor(exchange, logger = false) {
+  constructor(exchange) {
     this.exchange = exchange;
     this.channel = exchange.channel;
 
@@ -20,11 +21,6 @@ class Queue {
     this.routes = [];
     // Automagically create direct route to the queue using its name.
     this.routes.push(this.name);
-
-    // TODO: think of better method of exposing Logger.
-    if (logger) {
-      this.logger = logger;
-    }
   }
 
   async setup() {
@@ -73,14 +69,14 @@ class Queue {
         callback(message);
       } catch (error) {
         // TODO: better logging
-        this.logger.error(`Queue ${this.name}: Message not processed ${message.payload.meta.id} | uncaught message processing exception ${error}`);
+        logger.error(`Queue ${this.name}: Message not processed ${message.payload.meta.id} | uncaught message processing exception ${error}`);
         // TODO: send to dead letters?
         this.nack(message);
         return false;
       }
 
       // TODO: Ack here depending on rejection exception?
-      this.logger.info(`Message processed | ${message.payload.meta.id}`);
+      logger.info(`Message processed | ${message.payload.meta.id}`);
       return true;
     });
   }
@@ -93,9 +89,9 @@ class Queue {
       message = this.messageClass.fromRabbitMessage(rabbitMessage);
     } catch (error) {
       if (error instanceof MessageParsingBlinkError) {
-        this.logger.error(`Queue ${this.name}: can't parse payload, reason: "${error}", payload: "${error.rawPayload}"`);
+        logger.error(`Queue ${this.name}: can't parse payload, reason: "${error}", payload: "${error.rawPayload}"`);
       } else {
-        this.logger.error(`Queue ${this.name} unknown message parsing error ${error}`);
+        logger.error(`Queue ${this.name} unknown message parsing error ${error}`);
       }
       this.nack(rabbitMessage);
       return false;
@@ -106,15 +102,15 @@ class Queue {
       message.validate();
     } catch (error) {
       if (error instanceof MessageValidationBlinkError) {
-        this.logger.error(`Queue ${this.name}: message validation error: "${error}", payload: "${error.payload}"`);
+        logger.error(`Queue ${this.name}: message validation error: "${error}", payload: "${error.payload}"`);
       } else {
-        this.logger.error(`Queue ${this.name} unknown message validation error ${error}`);
+        logger.error(`Queue ${this.name} unknown message validation error ${error}`);
       }
       this.nack(message);
       return false;
     }
 
-    this.logger.info(`Message valid | ${message.payload.meta.id}`);
+    logger.info(`Message valid | ${message.payload.meta.id}`);
     return message;
   }
 

@@ -1,6 +1,7 @@
 'use strict';
 
 const changeCase = require('change-case');
+const logger = require('winston');
 
 const Exchange = require('../lib/Exchange');
 const CustomerIoWebhookQ = require('../queues/CustomerIoWebhookQ');
@@ -25,7 +26,7 @@ class BlinkApp {
         FetchQ,
       ]);
     } catch (error) {
-      this.config.logger.error(`Blink bootrstrap failed: ${error}`);
+      logger.error(`Blink bootrstrap failed: ${error}`);
       throw error;
       // TODO: make sure everything dies
     }
@@ -49,7 +50,7 @@ class BlinkApp {
 
   async setupQueues(queueClasses) {
     const queueMappingPromises = queueClasses.map(async (queueClass, i) => {
-      const queue = new queueClasses[i](this.exchange, this.config.logger);
+      const queue = new queueClasses[i](this.exchange);
       // Assert Rabbit Topology.
       await queue.setup();
       const mappingKey = changeCase.camelCase(queueClass.name);

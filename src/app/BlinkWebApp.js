@@ -6,6 +6,7 @@ const Koa = require('koa');
 const auth = require('koa-basic-auth');
 const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
+const logger = require('winston');
 
 const basicAuthCustom401 = require('../web/middleware/basicAuthCustom401');
 const generateRequestId = require('../web/middleware/generateRequestId');
@@ -107,7 +108,7 @@ class BlinkWebApp extends BlinkApp {
       () => {
         const address = this.web.server.address();
         // TODO: Make sure random port setting gets overriden with actual resolved port.
-        this.config.logger.info(
+        logger.info(
           `Blink Web is listening on http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}`
         );
       }
@@ -119,7 +120,7 @@ class BlinkWebApp extends BlinkApp {
     await super.stop();
     const address = this.web.server.address();
     this.web.server.close(() => {
-      this.config.logger.info(`Blink Web is stopped http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}.`);
+      logger.info(`Blink Web is stopped http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}.`);
     });
   }
 

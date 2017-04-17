@@ -1,12 +1,12 @@
 'use strict';
 
 const URL = require('url');
+const logger = require('winston');
 
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 
 class WebController {
   constructor(blink) {
-    this.logger = blink.config.logger;
     this.web = blink.config.web;
     this.blink = blink;
   }
@@ -58,7 +58,7 @@ class WebController {
     if (ctx.request.method !== 'GET') {
       fullMessage += ` | Raw body ${ctx.request.rawBody}`;
     }
-    this.logger.info(fullMessage);
+    logger.info(fullMessage);
   }
 }
 

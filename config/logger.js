@@ -2,11 +2,11 @@
 
 const winston = require('winston');
 
-// Initialize winston.
+// Setup winston default instance
 const LOGGER_LEVEL = process.env.LOGGER_LEVEL || 'info';
 const LOGGER_TIMESTAMP = !(process.env.LOGGER_TIMESTAMP === 'false');
 
-module.exports = new winston.Logger({
+winston.configure({
   transports: [
     new winston.transports.Console({
       prettyPrint: true,

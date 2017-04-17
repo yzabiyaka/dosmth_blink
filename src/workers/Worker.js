@@ -1,9 +1,10 @@
 'use strict';
 
+const logger = require('winston');
+
 class Worker {
 
   constructor(blink) {
-    this.logger = blink.config.logger;
     this.blink = blink;
 
     // Bind process method to queue context
@@ -11,7 +12,7 @@ class Worker {
   }
 
   perform() {
-    this.logger.info(`Listening for messages in "${this.queue.name}" queue`);
+    logger.info(`Listening for messages in "${this.queue.name}" queue`);
     // TODO: generate consumer tag
     this.queue.subscribe(this.consume);
   }
