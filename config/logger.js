@@ -14,7 +14,26 @@ winston.configure({
       prettyPrint: LOGGER_PRETTY_PRINT,
       colorize: LOGGER_COLORIZE,
       level: LOGGER_LEVEL,
-      timestamp: LOGGER_TIMESTAMP,
+      formatter: (options) => {
+        const message = [];
+        if (LOGGER_TIMESTAMP) {
+          message.push(new Date().toISOString());
+        }
+        // TODO: log dyno name
+        message.push('app[]:');
+        message.push(`at=${options.level}`);
+        // TODO: get from config
+        message.push('application=blink');
+        if (options.meta.length > 0) {
+          options.meta.forEach((key, value) => {
+            message.push(`${key}=${value}`);
+          });
+        }
+        if (options.message) {
+          message.push(options.message);
+        }
+        return message.join(' ');
+      },
     }),
   ],
   exceptionHandlers: [
