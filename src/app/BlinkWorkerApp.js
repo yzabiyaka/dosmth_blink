@@ -19,9 +19,8 @@ class BlinkWorkerApp extends BlinkApp {
     this.workerNname = name;
   }
 
-  async start() {
-    await super.start();
-    logger.info(`starting worker: ${this.workerNname}`);
+  async reconnect() {
+    await super.reconnect();
     this.worker.setup();
     this.worker.perform();
   }
