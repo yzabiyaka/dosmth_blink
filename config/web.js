@@ -14,5 +14,7 @@ config.hostname = process.env.BLINK_WEB_HOSTNAME || 'localhost';
 config.port = process.env.BLINK_WEB_PORT || config.bind_port || 80;
 // Base URI protocol
 config.protocol = process.env.BLINK_WEB_PROTOCOL || 'http';
+// Config proxy
+config.proxy = process.env.BLINK_WEB_PROXY_ENABLED === 'true';
 
 module.exports = config;

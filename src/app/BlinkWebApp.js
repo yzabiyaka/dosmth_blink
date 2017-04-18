@@ -74,6 +74,10 @@ class BlinkWebApp extends BlinkApp {
     // https://github.com/koajs/koa/blob/master/docs/api/index.md#settings
     app.env = this.config.app.env;
 
+    // Web proxy
+    // https://github.com/koajs/koa/blob/master/docs/api/index.md#settings
+    app.proxy = this.config.web.proxy;
+
     // -------- Setup web middleware --------
     // Parse incoming request bodies in a middleware before your handlers,
     // available under the req.body property.
