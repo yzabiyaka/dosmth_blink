@@ -80,7 +80,19 @@ class BlinkApp {
     logger.info(`AMQP connection established`, meta);
 
     exchange.channel.on('error', (error) => {
-      logger.warn(`channel_error: ${error}`);
+      const meta = {
+        env: this.config.app.env,
+        code: 'amqp_channel_error',
+      };
+      logger.warn(error.toString(), meta);
+    });
+
+    exchange.connection.on('error', (error) => {
+      const meta = {
+        env: this.config.app.env,
+        code: 'amqp_connection_error',
+      };
+      logger.warn(error.toString(), meta);
     });
 
     exchange.channel.on('close', () => {
@@ -89,10 +101,6 @@ class BlinkApp {
         'amqp_channel_closed_from_server',
         'Unexpected AMQP client shutdown'
       );
-    });
-
-    exchange.connection.on('error', (error) => {
-      logger.warn(`connection_error: ${error}`);
     });
 
     exchange.connection.on('close', () => {
