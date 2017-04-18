@@ -58,7 +58,7 @@ class Queue {
     return result.messageCount;
   }
 
-   subscribe(callback) {
+  subscribe(callback) {
     this.channel.consume(this.name, async (rabbitMessage) => {
       // Make sure nothing is thrown from here, it will kill the channel.
       const message = this.processRawMessage(rabbitMessage);
@@ -66,28 +66,38 @@ class Queue {
         return false;
       }
 
+      let result;
       try {
-        const result = await callback(message);
+        result = await callback(message);
       } catch (error) {
         this.log(
           'warning',
           error.toString(),
           message,
           'message_processing_error'
-        )
+        );
         // TODO: send to dead letters?
         this.nack(message);
         return false;
       }
 
-      // TODO: Ack here depending on rejection exception?
+      // TODO: Ack here depending on rejection exception? on result?
       this.ack(message);
-      this.log(
-        'debug',
-        'Message acknowledged',
-        message,
-        'success_message_ack'
-      )
+      if (result) {
+        this.log(
+          'debug',
+          'Message acknowledged, processed true',
+          message,
+          'acknowledged_true_result'
+        );
+      } else {
+        this.log(
+          'debug',
+          'Message acknowledged, processed false',
+          message,
+          'success_message_ack_false_result'
+        );
+      }
       return true;
     });
   }
@@ -102,7 +112,7 @@ class Queue {
       if (error instanceof MessageParsingBlinkError) {
         this.log(
           'warning',
-          `payload='${error.badPayload}' Can\'t parse payload: ${error}`,
+          `payload='${error.badPayload}' Can't parse payload: ${error}`,
           null,
           'error_cant_parse_message'
         );
