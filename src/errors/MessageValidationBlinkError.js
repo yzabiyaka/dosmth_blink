@@ -3,8 +3,8 @@
 const BlinkError = require('./BlinkError');
 
 class MessageValidationBlinkError extends BlinkError {
-  constructor(error, payload) {
-    super(error.message);
+  constructor(errorMessage, payload) {
+    super(errorMessage);
     this.payload = payload;
   }
 }

@@ -58,25 +58,36 @@ class Queue {
     return result.messageCount;
   }
 
-  subscribe(callback) {
-    this.channel.consume(this.name, (rabbitMessage) => {
+   subscribe(callback) {
+    this.channel.consume(this.name, async (rabbitMessage) => {
       // Make sure nothing is thrown from here, it will kill the channel.
       const message = this.processRawMessage(rabbitMessage);
       if (!message) {
         return false;
       }
+
       try {
-        callback(message);
+        const result = await callback(message);
       } catch (error) {
-        // TODO: better logging
-        logger.error(`Queue ${this.name}: Message not processed ${message.payload.meta.id} | uncaught message processing exception ${error}`);
+        this.log(
+          'warning',
+          error.toString(),
+          message,
+          'message_processing_error'
+        )
         // TODO: send to dead letters?
         this.nack(message);
         return false;
       }
 
       // TODO: Ack here depending on rejection exception?
-      logger.info(`Message processed | ${message.payload.meta.id}`);
+      this.ack(message);
+      this.log(
+        'debug',
+        'Message acknowledged',
+        message,
+        'success_message_ack'
+      )
       return true;
     });
   }
@@ -89,9 +100,19 @@ class Queue {
       message = this.messageClass.fromRabbitMessage(rabbitMessage);
     } catch (error) {
       if (error instanceof MessageParsingBlinkError) {
-        logger.error(`Queue ${this.name}: can't parse payload, reason: "${error}", payload: "${error.rawPayload}"`);
+        this.log(
+          'warning',
+          `payload='${error.badPayload}' Can\'t parse payload: ${error}`,
+          null,
+          'error_cant_parse_message'
+        );
       } else {
-        logger.error(`Queue ${this.name} unknown message parsing error ${error}`);
+        this.log(
+          'warning',
+          `Unknown message parsing error: ${error}`,
+          null,
+          'error_cant_parse_message_unknown'
+        );
       }
       this.nack(rabbitMessage);
       return false;
@@ -102,16 +123,44 @@ class Queue {
       message.validate();
     } catch (error) {
       if (error instanceof MessageValidationBlinkError) {
-        logger.error(`Queue ${this.name}: message validation error: "${error}", payload: "${error.payload}"`);
+        this.log(
+          'warning',
+          error.toString(),
+          message,
+          'error_queue_message_validation'
+        );
       } else {
-        logger.error(`Queue ${this.name} unknown message validation error ${error}`);
+        this.log(
+          'warning',
+          `Unexpected message validation error: ${error}`,
+          null,
+          'error_queue_unexpected_message_validation'
+        );
       }
       this.nack(message);
       return false;
     }
 
-    logger.info(`Message valid | ${message.payload.meta.id}`);
+    this.log(
+      'debug',
+      `Message valid`,
+      message,
+      'success_message_valid'
+    );
+
     return message;
+  }
+
+  log(level, logMessage, message = {}, code = 'unexpected_code') {
+    const meta = {
+      // Todo: log env
+      queue: this.name,
+      request_id: message ? message.payload.meta.request_id : 'not_parsed',
+      message: message ? `'${message.toString()}'` : 'not_parsed',
+      code,
+    };
+
+    logger.log(level, logMessage, meta);
   }
 
 }

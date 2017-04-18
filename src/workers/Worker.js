@@ -6,9 +6,6 @@ class Worker {
 
   constructor(blink) {
     this.blink = blink;
-
-    // Bind process method to queue context
-    this.consume = this.consume.bind(this);
   }
 
   perform() {

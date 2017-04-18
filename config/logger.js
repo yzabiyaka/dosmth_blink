@@ -8,9 +8,6 @@ const LOGGER_TIMESTAMP = !(process.env.LOGGER_TIMESTAMP === 'false');
 const LOGGER_COLORIZE = !(process.env.LOGGER_COLORIZE === 'false');
 const LOGGER_PRETTY_PRINT = !(process.env.LOGGER_PRETTY_PRINT === 'false');
 
-winston.setLevels(winston.config.syslog.levels);
-winston.addColors(winston.config.syslog.colors);
-
 winston.configure({
   transports: [
     new winston.transports.Console({
@@ -52,3 +49,6 @@ winston.configure({
   ],
 });
 
+
+winston.setLevels(winston.config.syslog.levels);
+winston.addColors(winston.config.syslog.colors);

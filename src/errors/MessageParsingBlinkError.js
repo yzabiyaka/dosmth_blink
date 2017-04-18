@@ -3,9 +3,9 @@
 const BlinkError = require('./BlinkError');
 
 class MessageParsingBlinkError extends BlinkError {
-  constructor(error, rawPayload) {
-    super(error.message);
-    super.rawPayload = rawPayload;
+  constructor(errorMessage, payload) {
+    super(errorMessage);
+    this.badPayload = `${payload}`.replace(/\n/g, '\n');;
   }
 }
 

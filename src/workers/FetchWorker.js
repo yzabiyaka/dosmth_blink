@@ -9,6 +9,9 @@ class FetchWorker extends Worker {
   constructor(blink) {
     super(blink);
     this.blink = blink;
+
+    // Bind process method to queue context
+    this.consume = this.consume.bind(this);
   }
 
   setup() {
@@ -17,17 +20,29 @@ class FetchWorker extends Worker {
 
   async consume(fetchMessage) {
     const { url, options } = fetchMessage.payload.data;
-    try {
-      const response = await fetch(url, options);
-      logger.info(`FetchQ.process() | ${fetchMessage.payload.meta.id} | ${response.status} ${response.statusText}`);
-      this.queue.ack(fetchMessage);
-      return true;
-    } catch (error) {
-      // Todo: retry
-      logger.error(`FetchQ.process() | ${fetchMessage.payload.meta.id} | ${error}`);
-      this.queue.nack(fetchMessage);
-    }
-    return false;
+    const response = await fetch(url, options);
+    this.log(
+      'debug',
+      fetchMessage,
+      response,
+      'success_fetch_performed'
+    )
+  }
+
+  async log(level, message, response, code = 'unexpected_code') {
+    const cleanedBody = (await response.text()).replace(/\n/g, '\\n');;
+
+    const meta = {
+      // Todo: log env
+      worker: this.constructor.name,
+      request_id: message ? message.payload.meta.request_id : 'not_parsed',
+      message: message ? `'${message.toString()}'` : 'not_parsed',
+      response_status: `"${response.status} ${response.statusText}"`,
+      code,
+    };
+    // Todo: log error?
+
+    logger.log(level, cleanedBody, meta);
   }
 }
 

@@ -3,6 +3,7 @@
 const Joi = require('joi');
 
 const Message = require('./Message');
+const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
 // TODO: url whitelist
 // TODO: authentication
@@ -32,6 +33,9 @@ class FetchMessage extends Message {
 
   static fromRabbitMessage(rabbitMessage) {
     const payload = this.parseIncomingPayload(rabbitMessage);
+    if (!payload.data || !payload.meta) {
+      throw new MessageParsingBlinkError('No data in message', payload);
+    }
 
     // TODO: save more metadata
     // TODO: metadata parse helper
