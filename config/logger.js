@@ -11,7 +11,6 @@ const LOGGER_PRETTY_PRINT = !(process.env.LOGGER_PRETTY_PRINT === 'false');
 winston.setLevels(winston.config.syslog.levels);
 winston.addColors(winston.config.syslog.colors);
 
-
 winston.configure({
   transports: [
     new winston.transports.Console({
@@ -20,6 +19,7 @@ winston.configure({
       level: LOGGER_LEVEL,
       showLevel: true,
       formatter: (options) => {
+        // TODO: move to app?
         const message = [];
         if (LOGGER_TIMESTAMP) {
           const date = new Date().toISOString();
