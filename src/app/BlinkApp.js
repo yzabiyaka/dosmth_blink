@@ -84,7 +84,7 @@ class BlinkApp {
         env: this.config.app.env,
         code: 'amqp_channel_error',
       };
-      logger.warn(error.toString(), meta);
+      logger.warning(error.toString(), meta);
     });
 
     exchange.connection.on('error', (error) => {
@@ -92,7 +92,7 @@ class BlinkApp {
         env: this.config.app.env,
         code: 'amqp_connection_error',
       };
-      logger.warn(error.toString(), meta);
+      logger.warning(error.toString(), meta);
     });
 
     exchange.channel.on('close', () => {
@@ -123,7 +123,7 @@ class BlinkApp {
       env: this.config.app.env,
       code: code,
     };
-    logger.warn(`${message}, reconnecting in ${timeout}ms`, meta);
+    logger.error(`${message}, reconnecting in ${timeout}ms`, meta);
     this.connected = false;
     setTimeout(this.reconnect, timeout);
   }

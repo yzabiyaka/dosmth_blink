@@ -53,7 +53,7 @@ class WebController {
     }
     ctx.body.message = error.toString();
 
-    this.log('warn', ctx);
+    this.log('warning', ctx);
   }
 
   log(level, ctx) {

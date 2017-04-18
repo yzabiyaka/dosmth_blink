@@ -43,3 +43,5 @@ winston.configure({
     }),
   ],
 });
+
+winston.setLevels(winston.config.syslog.levels);
