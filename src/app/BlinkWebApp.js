@@ -112,9 +112,18 @@ class BlinkWebApp extends BlinkApp {
       () => {
         const address = this.web.server.address();
         // TODO: Make sure random port setting gets overriden with actual resolved port.
-        logger.info(
-          `Blink Web is listening on http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}`
-        );
+
+        // TODO: log process name
+        const meta = {
+          host: this.config.web.hostname,
+          protocol: 'http',
+          env: this.config.app.env,
+          port: address.port,
+          code: 'web_started',
+        };
+
+        const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
+        logger.info(`Blink Web is listening on ${readableUrl}`, meta);
       }
     );
     // TODO: HTTPS?
@@ -124,7 +133,17 @@ class BlinkWebApp extends BlinkApp {
     await super.stop();
     const address = this.web.server.address();
     this.web.server.close(() => {
-      logger.info(`Blink Web is stopped http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}.`);
+
+      // TODO: log process name
+      const meta = {
+        host: this.config.web.hostname,
+        protocol: 'http',
+        env: this.config.app.env,
+        port: address.port,
+        code: 'web_stopped',
+      };
+
+      logger.info(`Blink Web is stopped`, meta);
     });
   }
 
