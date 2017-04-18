@@ -52,7 +52,7 @@ test('POST /api/v1/tools/fetch should validate incoming parameters', async (t) =
   res.header['content-type'].should.match(/json/);
 
   // Check response.
-  res.body.should.have.property('error', 'validation_failed');
+  res.body.should.have.property('code', 'error_validation_failed');
   res.body.should.have.property('ok', false);
   res.body.should.have.property('message').and.to.have.string('"url" is required');
 });
