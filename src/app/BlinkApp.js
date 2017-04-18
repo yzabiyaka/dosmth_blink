@@ -27,7 +27,7 @@ class BlinkApp {
 
   async reconnect() {
     if (this.connected || this.connecting) {
-      return true;
+      return false;
     }
 
     // Block other attempts to reconnect when in progress.

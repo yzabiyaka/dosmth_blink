@@ -20,9 +20,11 @@ class BlinkWorkerApp extends BlinkApp {
   }
 
   async reconnect() {
-    await super.reconnect();
-    this.worker.setup();
-    this.worker.perform();
+    const success = await super.reconnect();
+    if (success) {
+      this.worker.setup();
+      this.worker.perform();
+    }
   }
 
   static getAvailableWorkers() {
