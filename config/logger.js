@@ -25,7 +25,8 @@ winston.configure({
         // TODO: get from config
         message.push('application=blink');
 
-        Object.entries(options.meta).forEach(([key, value]) => {
+        const meta = options.meta || {};
+        Object.entries(meta).forEach(([key, value]) => {
           message.push(`${key}=${value}`);
         });
         if (options.message) {

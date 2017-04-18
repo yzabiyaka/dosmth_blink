@@ -27,28 +27,9 @@ class Exchange {
       }
     });
 
-    // const socket = this.connection.connection.stream;
-    // const meta = {
-    //   amqp_local_address: socket.localAddress,
-    //   amqp_local_port: socket.localPort,
-    //   amqp_remote_address: socket.remoteAddress,
-    //   amqp_remote_port: socket.remotePort,
-    //   code: 'amqp_connected',
-    // };
-
-    // logger.info(`AMQP connection established`, meta);
-
-
     this.channel = await this.connection.createChannel();
-    // console.dir(this.connection.connection.rest, { colors: true, showHidden: true });
-    // console.dir(this.channel, { colors: true, showHidden: true, depth: null });
-    // this.channel.on('error', () => {
-    //   // Suppressing Exception thrown is channel callback,
-    //   // so it's possible to actually catch this exception using Promises.
-    //   // Without this rabbit connection would kill the app,
-    //   // as it throws exeption from its own context.
-    //   // TODO: log?
-    // });
+    // this.channel.on('error', errorHandler);
+    // this.channel.on('error', closeHandler);
     // // See http://www.squaremobius.net/amqp.node/channel_api.html#channel-events
     // // TODO: Handle return events
     // // TODO: Handle drain events

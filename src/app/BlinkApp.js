@@ -20,15 +20,6 @@ class BlinkApp {
       // Initialize and setup exchange.
       this.exchange = await this.setupExchange();
 
-      const socket = this.exchange.channel.connection.stream;
-      const meta = {
-        env: this.config.app.env,
-        code: 'amqp_connected',
-        amqp_local: `${socket.localAddress}:${socket.localPort}`,
-        amqp_remote: `${socket.remoteAddress}:${socket.remotePort}`,
-      };
-      logger.info(`AMQP connection established`, meta);
-
       // Initialize and setup all available queues.
       this.queues = await this.setupQueues([
         CustomerIoWebhookQ,
@@ -46,7 +37,9 @@ class BlinkApp {
   async stop() {
     // TODO: log.
     this.queues = [];
+    this.exchange.closed = true;
     this.exchange.channel.close();
+    this.exchange.connection.close();
     this.exchange = false;
     return true;
   }
@@ -54,6 +47,33 @@ class BlinkApp {
   async setupExchange() {
     const exchange = new Exchange(this.config);
     await exchange.setup();
+
+    const socket = exchange.channel.connection.stream;
+    const meta = {
+      env: this.config.app.env,
+      code: 'amqp_connected',
+      amqp_local: `${socket.localAddress}:${socket.localPort}`,
+      amqp_remote: `${socket.remoteAddress}:${socket.remotePort}`,
+    };
+    logger.info(`AMQP connection established`, meta);
+
+    exchange.channel.on('error', (error) => {
+      logger.warn(error);
+    });
+
+    exchange.channel.on('close', () => {
+      if (this.exchange.closed) {
+        return;
+      }
+
+      const meta = {
+        env: this.config.app.env,
+        code: 'amqp_closed_from_server',
+      };
+      logger.info(`AMQP connection closed from server, reconnecting`, meta);
+      this.setupExchange();
+    });
+
     return exchange;
   }
 
