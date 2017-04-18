@@ -135,11 +135,11 @@ class BlinkWebApp extends BlinkApp {
     this.web.server.close(() => {
       // TODO: log process name
       const meta = {
+        env: this.config.app.env,
+        code: 'web_stopped',
         host: this.config.web.hostname,
         protocol: 'http',
-        env: this.config.app.env,
         port: address.port,
-        code: 'web_stopped',
       };
 
       logger.debug('Blink Web is stopped', meta);

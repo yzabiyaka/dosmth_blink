@@ -46,11 +46,11 @@ class FetchWorker extends Worker {
 
     const meta = {
       // Todo: log env
+      code,
       worker: this.constructor.name,
       request_id: message ? message.payload.meta.request_id : 'not_parsed',
       response_status: response.status,
       response_status_text: `"${response.statusText}"`,
-      code,
     };
     // Todo: log error?
 

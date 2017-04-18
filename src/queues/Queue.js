@@ -164,9 +164,9 @@ class Queue {
   log(level, logMessage, message = {}, code = 'unexpected_code') {
     const meta = {
       // Todo: log env
+      code,
       queue: this.name,
       request_id: message ? message.payload.meta.request_id : 'not_parsed',
-      code,
     };
 
     logger.log(level, logMessage, meta);
