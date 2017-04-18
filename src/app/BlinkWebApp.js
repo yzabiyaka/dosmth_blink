@@ -116,10 +116,10 @@ class BlinkWebApp extends BlinkApp {
         // TODO: log process name
         const meta = {
           env: this.config.app.env,
+          code: 'web_started',
           host: this.config.web.hostname,
           protocol: 'http',
           port: address.port,
-          code: 'web_started',
         };
 
         const readableUrl = `http://${this.config.web.hostname}:${address.port}`;

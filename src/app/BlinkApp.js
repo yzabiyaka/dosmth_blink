@@ -19,16 +19,14 @@ class BlinkApp {
     try {
       // Initialize and setup exchange.
       this.exchange = await this.setupExchange();
-      // console.dir(this.exchange.channel, { colors: true, showHidden: true });
-      const socket = this.exchange.channel.connection.stream;
 
+      const socket = this.exchange.channel.connection.stream;
       const meta = {
         env: this.config.app.env,
+        code: 'amqp_connected',
         amqp_local: `${socket.localAddress}:${socket.localPort}`,
         amqp_remote: `${socket.remoteAddress}:${socket.remotePort}`,
-        code: 'amqp_connected',
       };
-
       logger.info(`AMQP connection established`, meta);
 
       // Initialize and setup all available queues.
@@ -54,7 +52,7 @@ class BlinkApp {
   }
 
   async setupExchange() {
-    const exchange = new Exchange(this.config.amqp);
+    const exchange = new Exchange(this.config);
     await exchange.setup();
     return exchange;
   }

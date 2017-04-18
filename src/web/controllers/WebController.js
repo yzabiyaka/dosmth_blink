@@ -60,15 +60,13 @@ class WebController {
     const message = ctx.body.message;
     const meta = {
       env: this.blink.config.app.env,
+      code: ctx.body.code || 'unexpected_code',
       request_id: ctx.id,
       method: ctx.request.method,
       host: ctx.request.hostname,
       path: ctx.request.path,
       fwd: ctx.request.ip,
       protocol: ctx.request.protocol,
-    }
-    if (ctx.body.code) {
-      meta.code = ctx.body.code;
     }
     logger.log(level, message, meta);
   }

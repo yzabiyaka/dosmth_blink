@@ -3,9 +3,7 @@
 // ------- Imports -------------------------------------------------------------
 
 const yargs = require('yargs');
-
 const config = require('./config');
-const packageJson = require('./package.json');
 const BlinkWebApp = require('./src/app/BlinkWebApp.js');
 const BlinkWorkerApp = require('./src/app/BlinkWorkerApp.js');
 
@@ -14,7 +12,7 @@ const BlinkWorkerApp = require('./src/app/BlinkWorkerApp.js');
 // TODO: list workers
 const argv = yargs
   .usage('Usage: node $0 <command>')
-  .version(packageJson.version)
+  .version(config.app.version)
   .command('web', 'Start a web app')
   .command('worker <name>', 'Start worker with the given name')
   .demandCommand(1, 'Please provide a valid command')

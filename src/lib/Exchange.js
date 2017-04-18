@@ -5,18 +5,27 @@ const amqp = require('amqplib');
 const logger = require('winston');
 
 class Exchange {
-  constructor(options) {
-    this.options = options;
+  constructor(config) {
+    this.config = config;
     this.connection = new Promise(resolve => resolve(false));
     this.channel = new Promise(resolve => resolve(false));
-    this.name = this.options.exchange;
+    this.name = this.config.amqp.exchange;
   }
 
   async setup() {
     // Assert exchange
 
-    const uri = amqpUri(this.options);
-    this.connection = await amqp.connect(uri);
+    const uri = amqpUri(this.config.amqp);
+    this.connection = await amqp.connect(uri, {
+      clientProperties: {
+        app: {
+          // TODO: add dyno name
+          name: this.config.app.name,
+          version: this.config.app.version,
+          env: this.config.app.env,
+        }
+      }
+    });
 
     // const socket = this.connection.connection.stream;
     // const meta = {
@@ -60,7 +69,7 @@ class Exchange {
     }
 
     // Rabbit echoes exchange name on successful response.
-    return response.exchange === this.options.exchange;
+    return response.exchange === this.name;
   }
 
   async setupQueue(queue) {
