@@ -78,7 +78,7 @@ class BlinkApp {
       amqp_local: `${socket.localAddress}:${socket.localPort}`,
       amqp_remote: `${socket.remoteAddress}:${socket.remotePort}`,
     };
-    logger.info('AMQP connection established', meta);
+    logger.debug('AMQP connection established', meta);
 
     exchange.channel.on('error', (error) => {
       meta = {

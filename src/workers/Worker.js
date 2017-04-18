@@ -13,7 +13,7 @@ class Worker {
 
   perform() {
     if (this.queue) {
-      logger.info(`Listening for messages in "${this.queue.name}" queue`);
+      logger.debug(`Listening for messages in "${this.queue.name}" queue`);
       // TODO: generate consumer tag
       this.queue.subscribe(this.consume);
     } else {
