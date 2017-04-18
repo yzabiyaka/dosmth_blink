@@ -143,7 +143,7 @@ class Queue {
 
     this.log(
       'debug',
-      `Message valid`,
+      `Message valid ${message.toString()}`,
       message,
       'success_message_valid'
     );
@@ -156,7 +156,6 @@ class Queue {
       // Todo: log env
       queue: this.name,
       request_id: message ? message.payload.meta.request_id : 'not_parsed',
-      message: message ? `'${message.toString()}'` : 'not_parsed',
       code,
     };
 

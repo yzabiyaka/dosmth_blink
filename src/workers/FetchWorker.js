@@ -21,12 +21,21 @@ class FetchWorker extends Worker {
   async consume(fetchMessage) {
     const { url, options } = fetchMessage.payload.data;
     const response = await fetch(url, options);
-    this.log(
-      'debug',
-      fetchMessage,
-      response,
-      'success_fetch_performed'
-    )
+    if (response.status == 200) {
+      this.log(
+        'debug',
+        fetchMessage,
+        response,
+        'success_fetch_response_200'
+      );
+    } else {
+      this.log(
+        'warning',
+        fetchMessage,
+        response,
+        'error_fetch_response_not_200'
+      );
+    }
   }
 
   async log(level, message, response, code = 'unexpected_code') {
@@ -36,8 +45,8 @@ class FetchWorker extends Worker {
       // Todo: log env
       worker: this.constructor.name,
       request_id: message ? message.payload.meta.request_id : 'not_parsed',
-      message: message ? `'${message.toString()}'` : 'not_parsed',
-      response_status: `"${response.status} ${response.statusText}"`,
+      response_status: response.status,
+      response_status_text: `"${response.statusText}"`,
       code,
     };
     // Todo: log error?
