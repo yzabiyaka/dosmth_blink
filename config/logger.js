@@ -8,18 +8,26 @@ const LOGGER_TIMESTAMP = !(process.env.LOGGER_TIMESTAMP === 'false');
 const LOGGER_COLORIZE = !(process.env.LOGGER_COLORIZE === 'false');
 const LOGGER_PRETTY_PRINT = !(process.env.LOGGER_PRETTY_PRINT === 'false');
 
+winston.setLevels(winston.config.syslog.levels);
+winston.addColors(winston.config.syslog.colors);
+
+
 winston.configure({
   transports: [
     new winston.transports.Console({
       prettyPrint: LOGGER_PRETTY_PRINT,
       colorize: LOGGER_COLORIZE,
       level: LOGGER_LEVEL,
+      showLevel: true,
       formatter: (options) => {
         const message = [];
         if (LOGGER_TIMESTAMP) {
-          message.push(new Date().toISOString());
+          const date = new Date().toISOString();
+          message.push(winston.config.colorize(options.level, date));
           // TODO: log dyno name
-          message.push('app[]:');
+          let dyneName = winston.config.colorize(options.level, 'app[]');
+          dyneName += ':';
+          message.push(dyneName);
         }
         message.push(`at=${options.level}`);
         // TODO: get from config
@@ -44,4 +52,3 @@ winston.configure({
   ],
 });
 
-winston.setLevels(winston.config.syslog.levels);
