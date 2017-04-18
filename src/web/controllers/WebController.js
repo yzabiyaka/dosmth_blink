@@ -67,7 +67,7 @@ class WebController {
       path: ctx.request.path,
       fwd: ctx.request.ip,
       protocol: ctx.request.protocol,
-    }
+    };
     logger.log(level, message, meta);
   }
 }

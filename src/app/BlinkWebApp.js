@@ -133,7 +133,6 @@ class BlinkWebApp extends BlinkApp {
     await super.stop();
     const address = this.web.server.address();
     this.web.server.close(() => {
-
       // TODO: log process name
       const meta = {
         host: this.config.web.hostname,
@@ -143,7 +142,7 @@ class BlinkWebApp extends BlinkApp {
         code: 'web_stopped',
       };
 
-      logger.info(`Blink Web is stopped`, meta);
+      logger.info('Blink Web is stopped', meta);
     });
   }
 

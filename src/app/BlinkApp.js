@@ -22,7 +22,7 @@ class BlinkApp {
   }
 
   async start() {
-    return await this.reconnect();
+    return this.reconnect();
   }
 
   async reconnect() {
@@ -47,7 +47,7 @@ class BlinkApp {
         this.reconnectTimeout,
         'blink_bootstrap_error',
         `Blink bootrstrap failed: ${error}`
-      )
+      );
       return false;
     }
 
@@ -71,16 +71,17 @@ class BlinkApp {
     await exchange.setup();
 
     const socket = exchange.channel.connection.stream;
-    const meta = {
+    let meta;
+    meta = {
       env: this.config.app.env,
       code: 'amqp_connected',
       amqp_local: `${socket.localAddress}:${socket.localPort}`,
       amqp_remote: `${socket.remoteAddress}:${socket.remotePort}`,
     };
-    logger.info(`AMQP connection established`, meta);
+    logger.info('AMQP connection established', meta);
 
     exchange.channel.on('error', (error) => {
-      const meta = {
+      meta = {
         env: this.config.app.env,
         code: 'amqp_channel_error',
       };
@@ -88,7 +89,7 @@ class BlinkApp {
     });
 
     exchange.connection.on('error', (error) => {
-      const meta = {
+      meta = {
         env: this.config.app.env,
         code: 'amqp_connection_error',
       };
@@ -96,7 +97,7 @@ class BlinkApp {
     });
 
     exchange.channel.on('close', () => {
-       this.scheduleReconnect(
+      this.scheduleReconnect(
         0,
         'amqp_channel_closed_from_server',
         'Unexpected AMQP client shutdown'
@@ -104,7 +105,7 @@ class BlinkApp {
     });
 
     exchange.connection.on('close', () => {
-       this.scheduleReconnect(
+      this.scheduleReconnect(
          this.reconnectTimeout,
          'amqp_connection_closed_from_server',
          'Unexpected AMQP connection shutdown'
@@ -117,11 +118,11 @@ class BlinkApp {
   scheduleReconnect(timeout = 0, code, message) {
     // Don't reconnect on programmatic shutdown.
     if (this.shuttingDown) {
-        return;
+      return;
     }
     const meta = {
       env: this.config.app.env,
-      code: code,
+      code,
     };
     logger.error(`${message}, reconnecting in ${timeout}ms`, meta);
     this.connected = false;

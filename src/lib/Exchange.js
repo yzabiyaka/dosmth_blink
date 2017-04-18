@@ -2,7 +2,6 @@
 
 const amqpUri = require('amqp-uri');
 const amqp = require('amqplib');
-const logger = require('winston');
 
 class Exchange {
   constructor(config) {
@@ -23,24 +22,11 @@ class Exchange {
           name: this.config.app.name,
           version: this.config.app.version,
           env: this.config.app.env,
-        }
-      }
+        },
+      },
     });
 
     this.channel = await this.connection.createChannel();
-    // this.channel.on('error', errorHandler);
-    // this.channel.on('error', closeHandler);
-    // // See http://www.squaremobius.net/amqp.node/channel_api.html#channel-events
-    // // TODO: Handle return events
-    // // TODO: Handle drain events
-    // this.channel.on('close', () => {
-    //   console.dir(this.channel, { colors: true, showHidden: true });
-    //   // const meta = {
-
-    //   // }
-    //   // logger.error('Channel closed', meta);
-    // });
-
     let response = {};
     try {
       response = await this.channel.assertExchange(this.name, 'topic');
