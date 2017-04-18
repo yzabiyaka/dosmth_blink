@@ -17,11 +17,12 @@ class BlinkWorkerApp extends BlinkApp {
     this.workerNname = name;
   }
 
-  async start() {
-    await super.start();
-    this.config.logger.info(`starting worker: ${this.workerNname}`);
-    this.worker.setup();
-    this.worker.perform();
+  async reconnect() {
+    const success = await super.reconnect();
+    if (success) {
+      this.worker.setup();
+      this.worker.perform();
+    }
   }
 
   static getAvailableWorkers() {

@@ -11,9 +11,7 @@ class Message {
   constructor({ data = {}, meta = {} }) {
     this.payload = { data, meta };
     // Generate unique message id or reuse request id.
-    if (!this.payload.meta.id) {
-      this.payload.meta.id = this.payload.meta.request_id || uuidV4();
-    }
+    this.payload.meta.request_id = this.payload.meta.request_id || uuidV4();
   }
 
   toString() {
@@ -23,7 +21,7 @@ class Message {
   validate() {
     const { error } = Joi.validate(this.payload.data, this.schema || {});
     if (error) {
-      throw new MessageValidationBlinkError(error, this.toString());
+      throw new MessageValidationBlinkError(error.message, this.toString());
     }
     return true;
   }

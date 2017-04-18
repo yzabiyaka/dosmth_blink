@@ -5,9 +5,11 @@ const fs = require('fs');
 // Settings.
 const config = {};
 
-// Logger
+// Setup global logger instance.
+require('./logger');
+
+// Configuration
 config.app = require('./app');
-config.logger = require('./logger');
 config.web = require('./web');
 config.amqp = require('./amqp');
 config.amqpManagement = require('./amqpManagement');

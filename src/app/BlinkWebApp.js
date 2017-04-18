@@ -6,6 +6,7 @@ const Koa = require('koa');
 const auth = require('koa-basic-auth');
 const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
+const logger = require('winston');
 
 const basicAuthCustom401 = require('../web/middleware/basicAuthCustom401');
 const generateRequestId = require('../web/middleware/generateRequestId');
@@ -73,6 +74,10 @@ class BlinkWebApp extends BlinkApp {
     // https://github.com/koajs/koa/blob/master/docs/api/index.md#settings
     app.env = this.config.app.env;
 
+    // Web proxy
+    // https://github.com/koajs/koa/blob/master/docs/api/index.md#settings
+    app.proxy = this.config.web.proxy;
+
     // -------- Setup web middleware --------
     // Parse incoming request bodies in a middleware before your handlers,
     // available under the req.body property.
@@ -107,9 +112,18 @@ class BlinkWebApp extends BlinkApp {
       () => {
         const address = this.web.server.address();
         // TODO: Make sure random port setting gets overriden with actual resolved port.
-        this.config.logger.info(
-          `Blink Web is listening on http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}`
-        );
+
+        // TODO: log process name
+        const meta = {
+          env: this.config.app.env,
+          code: 'web_started',
+          host: this.config.web.hostname,
+          protocol: 'http',
+          port: address.port,
+        };
+
+        const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
+        logger.debug(`Blink Web is listening on ${readableUrl}`, meta);
       }
     );
     // TODO: HTTPS?
@@ -119,7 +133,16 @@ class BlinkWebApp extends BlinkApp {
     await super.stop();
     const address = this.web.server.address();
     this.web.server.close(() => {
-      this.config.logger.info(`Blink Web is stopped http://${this.config.web.hostname}:${address.port} env:${this.config.app.env}.`);
+      // TODO: log process name
+      const meta = {
+        env: this.config.app.env,
+        code: 'web_stopped',
+        host: this.config.web.hostname,
+        protocol: 'http',
+        port: address.port,
+      };
+
+      logger.debug('Blink Web is stopped', meta);
     });
   }
 

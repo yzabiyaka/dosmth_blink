@@ -38,7 +38,7 @@ test.skip('WebController.fullUrl(): Test generating urls for controller methods'
     }
 
     index() {
-      this.logger.info('should not be called');
+      this.logger.error('should not be called');
     }
   }
 
@@ -65,7 +65,7 @@ test.skip('WebController.fullUrl(): Test ommitting port 80', () => {
     }
 
     index() {
-      this.logger.info('should not be called');
+      this.logger.error('should not be called');
     }
   }
 

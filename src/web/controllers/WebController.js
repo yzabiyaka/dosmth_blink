@@ -1,12 +1,12 @@
 'use strict';
 
 const URL = require('url');
+const logger = require('winston');
 
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 
 class WebController {
   constructor(blink) {
-    this.logger = blink.config.logger;
     this.web = blink.config.web;
     this.blink = blink;
   }
@@ -33,8 +33,10 @@ class WebController {
   sendOK(ctx) {
     ctx.body = {
       ok: true,
+      message: 'Message queued',
+      code: 'success_message_queued',
     };
-    this.log(ctx, 'OK');
+    this.log('info', ctx);
   }
 
   sendError(ctx, error) {
@@ -46,19 +48,27 @@ class WebController {
     // Check error type.
     if (error instanceof MessageValidationBlinkError) {
       // Machine-readable error code.
-      ctx.body.error = 'validation_failed';
-      ctx.body.message = error.message;
+      ctx.body.code = 'error_validation_failed';
       ctx.status = 422;
     }
-    this.log(ctx, error);
+    ctx.body.message = error.toString();
+
+    this.log('warning', ctx);
   }
 
-  log(ctx, message) {
-    let fullMessage = `${ctx.request.method} ${ctx.request.originalUrl} | Request ${ctx.id} | Code ${ctx.status} | ${message}`;
-    if (ctx.request.method !== 'GET') {
-      fullMessage += ` | Raw body ${ctx.request.rawBody}`;
-    }
-    this.logger.info(fullMessage);
+  log(level, ctx) {
+    const message = ctx.body.message;
+    const meta = {
+      env: this.blink.config.app.env,
+      code: ctx.body.code || 'unexpected_code',
+      request_id: ctx.id,
+      method: ctx.request.method,
+      host: ctx.request.hostname,
+      path: ctx.request.path,
+      fwd: ctx.request.ip,
+      protocol: ctx.request.protocol,
+    };
+    logger.log(level, message, meta);
   }
 }
 

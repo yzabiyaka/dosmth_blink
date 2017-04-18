@@ -3,9 +3,9 @@
 const uuidV4 = require('uuid/v4');
 
 const generateRequestId = async function (ctx, next) {
-  ctx.id = ctx.id || uuidV4();
+  ctx.id = ctx.id || ctx.get('X-Request-ID') || uuidV4();
   await next();
-  ctx.set('X-Request-Id', ctx.id);
+  ctx.set('X-Request-ID', ctx.id);
 };
 
 module.exports = generateRequestId;
