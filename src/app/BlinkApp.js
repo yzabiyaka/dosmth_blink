@@ -12,10 +12,26 @@ class BlinkApp {
     this.config = config;
     this.exchange = false;
     this.queues = [];
+    this.connected = false;
+    this.connecting = false;
+    this.shuttingDown = false;
+
+    // Attach reconnect function to object context.
+    this.reconnectTimeout = 2000;
+    this.reconnect = this.reconnect.bind(this);
   }
 
   async start() {
-    // TODO: log.
+    return await this.reconnect();
+  }
+
+  async reconnect() {
+    if (this.connected || this.connecting) {
+      return true;
+    }
+
+    // Block other attempts to reconnect when in progress.
+    this.connecting = true;
     try {
       // Initialize and setup exchange.
       this.exchange = await this.setupExchange();
@@ -26,18 +42,24 @@ class BlinkApp {
         FetchQ,
       ]);
     } catch (error) {
-      logger.error(`Blink bootrstrap failed: ${error}`);
-      throw error;
-      // TODO: make sure everything dies
+      this.connecting = false;
+      this.scheduleReconnect(
+        this.reconnectTimeout,
+        'blink_bootstrap_error',
+        `Blink bootrstrap failed: ${error}`
+      )
+      return false;
     }
 
+    this.connecting = false;
+    this.connected = true;
     return true;
   }
 
   async stop() {
     // TODO: log.
     this.queues = [];
-    this.exchange.closed = true;
+    this.shuttingDown = true;
     this.exchange.channel.close();
     this.exchange.connection.close();
     this.exchange = false;
@@ -45,10 +67,6 @@ class BlinkApp {
   }
 
   async setupExchange() {
-    if (this.exchange) {
-      return this.exchange;
-    }
-
     const exchange = new Exchange(this.config);
     await exchange.setup();
 
@@ -62,42 +80,44 @@ class BlinkApp {
     logger.info(`AMQP connection established`, meta);
 
     exchange.channel.on('error', (error) => {
-      logger.warn(error);
+      logger.warn(`channel_error: ${error}`);
     });
 
-    exchange.channel.on('close', async () => {
-       if (this.exchange.closed) {
-        return;
-      }
-
-      const meta = {
-        env: this.config.app.env,
-        code: 'amqp_channel_closed_from_server',
-      };
-      logger.warn('Unexpected AMQP client shutdown, reconnecting', meta);
-      this.exchange = false;
-      this.exchange = await this.setupExchange();
+    exchange.channel.on('close', () => {
+       this.scheduleReconnect(
+        0,
+        'amqp_channel_closed_from_server',
+        'Unexpected AMQP client shutdown'
+      );
     });
 
     exchange.connection.on('error', (error) => {
       logger.warn(`connection_error: ${error}`);
     });
 
-    exchange.connection.on('close', async () => {
-       if (this.exchange.closed) {
-        return;
-      }
-
-      const meta = {
-        env: this.config.app.env,
-        code: 'amqp_connection_closed_from_server',
-      };
-      logger.warn(`Unexpected AMQP connection shutdown, reconnecting after timeout`, meta);
-      this.exchange = false;
-      this.exchange = await this.setupExchange();
+    exchange.connection.on('close', () => {
+       this.scheduleReconnect(
+         this.reconnectTimeout,
+         'amqp_connection_closed_from_server',
+         'Unexpected AMQP connection shutdown'
+       );
     });
 
     return exchange;
+  }
+
+  scheduleReconnect(timeout = 0, code, message) {
+    // Don't reconnect on programmatic shutdown.
+    if (this.shuttingDown) {
+        return;
+    }
+    const meta = {
+      env: this.config.app.env,
+      code: code,
+    };
+    logger.warn(`${message}, reconnecting in ${timeout}ms`, meta);
+    this.connected = false;
+    setTimeout(this.reconnect, timeout);
   }
 
   async setupQueues(queueClasses) {
