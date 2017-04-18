@@ -1,7 +1,5 @@
 'use strict';
 
-const logger = require('winston');
-
 const BlinkError = require('../errors/BlinkError');
 const FetchWorker = require('../workers/FetchWorker');
 const BlinkApp = require('./BlinkApp');
