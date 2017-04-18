@@ -59,13 +59,13 @@ class WebController {
   log(level, ctx) {
     const message = ctx.body.message;
     const meta = {
-      method: ctx.request.method,
-      path: ctx.request.path,
-      host: ctx.request.hostname,
+      env: this.blink.config.app.env,
       request_id: ctx.id,
+      method: ctx.request.method,
+      host: ctx.request.hostname,
+      path: ctx.request.path,
       fwd: ctx.request.ip,
       protocol: ctx.request.protocol,
-      env: this.blink.config.app.env
     }
     if (ctx.body.code) {
       meta.code = ctx.body.code;
