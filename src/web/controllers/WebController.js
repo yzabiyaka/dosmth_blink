@@ -33,8 +33,10 @@ class WebController {
   sendOK(ctx) {
     ctx.body = {
       ok: true,
+      message: 'Message queued',
+      code: 'success_message_queued',
     };
-    this.log(ctx, 'OK');
+    this.log('info', ctx);
   }
 
   sendError(ctx, error) {
@@ -46,19 +48,29 @@ class WebController {
     // Check error type.
     if (error instanceof MessageValidationBlinkError) {
       // Machine-readable error code.
-      ctx.body.error = 'validation_failed';
-      ctx.body.message = error.message;
+      ctx.body.code = 'error_validation_failed';
       ctx.status = 422;
     }
-    this.log(ctx, error);
+    ctx.body.message = error.toString();
+
+    this.log('warn', ctx);
   }
 
-  log(ctx, message) {
-    let fullMessage = `${ctx.request.method} ${ctx.request.originalUrl} | Request ${ctx.id} | Code ${ctx.status} | ${message}`;
-    if (ctx.request.method !== 'GET') {
-      fullMessage += ` | Raw body ${ctx.request.rawBody}`;
+  log(level, ctx) {
+    const message = ctx.body.message;
+    const meta = {
+      method: ctx.request.method,
+      path: ctx.request.path,
+      host: ctx.request.hostname,
+      request_id: ctx.id,
+      fwd: ctx.request.ip,
+      protocol: ctx.request.protocol,
+      env: this.blink.config.app.env
     }
-    logger.info(fullMessage);
+    if (ctx.body.code) {
+      meta.code = ctx.body.code;
+    }
+    logger.log(level, message, meta);
   }
 }
 

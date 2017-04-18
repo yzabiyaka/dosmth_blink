@@ -24,11 +24,10 @@ winston.configure({
         message.push(`at=${options.level}`);
         // TODO: get from config
         message.push('application=blink');
-        if (options.meta.length > 0) {
-          options.meta.forEach((key, value) => {
-            message.push(`${key}=${value}`);
-          });
-        }
+
+        Object.entries(options.meta).forEach(([key, value]) => {
+          message.push(`${key}=${value}`);
+        });
         if (options.message) {
           message.push(options.message);
         }
