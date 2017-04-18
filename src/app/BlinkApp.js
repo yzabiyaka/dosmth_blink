@@ -45,6 +45,10 @@ class BlinkApp {
   }
 
   async setupExchange() {
+    if (this.exchange) {
+      return this.exchange;
+    }
+
     const exchange = new Exchange(this.config);
     await exchange.setup();
 
@@ -61,17 +65,36 @@ class BlinkApp {
       logger.warn(error);
     });
 
-    exchange.channel.on('close', () => {
-      if (this.exchange.closed) {
+    exchange.channel.on('close', async () => {
+       if (this.exchange.closed) {
         return;
       }
 
       const meta = {
         env: this.config.app.env,
-        code: 'amqp_closed_from_server',
+        code: 'amqp_channel_closed_from_server',
       };
-      logger.info(`AMQP connection closed from server, reconnecting`, meta);
-      this.setupExchange();
+      logger.warn('Unexpected AMQP client shutdown, reconnecting', meta);
+      this.exchange = false;
+      this.exchange = await this.setupExchange();
+    });
+
+    exchange.connection.on('error', (error) => {
+      logger.warn(`connection_error: ${error}`);
+    });
+
+    exchange.connection.on('close', async () => {
+       if (this.exchange.closed) {
+        return;
+      }
+
+      const meta = {
+        env: this.config.app.env,
+        code: 'amqp_connection_closed_from_server',
+      };
+      logger.warn(`Unexpected AMQP connection shutdown, reconnecting after timeout`, meta);
+      this.exchange = false;
+      this.exchange = await this.setupExchange();
     });
 
     return exchange;
