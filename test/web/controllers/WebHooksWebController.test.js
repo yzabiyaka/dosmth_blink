@@ -81,7 +81,7 @@ test('POST /api/v1/webhooks/customerio should publish message to customer-io que
 });
 
 /**
- * POST /api/v1/webhooks/gambit-mdata
+ * POST /api/v1/webhooks/gambit-chatbot-mdata
  */
 test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming message', async (t) => {
   // Test empty message
@@ -99,7 +99,7 @@ test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming messag
     phone: '15555225222',
     profile_id: '167181555',
     message_id: '841415468',
-    // Empty should be treated as not present
+    // Empty string should be treated as not present
     keyword: '',
     args: '',
     mms_image_url: '',
