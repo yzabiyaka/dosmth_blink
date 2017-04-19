@@ -51,7 +51,7 @@ class BlinkWebApp extends BlinkApp {
     router.post('api.v1.tools.fetch', '/api/v1/tools/fetch', toolsWebController.fetch);
     router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);
     router.post('api.v1.webhooks.customerio', '/api/v1/webhooks/customerio', webHooksWebController.customerio);
-    router.post('api.v1.webhooks.mobilecommons', '/api/v1/webhooks/mobilecommons', webHooksWebController.mobilecommons);
+    router.post('api.v1.webhooks.gambit-mdata', '/api/v1/webhooks/gambit-mdata', webHooksWebController.gambitMdata);
     return router;
   }
 

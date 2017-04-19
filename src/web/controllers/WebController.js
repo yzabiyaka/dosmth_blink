@@ -50,6 +50,9 @@ class WebController {
       // Machine-readable error code.
       ctx.body.code = 'error_validation_failed';
       ctx.status = 422;
+    } else {
+      ctx.body.code = 'error_unexpected_controller_error';
+      ctx.status = 400;
     }
     ctx.body.message = error.toString();
 
