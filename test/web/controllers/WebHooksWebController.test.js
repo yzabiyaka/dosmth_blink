@@ -32,8 +32,8 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
   // Check response.
   res.body.should.have.property('customerio')
     .and.have.string('/api/v1/webhooks/customerio');
-  res.body.should.have.property('gambit-mdata')
-    .and.have.string('/api/v1/webhooks/gambit-mdata');
+  res.body.should.have.property('gambit-chatbot-mdata')
+    .and.have.string('/api/v1/webhooks/gambit-chatbot-mdata');
 });
 
 /**
@@ -83,16 +83,96 @@ test('POST /api/v1/webhooks/customerio should publish message to customer-io que
 /**
  * POST /api/v1/webhooks/gambit-mdata
  */
-test('POST /api/v1/webhooks/gambit-mdata should validate incoming message', async (t) => {
+test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming message', async (t) => {
   // Test empty message
-  const res = await t.context.supertest.post('/api/v1/webhooks/gambit-mdata')
+  const responseToEmptyPayload = await t.context.supertest
+    .post('/api/v1/webhooks/gambit-chatbot-mdata')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send({});
+  responseToEmptyPayload.status.should.be.equal(422);
+  responseToEmptyPayload.body.should.have.property('ok', false);
+  responseToEmptyPayload.body.should.have.property('message')
+    .and.have.string('"phone" is required');
 
-  res.status.should.be.equal(422);
-  res.body.should.have.property('ok', false);
+  // Test one of [keyword, args, mms_image_url] presence rule
+  const testOneOfPayload = {
+    phone: '15555225222',
+    profile_id: '167181555',
+    message_id: '841415468',
+    // Empty should be treated as not present
+    keyword: '',
+    args: '',
+    mms_image_url: '',
+  };
+  const responseToTestOneOfPayload = await t.context.supertest
+    .post('/api/v1/webhooks/gambit-chatbot-mdata')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(testOneOfPayload);
+  responseToTestOneOfPayload.status.should.be.equal(422);
+  responseToTestOneOfPayload.body.should.have.property('ok', false);
+  responseToTestOneOfPayload.body.should.have.property('message')
+    .and.have.string('must contain at least one of [keyword, args, mms_image_url]');
 
+  // Test one of [keyword, args, mms_image_url] presence rule
+  const minimalViablePayload = {
+    phone: '15555225222',
+    profile_id: '167181555',
+    message_id: '841415468',
+    keyword: "BLINKMEUP",
+  };
+  const responseToMinimalViablePayload = await t.context.supertest
+    .post('/api/v1/webhooks/gambit-chatbot-mdata')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(testOneOfPayload);
+  responseToMinimalViablePayload.status.should.be.equal(422);
+  responseToMinimalViablePayload.body.should.have.property('ok', false);
+  responseToMinimalViablePayload.body.should.have.property('message')
+    .and.have.string('must contain at least one of [keyword, args, mms_image_url]');
 
+  // Test empty message
+  // TODO: factory test data generator?
+  const fullPayload = {
+    phone: "15555225222",
+    carrier: "tmobile",
+    profile_id: "167181555",
+    profile_first_name: "Sergii",
+    profile_last_name: "Tkachenko",
+    profile_email: "sergii+test-blink@dosomething.org",
+    profile_street1: "FL 1",
+    profile_street2: "",
+    profile_city: "Brooklyn",
+    profile_state: "NY",
+    profile_postal_code: "10010",
+    profile_age: "",
+    profile_birthdate: "2000-01-01",
+    profile_birthyear: "",
+    profile_cause: "",
+    profile_college_gradyear: "",
+    profile_ctd_completed: "",
+    profile_ctd_day1: "",
+    profile_ctd_day2: "",
+    profile_ctd_day3: "",
+    profile_ctd_start: "",
+    profile_date_of_birth: "2000-01-01",
+    profile_edutype: "",
+    profile_gambit_chatbot_response: "Hi it\\'s Freddie from DoSomething...",
+    profile_sfw_day3: "",
+    profile_source: "Niche",
+    profile_texting_frequency: "",
+    args: "",
+    keyword: "BLINKMEUP",
+    timestamp: "2017-04-19T13:35:56Z",
+    message_id: "841415468",
+    mdata_id: "14372",
+    mms_image_url: "",
+    phone_number_without_country_code: "15555225222"
+  };
+  const responseToFullPayload = await t.context.supertest
+    .post('/api/v1/webhooks/gambit-chatbot-mdata')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(fullPayload);
+  responseToFullPayload.status.should.be.equal(200);
+  responseToFullPayload.body.should.have.property('ok', true);
 });
 
 
