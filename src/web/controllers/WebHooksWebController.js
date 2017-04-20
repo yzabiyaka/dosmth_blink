@@ -9,23 +9,23 @@ class WebHooksWebController extends WebController {
     super(...args);
     // Bind web methods to object context so they can be passed to router.
     this.index = this.index.bind(this);
-    this.customerio = this.customerio.bind(this);
+    this.customerioEmailActivity = this.customerioEmailActivity.bind(this);
     this.gambitChatbotMdata = this.gambitChatbotMdata.bind(this);
   }
 
   async index(ctx) {
     ctx.body = {
-      customerio: this.fullUrl('api.v1.webhooks.customerio'),
+      'customerio-email-activity': this.fullUrl('api.v1.webhooks.customerio-email-activity'),
       'gambit-chatbot-mdata': this.fullUrl('api.v1.webhooks.gambit-chatbot-mdata'),
     };
   }
 
-  async customerio(ctx) {
+  async customerioEmailActivity(ctx) {
     try {
       const customerIoWebhookMessage = CustomerIoWebhookMessage.fromCtx(ctx);
       customerIoWebhookMessage.validate();
-      const { customerIoWebhookQ } = this.blink.queues;
-      customerIoWebhookQ.publish(customerIoWebhookMessage);
+      const { quasarCustomerIoEmailActivityQ } = this.blink.queues;
+      quasarCustomerIoEmailActivityQ.publish(customerIoWebhookMessage);
     } catch (error) {
       this.sendError(ctx, error);
       return;
