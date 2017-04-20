@@ -1,7 +1,9 @@
 'use strict';
 
-// ------- Imports -------------------------------------------------------------
+// ------- New Relic first ------------------------------------------------------
+require('newrelic');
 
+// ------- Imports -------------------------------------------------------------
 const yargs = require('yargs');
 const config = require('./config');
 const BlinkWebApp = require('./src/app/BlinkWebApp.js');
