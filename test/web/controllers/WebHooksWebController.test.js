@@ -30,8 +30,8 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
   res.header['content-type'].should.match(/json/);
 
   // Check response.
-  res.body.should.have.property('customerio')
-    .and.have.string('/api/v1/webhooks/customerio');
+  res.body.should.have.property('customerio-email-activity')
+    .and.have.string('/api/v1/webhooks/customerio-email-activity');
   res.body.should.have.property('gambit-chatbot-mdata')
     .and.have.string('/api/v1/webhooks/gambit-chatbot-mdata');
 });
@@ -39,7 +39,7 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
 /**
  * POST /api/v1/webhooks/customerio
  */
-test('POST /api/v1/webhooks/customerio should publish message to customer-io queue', async (t) => {
+test('POST /api/v1/webhooks/customerio-email-activity should publish message to customer-io queue', async (t) => {
   const data = {
     data: {
       campaign_id: '0',
@@ -54,7 +54,7 @@ test('POST /api/v1/webhooks/customerio should publish message to customer-io que
     timestamp: 1491337360,
   };
 
-  const res = await t.context.supertest.post('/api/v1/webhooks/customerio')
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-email-activity')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
@@ -70,7 +70,7 @@ test('POST /api/v1/webhooks/customerio should publish message to customer-io que
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
-  const messages = await rabbit.getMessagesFrom('customer-io-webhook', 1);
+  const messages = await rabbit.getMessagesFrom('quasar-customer-io-email-activity', 1);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');

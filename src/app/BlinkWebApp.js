@@ -53,9 +53,9 @@ class BlinkWebApp extends BlinkApp {
     // Webhooks
     router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);
     router.post(
-      'api.v1.webhooks.customerio',
-      '/api/v1/webhooks/customerio',
-      webHooksWebController.customerio
+      'api.v1.webhooks.customerio-email-activity',
+      '/api/v1/webhooks/customerio-email-activity',
+      webHooksWebController.customerioEmailActivity
     );
     router.post(
       'api.v1.webhooks.gambit-chatbot-mdata',

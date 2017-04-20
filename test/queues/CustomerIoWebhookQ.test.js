@@ -6,13 +6,13 @@
 const test = require('ava');
 require('chai').should();
 
-const CustomerIoWebhookQ = require('../../src/queues/CustomerIoWebhookQ');
+const QuasarCustomerIoEmailActivityQ = require('../../src/queues/QuasarCustomerIoEmailActivityQ');
 const Queue = require('../../src/queues/Queue');
 
 /**
- * Test CustomerIoWebhookQ class
+ * Test QuasarCustomerIoEmailActivityQ class
  */
-test.skip('CustomerIoWebhookQ', () => {
-  const customerIoWebhookQ = new CustomerIoWebhookQ();
+test.skip('QuasarCustomerIoEmailActivityQ', () => {
+  const customerIoWebhookQ = new QuasarCustomerIoEmailActivityQ();
   customerIoWebhookQ.should.be.an.instanceof(Queue);
 });
