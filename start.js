@@ -32,21 +32,22 @@ const [command] = argv._;
 switch (command) {
   case 'web':
     concurrency = process.env.BLINK_CONCURRENCY_WEB;
-    blinkApp = new BlinkWebApp(config);
+    throng({
+      workers: concurrency || 1,
+      lifetime: Infinity,
+      start: () => {
+        blinkApp = new BlinkWebApp(config);
+        blinkApp.start();
+      }
+    });
     break;
   case 'worker':
-    workerConcurrencyEnvVar = `BLINK_CONCURRENCY_WORKER_${argv.name.toUpperCase()}`;
-    concurrency = process.env[workerConcurrencyEnvVar];
     blinkApp = new BlinkWorkerApp(config, argv.name);
+    blinkApp.start();
     break;
   default:
     throw new Error('Argument parsing integrity violation');
 }
 
-throng({
-  workers: concurrency || 1,
-  lifetime: Infinity,
-  start: blinkApp.start,
-});
 
 // ------- End -----------------------------------------------------------------
