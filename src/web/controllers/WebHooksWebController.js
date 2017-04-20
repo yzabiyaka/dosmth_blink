@@ -37,6 +37,8 @@ class WebHooksWebController extends WebController {
     try {
       const mdataMessage = MdataMessage.fromCtx(ctx);
       mdataMessage.validate();
+      const { gambitChatbotMdataQ } = this.blink.queues;
+      gambitChatbotMdataQ.publish(mdataMessage);
     } catch (error) {
       this.sendError(ctx, error);
       return;

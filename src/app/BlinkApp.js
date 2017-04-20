@@ -6,6 +6,7 @@ const logger = require('winston');
 const Exchange = require('../lib/Exchange');
 const CustomerIoWebhookQ = require('../queues/CustomerIoWebhookQ');
 const FetchQ = require('../queues/FetchQ');
+const GambitChatbotMdataQ = require('../queues/GambitChatbotMdataQ');
 
 class BlinkApp {
   constructor(config) {
@@ -40,6 +41,7 @@ class BlinkApp {
       this.queues = await this.setupQueues([
         CustomerIoWebhookQ,
         FetchQ,
+        GambitChatbotMdataQ,
       ]);
     } catch (error) {
       this.connecting = false;
