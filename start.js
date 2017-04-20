@@ -27,6 +27,7 @@ const argv = yargs
 
 let blinkApp;
 let concurrency;
+let workerConcurrencyEnvVar;
 const [command] = argv._;
 switch (command) {
   case 'web':
@@ -34,7 +35,7 @@ switch (command) {
     blinkApp = new BlinkWebApp(config);
     break;
   case 'worker':
-    const workerConcurrencyEnvVar = `BLINK_CONCURRENCY_WORKER_${argv.name.toUpperCase()}`;
+    workerConcurrencyEnvVar = `BLINK_CONCURRENCY_WORKER_${argv.name.toUpperCase()}`;
     concurrency = process.env[workerConcurrencyEnvVar];
     blinkApp = new BlinkWorkerApp(config, argv.name);
     break;
