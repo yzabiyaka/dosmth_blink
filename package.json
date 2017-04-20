@@ -36,6 +36,7 @@
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.1.1",
     "newrelic": "^1.38.2",
+    "throng": "^4.0.0",
     "uuid": "^3.0.1",
     "winston": "^2.3.1",
     "yargs": "^7.1.0"
