@@ -84,6 +84,13 @@ class Exchange {
     return true;
   }
 
+  /**
+   * Use carefully. TODO: document
+   */
+  limitConsumerPrefetchCount(count) {
+    this.channel.prefetch(count);
+  }
+
 }
 
 module.exports = Exchange;
