@@ -4,7 +4,9 @@
 require('newrelic');
 
 // ------- Imports -------------------------------------------------------------
+const throng = require('throng');
 const yargs = require('yargs');
+
 const config = require('./config');
 const BlinkWebApp = require('./src/app/BlinkWebApp.js');
 const BlinkWorkerApp = require('./src/app/BlinkWorkerApp.js');
@@ -24,18 +26,30 @@ const argv = yargs
 // ------- App bootstrap -------------------------------------------------------
 
 let blinkApp;
+let concurrency;
 const [command] = argv._;
 switch (command) {
   case 'web':
-    blinkApp = new BlinkWebApp(config);
+    concurrency = process.env.BLINK_CONCURRENCY_WEB;
+    throng({
+      workers: concurrency || 1,
+      // TODO: set finite lifetime and grace shutdown period
+      lifetime: Infinity,
+      start: () => {
+        blinkApp = new BlinkWebApp(config);
+        blinkApp.start();
+        // TODO: prepare shutdown.
+      },
+    });
     break;
   case 'worker':
+    // TODO:  Workers concurrency.
     blinkApp = new BlinkWorkerApp(config, argv.name);
+    blinkApp.start();
     break;
   default:
     throw new Error('Argument parsing integrity violation');
 }
 
-blinkApp.start();
 
 // ------- End -----------------------------------------------------------------

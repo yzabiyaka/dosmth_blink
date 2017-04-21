@@ -16,9 +16,10 @@ class BlinkApp {
     this.connected = false;
     this.connecting = false;
     this.shuttingDown = false;
-
-    // Attach reconnect function to object context.
     this.reconnectTimeout = 2000;
+
+    // Attach functions to object context.
+    this.start = this.start.bind(this);
     this.reconnect = this.reconnect.bind(this);
   }
 
