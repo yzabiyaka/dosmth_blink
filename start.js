@@ -42,6 +42,7 @@ switch (command) {
     });
     break;
   case 'worker':
+    // TODO:  Workers concurrency.
     blinkApp = new BlinkWorkerApp(config, argv.name);
     blinkApp.start();
     break;
