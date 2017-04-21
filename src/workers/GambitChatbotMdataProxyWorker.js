@@ -30,6 +30,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
         method: 'POST',
         headers: {
           'x-gambit-api-key': this.gambitApiKey,
+          'X-Request-ID': mdataMessage.payload.meta.request_id,
           'Content-type': 'application/json',
         },
         body: JSON.stringify(data),
