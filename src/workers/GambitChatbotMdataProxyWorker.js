@@ -35,7 +35,8 @@ class GambitChatbotMdataProxyWorker extends Worker {
         },
         body: JSON.stringify(data),
       }
-    )
+    );
+
     if (response.status === 200) {
       this.log(
         'debug',
