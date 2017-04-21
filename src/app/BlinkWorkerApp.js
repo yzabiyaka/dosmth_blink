@@ -2,6 +2,7 @@
 
 const BlinkError = require('../errors/BlinkError');
 const FetchWorker = require('../workers/FetchWorker');
+const GambitChatbotMdataProxyWorker = require('../workers/GambitChatbotMdataProxyWorker');
 const BlinkApp = require('./BlinkApp');
 
 class BlinkWorkerApp extends BlinkApp {
@@ -28,6 +29,7 @@ class BlinkWorkerApp extends BlinkApp {
   static getAvailableWorkers() {
     return {
       fetch: FetchWorker,
+      'gambit-chatbot-mdata-proxy': GambitChatbotMdataProxyWorker,
     };
   }
 }
