@@ -48,12 +48,13 @@ class Queue {
     if (message.payload.meta.retry) {
       retry = message.payload.meta.retry;
     }
-    retry++;
-    message.payload.meta.retry = retry;
-    message.payload.meta.retryReason = reason;
+    retry += 1;
+    const retryMessage = message;
+    retryMessage.payload.meta.retry = retry;
+    retryMessage.payload.meta.retryReason = reason;
     // Republish modified message.
     this.nack(message);
-    this.publish(message);
+    this.publish(retryMessage);
   }
 
   /**
