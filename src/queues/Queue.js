@@ -3,6 +3,7 @@
 const changeCase = require('change-case');
 const logger = require('winston');
 
+const BlinkRetryError = require('../errors/BlinkRetryError');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 
@@ -42,6 +43,19 @@ class Queue {
     this.channel.ack(message);
   }
 
+  retry(reason, message) {
+    let retry = 0;
+    if (message.payload.meta.retry) {
+      retry = message.payload.meta.retry;
+    }
+    retry++;
+    message.payload.meta.retry = retry;
+    message.payload.meta.retryReason = reason;
+    // Republish modified message.
+    this.nack(message);
+    this.publish(message);
+  }
+
   /**
    * Purge the queue.
    *
@@ -70,6 +84,33 @@ class Queue {
       try {
         result = await callback(message);
       } catch (error) {
+        if (error instanceof BlinkRetryError) {
+          // Todo: move to setting
+          const retryTimeout = 2000;
+          const retryLimit = 3;
+          const retry = message.payload.meta.retry || 0;
+          if (retry < retryLimit) {
+            this.log(
+              'warning',
+              `Got error ${error}, retrying after ${retryTimeout}ms`,
+              message,
+              'error_got_retry_request'
+            );
+            setTimeout(() => {
+              this.retry(error.toString(), message);
+            }, retryTimeout);
+          } else {
+            this.log(
+              'warning',
+              `Got error ${error}, retry limit reached, rejecting`,
+              message,
+              'error_got_retry_limit_reached'
+            );
+            this.nack(message);
+          }
+          return false;
+        }
+
         this.log(
           'warning',
           error.toString(),
