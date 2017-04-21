@@ -88,7 +88,7 @@ class Queue {
         if (error instanceof BlinkRetryError) {
           // Todo: move to setting
           const retryTimeout = 2000;
-          const retryLimit = 3;
+          const retryLimit = 100;
           const retry = message.payload.meta.retry || 0;
           if (retry < retryLimit) {
             this.log(
