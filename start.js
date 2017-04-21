@@ -34,10 +34,12 @@ switch (command) {
     concurrency = process.env.BLINK_CONCURRENCY_WEB;
     throng({
       workers: concurrency || 1,
+      // TODO: set not infinite lifetime and grace shutdown period
       lifetime: Infinity,
       start: () => {
         blinkApp = new BlinkWebApp(config);
         blinkApp.start();
+        // TODO: prepare shutdown.
       }
     });
     break;
