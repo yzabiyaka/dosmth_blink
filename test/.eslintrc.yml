@@ -16,7 +16,8 @@
     ava/no-nested-tests: error
     ava/no-only-test: error
     ava/no-skip-assert: error
-    ava/no-skip-test: error
+    # Allow skipping tests
+    ava/no-skip-test: off
     ava/no-statement-after-end: error
     ava/no-todo-implementation: error
     ava/no-todo-test: warn
@@ -40,3 +41,9 @@
     no-unused-expressions: 'off'
     # Allow local requires for tests
     global-require: 'off'
+    # Allow t.context reassignment
+    no-param-reassign:
+      - error
+      - props: true
+        ignorePropertyModificationsFor:
+        - t

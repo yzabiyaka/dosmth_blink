@@ -3,10 +3,11 @@
 /**
  * Imports.
  */
+const test = require('ava');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const test = require('ava');
-const RabbitManagement = require('../../lib/RabbitManagement');
+
+const RabbitManagement = require('../../src/lib/RabbitManagement');
 
 // Chai setup.
 chai.should();
