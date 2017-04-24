@@ -2,6 +2,7 @@
 
 const logger = require('winston');
 
+const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 
 class GambitChatbotMdataProxyWorker extends Worker {
@@ -57,19 +58,33 @@ class GambitChatbotMdataProxyWorker extends Worker {
         'debug',
         mdataMessage,
         response,
-        'success_fetch_response_200'
+        'success_gambit_proxy_response_200'
       );
       return true;
     }
 
-    // Todo: retry when 500?
+    if (response.status === 422) {
+      this.log(
+        'warning',
+        mdataMessage,
+        response,
+        'error_gambit_proxy_response_422'
+      );
+      return false;
+    }
+
+
     this.log(
       'warning',
       mdataMessage,
       response,
-      'error_fetch_response_not_200'
+      'error_gambit_proxy_response_not_200_retry'
     );
-    return false;
+
+    throw new BlinkRetryError(
+      `${response.status} ${response.statusText}`,
+      mdataMessage
+    );
   }
 
   async log(level, message, response, code = 'unexpected_code') {
@@ -84,7 +99,6 @@ class GambitChatbotMdataProxyWorker extends Worker {
       response_status_text: `"${response.statusText}"`,
     };
     // Todo: log error?
-
     logger.log(level, cleanedBody, meta);
   }
 }
