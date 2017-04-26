@@ -58,14 +58,14 @@ test('POST /api/v1/events/user-registration should validate incoming message', a
   responseToNotUuid.status.should.be.equal(422);
   responseToNotUuid.body.should.have.property('ok', false);
   responseToNotUuid.body.should.have.property('message')
-    .and.have.string('"id" with value "not-an-uuid" fails to match the valid object id pattern');
+    .and.have.string('fails to match the valid object id pattern');
 
   // Test correct payload
   const responseValidPayload = await t.context.supertest
     .post('/api/v1/events/user-registration')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send({
-      id: '5554eac1a59dbf117e8b4567'
+      id: '5554eac1a59dbf117e8b4567',
     });
   responseValidPayload.status.should.be.equal(200);
   responseValidPayload.body.should.have.property('ok', true);
