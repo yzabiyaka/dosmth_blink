@@ -131,7 +131,7 @@ test.skip('Queue.purge(): Ensure incorrect queue purging fails', async () => {
 /**
  * Queue.purge(): Check retryDelay behavior
  */
-test('Queue.retryDelay(): Check retryDelay behavior', async () => {
+test('Queue.retryDelay(): Check retryDelay behavior', () => {
   // First, delay between retries should be a matter of seconds
   Queue.retryDelay(0).should.be.equal(1000);
   Queue.retryDelay(1).should.be.equal(1250);
@@ -159,6 +159,5 @@ test('Queue.retryDelay(): Check retryDelay behavior', async () => {
     accumulator += Queue.retryDelay(retry);
     retry += 1;
   }
-  console.dir(accumulator, { colors: true, showHidden: true });
   accumulator.should.be.below(60 * 60 * 1000 * 24);
 });

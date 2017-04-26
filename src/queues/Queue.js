@@ -217,7 +217,8 @@ class Queue {
   static retryDelay(currentRetryNumber) {
     // Make longer delays as number of retries increases.
     // https://docs.google.com/spreadsheets/d/1AECd5YrOXJnYlH7BW9wtPBL2Tqp5Wjd3c0VnYGqA780/edit?usp=sharing
-    return (Math.pow(currentRetryNumber, 2) / 4 + 1) * 1000;
+    // eslint-disable-next-line no-mixed-operators
+    return ((currentRetryNumber ** 2) / 4 + 1) * 1000;
   }
 
 }
