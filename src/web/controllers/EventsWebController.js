@@ -1,5 +1,6 @@
 'use strict';
 
+const UserRegistrationMessage = require('../../messages/UserRegistrationMessage');
 const WebController = require('./WebController');
 
 class EventsWebController extends WebController {
@@ -17,6 +18,13 @@ class EventsWebController extends WebController {
   }
 
   async userRegistration(ctx) {
+    try {
+      const userRegistrationMessage = UserRegistrationMessage.fromCtx(ctx);
+      userRegistrationMessage.validate();
+    } catch (error) {
+      this.sendError(ctx, error);
+      return;
+    }
     this.sendOK(ctx);
   }
 }
