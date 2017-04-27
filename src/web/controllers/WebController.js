@@ -46,17 +46,20 @@ class WebController {
     };
 
     // Check error type.
+    let level;
     if (error instanceof MessageValidationBlinkError) {
       // Machine-readable error code.
       ctx.body.code = 'error_validation_failed';
       ctx.status = 422;
+      level = 'warning';
     } else {
       ctx.body.code = 'error_unexpected_controller_error';
       ctx.status = 400;
+      level = 'error';
     }
     ctx.body.message = error.toString();
 
-    this.log('warning', ctx);
+    this.log(level, ctx);
   }
 
   log(level, ctx) {
