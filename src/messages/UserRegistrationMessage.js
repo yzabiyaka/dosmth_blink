@@ -4,9 +4,6 @@ const Joi = require('joi');
 
 const Message = require('./Message');
 
-
-// TODO: url whitelist
-// TODO: authentication
 class UserRegistrationMessage extends Message {
 
   constructor(...args) {
