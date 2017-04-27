@@ -12,7 +12,7 @@ class CustomerIoUpdateCustomerQ extends Queue {
     this.messageClass = UserRegistrationMessage;
     this.routes = [
       UserRegistrationMessage.routingKey(),
-    ]
+    ];
   }
 
 }
