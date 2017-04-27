@@ -4,6 +4,7 @@ const changeCase = require('change-case');
 const logger = require('winston');
 
 const Exchange = require('../lib/Exchange');
+const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const FetchQ = require('../queues/FetchQ');
 const GambitChatbotMdataQ = require('../queues/GambitChatbotMdataQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
@@ -40,9 +41,10 @@ class BlinkApp {
 
       // Initialize and setup all available queues.
       this.queues = await this.setupQueues([
-        QuasarCustomerIoEmailActivityQ,
+        CustomerIoUpdateCustomerQ,
         FetchQ,
         GambitChatbotMdataQ,
+        QuasarCustomerIoEmailActivityQ,
       ]);
     } catch (error) {
       this.connecting = false;

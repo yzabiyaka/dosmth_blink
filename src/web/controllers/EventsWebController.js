@@ -21,6 +21,10 @@ class EventsWebController extends WebController {
     try {
       const userRegistrationMessage = UserRegistrationMessage.fromCtx(ctx);
       userRegistrationMessage.validate();
+      this.blink.exchange.publish(
+        UserRegistrationMessage.routingKey(),
+        userRegistrationMessage
+      );
     } catch (error) {
       this.sendError(ctx, error);
       return;

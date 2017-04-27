@@ -61,6 +61,7 @@ class Exchange {
   }
 
   publish(routingKey, message) {
+    // TODO: get routing key from message
     const options = {
       // The message will be returned if it is not routed to a queue.
       mandatory: true,
