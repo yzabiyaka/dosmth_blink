@@ -27,6 +27,11 @@ class UserRegistrationMessage extends Message {
     return userRegistrationMessage;
   }
 
+  static routingKey() {
+    // TODO: unify
+    return 'registration.user.event';
+  }
+
 }
 
 module.exports = UserRegistrationMessage;
