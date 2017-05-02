@@ -1,6 +1,6 @@
 'use strict';
 
-const UserRegistrationMessage = require('../../messages/UserRegistrationMessage');
+const UserMessage = require('../../messages/UserMessage');
 const WebController = require('./WebController');
 
 class EventsWebController extends WebController {
@@ -19,11 +19,11 @@ class EventsWebController extends WebController {
 
   async userRegistration(ctx) {
     try {
-      const userRegistrationMessage = UserRegistrationMessage.fromCtx(ctx);
-      userRegistrationMessage.validate();
+      const userMessage = UserMessage.fromCtx(ctx);
+      userMessage.validate();
       this.blink.exchange.publish(
-        UserRegistrationMessage.routingKey(),
-        userRegistrationMessage
+        'registration.user.event',
+        userMessage
       );
     } catch (error) {
       this.sendError(ctx, error);

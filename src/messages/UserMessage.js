@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 const Message = require('./Message');
 
-class UserRegistrationMessage extends Message {
+class UserMessage extends Message {
 
   constructor(...args) {
     super(...args);
@@ -18,20 +18,15 @@ class UserRegistrationMessage extends Message {
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper
-    const userRegistrationMessage = new UserRegistrationMessage({
+    const userMessage = new UserMessage({
       data: ctx.request.body,
       meta: {
         request_id: ctx.id,
       },
     });
-    return userRegistrationMessage;
-  }
-
-  static routingKey() {
-    // TODO: unify
-    return 'registration.user.event';
+    return userMessage;
   }
 
 }
 
-module.exports = UserRegistrationMessage;
+module.exports = UserMessage;
