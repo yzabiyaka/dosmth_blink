@@ -8,21 +8,21 @@ class EventsWebController extends WebController {
     super(...args);
     // Bind web methods to object context so they can be passed to router.
     this.index = this.index.bind(this);
-    this.userRegistration = this.userRegistration.bind(this);
+    this.userCreate = this.userCreate.bind(this);
   }
 
   async index(ctx) {
     ctx.body = {
-      'user-registration': this.fullUrl('api.v1.events.user-registration'),
+      'user-create': this.fullUrl('api.v1.events.user-create'),
     };
   }
 
-  async userRegistration(ctx) {
+  async userCreate(ctx) {
     try {
       const userMessage = UserMessage.fromCtx(ctx);
       userMessage.validateStrict();
       this.blink.exchange.publish(
-        'registration.user.event',
+        'create.user.event',
         userMessage
       );
     } catch (error) {

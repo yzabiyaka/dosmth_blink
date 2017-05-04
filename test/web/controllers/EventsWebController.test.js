@@ -29,18 +29,18 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
     .and.have.string('application/json');
 
   // Check response.
-  res.body.should.have.property('user-registration')
-    .and.have.string('/api/v1/events/user-registration');
+  res.body.should.have.property('user-create')
+    .and.have.string('/api/v1/events/user-create');
 });
 
 
 /**
- * POST /api/v1/events/user-registration
+ * POST /api/v1/events/user-create
  */
-test('POST /api/v1/events/user-registration should validate incoming message', async (t) => {
+test('POST /api/v1/events/user-create should validate incoming message', async (t) => {
   // Test empty message
   const responseToEmptyPayload = await t.context.supertest
-    .post('/api/v1/events/user-registration')
+    .post('/api/v1/events/user-create')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send({});
   responseToEmptyPayload.status.should.be.equal(422);
@@ -50,7 +50,7 @@ test('POST /api/v1/events/user-registration should validate incoming message', a
 
   // Test incorrect id
   const responseToNotUuid = await t.context.supertest
-    .post('/api/v1/events/user-registration')
+    .post('/api/v1/events/user-create')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send({
       id: 'not-an-uuid',
@@ -62,7 +62,7 @@ test('POST /api/v1/events/user-registration should validate incoming message', a
 
   // Test correct payload
   const responseValidPayload = await t.context.supertest
-    .post('/api/v1/events/user-registration')
+    .post('/api/v1/events/user-create')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send({
       id: '57d1aa6142a06448258b4572',
