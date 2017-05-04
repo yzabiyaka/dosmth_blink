@@ -19,7 +19,7 @@ class CustomerIoIdentifyMessage extends Message {
       data: Joi.object().keys({
         // Remove field when provided as empty string or null.
         email: Joi.string().empty(whenNullOrEmpty).default(undefined),
-        mobile: Joi.string().empty(whenNullOrEmpty).default(undefined),
+        phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
         // Required:
         updated_at: Joi.string().required().isoDate(),
@@ -53,7 +53,7 @@ class CustomerIoIdentifyMessage extends Message {
 
         // TODO: add cio specific fields, like unsubscribe
       })
-      .or('email', 'mobile'),
+      .or('email', 'phone'),
   })
   // Require presence at least one of: keyword, args, mms_image_url.
   }
@@ -71,6 +71,16 @@ class CustomerIoIdentifyMessage extends Message {
       delete customerData.mobilecommon_status;
       customerData.mobile_status = mobile_status;
     }
+
+    // Rename mobile to phone
+    // TODO: format phone
+    if (customerData.mobile) {
+      const mobile = customerData.mobile;
+      delete customerData.mobile;
+      customerData.phone = mobile;
+    }
+
+    // TODO: Transform timestamps
 
     const customerIoIdentifyMessage = new CustomerIoIdentifyMessage({
       data: {
