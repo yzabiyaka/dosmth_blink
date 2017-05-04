@@ -21,7 +21,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
 
   setup() {
     this.queue = this.blink.queues.customerIoUpdateCustomerQ;
-    this.cioClient = new CIO(this.cioConfig.siteId, this.cioConfig.apiKey);
+    this.cioClient = new CIO(this.cioConfig.apiKey, this.cioConfig.siteId);
   }
 
   async consume(userMessage) {
@@ -32,8 +32,20 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     } catch (error) {
       // TODO: log.
       console.dir(error, { colors: true, showHidden: true });
+      return false;
     }
-    console.dir(customerIoIdentifyMessage.payload.data.data, { colors: true, showHidden: true });
+
+    const { id, data } = customerIoIdentifyMessage.payload.data;
+
+
+    let cioIdentifyResponse;
+    try {
+      cioIdentifyResponse = await this.cioClient.identify(id, data);
+    } catch (error) {
+      // TODO: log.
+      console.dir(error, { colors: true, showHidden: true });
+      return false;
+    }
 
 
     // const result = this.cioClient.identify(
