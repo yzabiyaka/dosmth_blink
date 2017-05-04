@@ -10,9 +10,51 @@ class UserMessage extends Message {
     super(...args);
 
     // Data validation rules.
+    // TODO: move to helpers.
+    const whenNullOrEmpty = Joi.valid(['', null]);
+    const optionalStringDefaultsToNull = Joi.string().empty(whenNullOrEmpty).default(null);
+    const optionalDateDefaultsToNull = Joi.string().isoDate().empty(whenNullOrEmpty).default(null);
+
     this.schema = Joi.object().keys({
-      id: Joi.string().regex(/^[0-9a-f]{24}$/, 'valid object id').required(),
-    });
+      id: Joi.string().required().regex(/^[0-9a-f]{24}$/, 'valid object id'),
+
+      // Treat the following as not present when provided as empty string or null.
+      email: Joi.string().empty(whenNullOrEmpty),
+      mobile: Joi.string().empty(whenNullOrEmpty),
+
+      // Required:
+      updated_at: Joi.string().required().isoDate(),
+      created_at: Joi.string().required().isoDate(),
+      // TODO: rename to mobile_status when this is closed:
+      // https://github.com/DoSomething/northstar/issues/570
+      mobilecommons_status: Joi.required().valid([
+        'active',
+        'undeliverable',
+        'unknown',
+        null,
+      ]),
+
+      // Optional, defaults to null when provided as empty string or null.
+      last_authenticated_at: optionalDateDefaultsToNull,
+      birthdate: optionalDateDefaultsToNull,
+      first_name: optionalStringDefaultsToNull,
+      last_name: optionalStringDefaultsToNull,
+      addr_city: optionalStringDefaultsToNull,
+      addr_state: optionalStringDefaultsToNull,
+      addr_zip: optionalStringDefaultsToNull,
+      source: optionalStringDefaultsToNull,
+      source_detail: optionalStringDefaultsToNull,
+      language: optionalStringDefaultsToNull,
+      country: optionalStringDefaultsToNull,
+
+      // Allow anything as a role, but dedault to user.
+      role: Joi.string().empty(whenNullOrEmpty).default('user'),
+
+      // When iterests not present, make them an empty array.
+      interests: Joi.array().items(Joi.string()).empty(whenNullOrEmpty).default([]),
+    })
+    // Require presence at least one of: keyword, args, mms_image_url.
+    .or('email', 'mobile');
   }
 
   static fromCtx(ctx) {

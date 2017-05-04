@@ -20,7 +20,7 @@ class EventsWebController extends WebController {
   async userRegistration(ctx) {
     try {
       const userMessage = UserMessage.fromCtx(ctx);
-      userMessage.validate();
+      userMessage.validateStrict();
       this.blink.exchange.publish(
         'registration.user.event',
         userMessage
