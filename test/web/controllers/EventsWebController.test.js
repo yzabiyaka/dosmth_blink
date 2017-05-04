@@ -61,6 +61,7 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
     .and.have.string('fails to match the valid object id pattern');
 
   // Test correct payload
+  // TODO: Move data stubs outside of the test file.
   const responseValidPayload = await t.context.supertest
     .post('/api/v1/events/user-create')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
