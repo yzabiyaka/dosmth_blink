@@ -18,9 +18,9 @@ class UserMessage extends Message {
     this.schema = Joi.object().keys({
       id: Joi.string().required().regex(/^[0-9a-f]{24}$/, 'valid object id'),
 
-      // Treat the following as not present when provided as empty string or null.
-      email: Joi.string().empty(whenNullOrEmpty),
-      mobile: Joi.string().empty(whenNullOrEmpty),
+      // Remove field when provided as empty string or null.
+      email: Joi.string().empty(whenNullOrEmpty).default(undefined),
+      mobile: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
       // Required:
       updated_at: Joi.string().required().isoDate(),
@@ -47,10 +47,10 @@ class UserMessage extends Message {
       language: optionalStringDefaultsToNull,
       country: optionalStringDefaultsToNull,
 
-      // Allow anything as a role, but dedault to user.
+      // Allow anything as a role, but default to user.
       role: Joi.string().empty(whenNullOrEmpty).default('user'),
 
-      // When iterests not present, make them an empty array.
+      // When interests not present, make them an empty array.
       interests: Joi.array().items(Joi.string()).empty(whenNullOrEmpty).default([]),
     })
     // Require presence at least one of: keyword, args, mms_image_url.
