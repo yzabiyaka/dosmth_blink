@@ -52,7 +52,7 @@ class UserMessage extends Message {
       role: Joi.string().empty(whenNullOrEmpty).default('user'),
 
       // When interests not present, make them an empty array.
-      interests: Joi.array().items(Joi.string()).empty(whenNullOrEmpty).default([]),
+      interests: Joi.array().items(Joi.string()).empty(null).default(null),
     })
     // Require presence at least one of: keyword, args, mms_image_url.
     .or('email', 'mobile');

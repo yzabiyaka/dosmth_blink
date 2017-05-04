@@ -25,8 +25,15 @@ class CustomerIoUpdateCustomerWorker extends Worker {
   }
 
   async consume(userMessage) {
-    const customerIoMessage = CustomerIoIdentifyMessage.fromUser(userMessage);
-    console.dir(customerio, { colors: true, showHidden: true });
+    let customerIoIdentifyMessage;
+    try {
+      customerIoIdentifyMessage = CustomerIoIdentifyMessage.fromUser(userMessage);
+      customerIoIdentifyMessage.validateStrict();
+    } catch (error) {
+      // TODO: log.
+      console.dir(error, { colors: true, showHidden: true });
+    }
+    console.dir(customerIoIdentifyMessage.payload.data.data, { colors: true, showHidden: true });
 
 
     // const result = this.cioClient.identify(
