@@ -75,8 +75,8 @@ test('POST /api/v1/events/user-registration should validate incoming message', a
       mobile: null,
       facebook_id: null,
       interests: [
-        "basketball",
-        "wwe",
+        'basketball',
+        'wwe',
       ],
       birthdate: '1996-05-28',
       addr_street1: null,
@@ -97,7 +97,7 @@ test('POST /api/v1/events/user-registration should validate incoming message', a
       last_authenticated_at: '2017-04-25T18:51:28+00:00',
       updated_at: '2017-04-25T18:51:28+00:00',
       created_at: '2016-09-08T18:13:43+00:00',
-  });
+    });
   responseValidPayload.status.should.be.equal(200);
   responseValidPayload.body.should.have.property('ok', true);
   responseValidPayload.body.should.have.property('message')
