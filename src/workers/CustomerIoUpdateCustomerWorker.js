@@ -1,8 +1,10 @@
 'use strict';
 
+const CIO = require('customerio-node');
 const logger = require('winston');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
+const CustomerIoIdentifyMessage = require('../messages/CustomerIoIdentifyMessage');
 const Worker = require('./Worker');
 
 class CustomerIoUpdateCustomerWorker extends Worker {
@@ -11,33 +13,29 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     super(blink);
     this.blink = blink;
 
-    // this.gambitBaseUrl = this.blink.config.gambit.baseUrl;
-    // this.gambitApiKey = this.blink.config.gambit.apiKey;
-    // this.proxyConcurrency = this.blink.config.gambit.proxyConcurrency;
+    this.cioConfig = this.blink.config.customerio;
 
     // Bind process method to queue context
     this.consume = this.consume.bind(this);
   }
 
   setup() {
-    // if (this.proxyConcurrency > 0) {
-    //   const meta = {
-    //     env: this.blink.config.app.env,
-    //     code: 'gambit_concurrency_change',
-    //     worker: this.constructor.name,
-    //   };
-
-    //   logger.debug(
-    //     `Setting Gambit concurrency to ${this.proxyConcurrency}`,
-    //     meta
-    //   );
-    //   this.blink.exchange.limitConsumerPrefetchCount(this.proxyConcurrency);
-    // }
     this.queue = this.blink.queues.customerIoUpdateCustomerQ;
+    this.cioClient = new CIO(this.cioConfig.siteId, this.cioConfig.apiKey);
   }
 
   async consume(userMessage) {
-    console.dir(userMessage, { colors: true, showHidden: true });
+    const customerIoMessage = CustomerIoIdentifyMessage.fromUser(userMessage);
+    console.dir(customerio, { colors: true, showHidden: true });
+
+
+    // const result = this.cioClient.identify(
+    //   customerIoMessage.id,
+    //   customerIoMessage.payload.data
+    // );
+
+    // console.dir(result, { colors: true, showHidden: true });
+
     // const data = mdataMessage.payload.data;
 
     // const url = `${this.gambitBaseUrl}/chatbot`;
