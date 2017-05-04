@@ -26,6 +26,21 @@ class Message {
     return true;
   }
 
+  validateStrict() {
+    const { error, value } = Joi.validate(
+      this.payload.data,
+      this.schema || {},
+      {
+        stripUnknown: true,
+      }
+    );
+    if (error) {
+      throw new MessageValidationBlinkError(error.message, this.toString());
+    }
+    this.payload.data = value;
+    return true;
+  }
+
   static parseIncomingPayload(incomingMessage) {
     let payload = false;
     const rawPayload = incomingMessage.content.toString();

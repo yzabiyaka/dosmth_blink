@@ -1,6 +1,6 @@
 'use strict';
 
-const UserRegistrationMessage = require('../../messages/UserRegistrationMessage');
+const UserMessage = require('../../messages/UserMessage');
 const WebController = require('./WebController');
 
 class EventsWebController extends WebController {
@@ -8,22 +8,22 @@ class EventsWebController extends WebController {
     super(...args);
     // Bind web methods to object context so they can be passed to router.
     this.index = this.index.bind(this);
-    this.userRegistration = this.userRegistration.bind(this);
+    this.userCreate = this.userCreate.bind(this);
   }
 
   async index(ctx) {
     ctx.body = {
-      'user-registration': this.fullUrl('api.v1.events.user-registration'),
+      'user-create': this.fullUrl('api.v1.events.user-create'),
     };
   }
 
-  async userRegistration(ctx) {
+  async userCreate(ctx) {
     try {
-      const userRegistrationMessage = UserRegistrationMessage.fromCtx(ctx);
-      userRegistrationMessage.validate();
+      const userMessage = UserMessage.fromCtx(ctx);
+      userMessage.validateStrict();
       this.blink.exchange.publish(
-        UserRegistrationMessage.routingKey(),
-        userRegistrationMessage
+        'create.user.event',
+        userMessage
       );
     } catch (error) {
       this.sendError(ctx, error);

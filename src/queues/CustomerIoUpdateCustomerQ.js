@@ -2,16 +2,16 @@
 
 require('isomorphic-fetch');
 
-const UserRegistrationMessage = require('../messages/UserRegistrationMessage');
+const UserMessage = require('../messages/UserMessage');
 const Queue = require('./Queue');
 
 class CustomerIoUpdateCustomerQ extends Queue {
 
   constructor(...args) {
     super(...args);
-    this.messageClass = UserRegistrationMessage;
+    this.messageClass = UserMessage;
     this.routes = [
-      UserRegistrationMessage.routingKey(),
+      'create.user.event',
     ];
   }
 
