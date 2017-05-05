@@ -68,7 +68,7 @@ class CustomerIoIdentifyMessage extends Message {
       }),
       // TODO: Bring back when phone is formatted in Northstar
       // .or('email', 'phone'),
-  })
+    });
   // Require presence at least one of: keyword, args, mms_image_url.
   }
 
@@ -81,16 +81,16 @@ class CustomerIoIdentifyMessage extends Message {
 
     // Rename mobilecommon_status to mobile_status
     if (customerData.mobilecommon_status) {
-      const mobile_status = customerData.mobilecommon_status;
+      const mobileStatus = customerData.mobilecommon_status;
       delete customerData.mobilecommon_status;
-      customerData.mobile_status = mobile_status;
+      customerData.mobileStatus = mobileStatus;
     }
 
     // Rename mobile to phone
     // TODO: format phone
 
     if (customerData.mobile) {
-      const mobile = customerData.mobile;
+      // const mobile = customerData.mobile;
       delete customerData.mobile;
       // TODO: Bring back when phone is formatted in Northstar
       // customerData.phone = mobile;

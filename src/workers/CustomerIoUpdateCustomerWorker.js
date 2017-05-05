@@ -28,7 +28,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     let meta;
     // Exclude mobile-only users
     if (!userMessage.payload.data.email) {
-      const meta = {
+      meta = {
         env: this.blink.config.app.env,
         code: 'cio_update_skip_mobile_only',
         worker: this.constructor.name,
@@ -42,7 +42,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       customerIoIdentifyMessage = CustomerIoIdentifyMessage.fromUser(userMessage);
       customerIoIdentifyMessage.validateStrict();
     } catch (error) {
-      const meta = {
+      meta = {
         env: this.blink.config.app.env,
         code: 'error_cio_update_cant_convert_user',
         worker: this.constructor.name,
@@ -56,10 +56,8 @@ class CustomerIoUpdateCustomerWorker extends Worker {
 
     const { id, data } = customerIoIdentifyMessage.payload.data;
 
-
-    let cioIdentifyResponse;
     try {
-      cioIdentifyResponse = await this.cioClient.identify(id, data);
+      await this.cioClient.identify(id, data);
     } catch (error) {
       this.log(
         'warning',
@@ -80,7 +78,6 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     );
 
     return true;
-
   }
 
   async log(level, message, text, code = 'unexpected_code') {
