@@ -25,14 +25,33 @@ class CustomerIoUpdateCustomerWorker extends Worker {
   }
 
   async consume(userMessage) {
+    let meta;
+    // Exclude mobile-only users
+    if (!userMessage.payload.data.email) {
+      const meta = {
+        env: this.blink.config.app.env,
+        code: 'cio_update_skip_mobile_only',
+        worker: this.constructor.name,
+        request_id: userMessage ? userMessage.payload.meta.request_id : 'not_parsed',
+      };
+      logger.debug(`Skipping mobile only user ${userMessage.payload.data.id}`, meta);
+    }
+
     let customerIoIdentifyMessage;
     try {
       customerIoIdentifyMessage = CustomerIoIdentifyMessage.fromUser(userMessage);
       customerIoIdentifyMessage.validateStrict();
     } catch (error) {
-      // TODO: log.
-      console.dir(error, { colors: true, showHidden: true });
-      return false;
+      const meta = {
+        env: this.blink.config.app.env,
+        code: 'error_cio_update_cant_convert_user',
+        worker: this.constructor.name,
+        request_id: userMessage ? userMessage.payload.meta.request_id : 'not_parsed',
+      };
+      logger.warning(
+        `Can't convert user to cio customer: ${userMessage.payload.data.id} error ${error}`,
+        meta
+      );
     }
 
     const { id, data } = customerIoIdentifyMessage.payload.data;
@@ -107,18 +126,18 @@ class CustomerIoUpdateCustomerWorker extends Worker {
   }
 
   async log(level, message, response, code = 'unexpected_code') {
-  //   const cleanedBody = (await response.text()).replace(/\n/g, '\\n');
+    const cleanedBody = (await response.text()).replace(/\n/g, '\\n');
 
-  //   const meta = {
-  //     env: this.blink.config.app.env,
-  //     code,
-  //     worker: this.constructor.name,
-  //     request_id: message ? message.payload.meta.request_id : 'not_parsed',
-  //     response_status: response.status,
-  //     response_status_text: `"${response.statusText}"`,
-  //   };
-  //   // Todo: log error?
-  //   logger.log(level, cleanedBody, meta);
+    const meta = {
+      env: this.blink.config.app.env,
+      code,
+      worker: this.constructor.name,
+      request_id: message ? message.payload.meta.request_id : 'not_parsed',
+      response_status: response.status,
+      response_status_text: `"${response.statusText}"`,
+    };
+    // Todo: log error?
+    logger.log(level, cleanedBody, meta);
   }
 }
 

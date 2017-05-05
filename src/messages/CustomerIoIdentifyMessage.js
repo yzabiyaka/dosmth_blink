@@ -96,7 +96,7 @@ class CustomerIoIdentifyMessage extends Message {
     }
 
     if (customerData.created_at) {
-      customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();
+      // customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();
     }
 
     if (customerData.updated_at) {
