@@ -10,9 +10,7 @@ class CustomerIoUpdateCustomerQ extends Queue {
   constructor(...args) {
     super(...args);
     this.messageClass = UserMessage;
-    this.routes = [
-      'create.user.event',
-    ];
+    this.routes.push('create.user.event');
   }
 
 }
