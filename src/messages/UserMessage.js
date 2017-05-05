@@ -28,7 +28,7 @@ class UserMessage extends Message {
       created_at: Joi.string().required().isoDate(),
       // TODO: rename to mobile_status when this is closed:
       // https://github.com/DoSomething/northstar/issues/570
-      mobilecommons_status: Joi.required().valid([
+      mobilecommons_status: Joi.valid([
         'active',
         'undeliverable',
         'unknown',
