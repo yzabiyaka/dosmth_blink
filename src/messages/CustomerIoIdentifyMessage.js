@@ -46,7 +46,8 @@ class CustomerIoIdentifyMessage extends Message {
 
         // Optional, defaults to null when provided as empty string or null.
         last_authenticated_at: optionalTimestampDefaultsToUndefined,
-        birthdate: optionalTimestampDefaultsToUndefined,
+        // Exception: kept as an isodate
+        birthdate: Joi.string().isoDate().empty(whenNullOrEmpty).default(null),
         first_name: optionalStringDefaultsToUndefined,
         last_name: optionalStringDefaultsToUndefined,
         addr_city: optionalStringDefaultsToUndefined,
@@ -95,24 +96,12 @@ class CustomerIoIdentifyMessage extends Message {
       // customerData.phone = mobile;
     }
 
-    if (customerData.created_at) {
-      // customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();
-    }
-
-    if (customerData.updated_at) {
-      customerData.updated_at = moment(customerData.updated_at, moment.ISO_8601).unix();
-    }
+    customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();
+    customerData.updated_at = moment(customerData.updated_at, moment.ISO_8601).unix();
 
     if (customerData.last_authenticated_at) {
       customerData.last_authenticated_at = moment(
         customerData.last_authenticated_at,
-        moment.ISO_8601
-      ).unix();
-    }
-
-    if (customerData.birthdate) {
-      customerData.birthdate = moment(
-        `${customerData.birthdate}T00:00:00Z`,
         moment.ISO_8601
       ).unix();
     }
