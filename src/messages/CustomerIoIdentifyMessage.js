@@ -29,7 +29,9 @@ class CustomerIoIdentifyMessage extends Message {
       data: Joi.object().keys({
         // Remove field when provided as empty string or null.
         email: Joi.string().empty(whenNullOrEmpty).default(undefined),
-        phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
+
+        // TODO: make sure has E.164 format
+        // phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
         // Required:
         updated_at: Joi.date().timestamp('unix').raw().required(),
@@ -62,8 +64,9 @@ class CustomerIoIdentifyMessage extends Message {
         interests: Joi.array().items(Joi.string()).empty(null).default(undefined),
 
         // TODO: add cio specific fields, like unsubscribe
-      })
-      .or('email', 'phone'),
+      }),
+      // TODO: Bring back when phone is formatted in Northstar
+      // .or('email', 'phone'),
   })
   // Require presence at least one of: keyword, args, mms_image_url.
   }
@@ -84,10 +87,12 @@ class CustomerIoIdentifyMessage extends Message {
 
     // Rename mobile to phone
     // TODO: format phone
+
     if (customerData.mobile) {
       const mobile = customerData.mobile;
       delete customerData.mobile;
-      customerData.phone = mobile;
+      // TODO: Bring back when phone is formatted in Northstar
+      // customerData.phone = mobile;
     }
 
     if (customerData.created_at) {
