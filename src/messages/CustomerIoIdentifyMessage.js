@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
+const moment = require('moment');
 
 const Message = require('./Message');
 
@@ -11,8 +12,17 @@ class CustomerIoIdentifyMessage extends Message {
     // Data validation rules.
     // TODO: move to helpers.
     const whenNullOrEmpty = Joi.valid(['', null]);
-    const optionalStringDefaultsToUndefined = Joi.string().empty(whenNullOrEmpty).default(undefined);
-    const optionalDateDefaultsToUndefined = Joi.string().isoDate().empty(whenNullOrEmpty).default(undefined);
+    const optionalStringDefaultsToUndefined = Joi
+      .string()
+      .empty(whenNullOrEmpty)
+      .default(undefined);
+
+    const optionalTimestampDefaultsToUndefined = Joi
+      .date()
+      .timestamp('unix')
+      .raw()
+      .empty(whenNullOrEmpty)
+      .default(undefined);
 
     this.schema = Joi.object().keys({
       id: Joi.string().required().regex(/^[0-9a-f]{24}$/, 'valid object id'),
@@ -22,8 +32,8 @@ class CustomerIoIdentifyMessage extends Message {
         phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
         // Required:
-        updated_at: Joi.string().required().isoDate(),
-        created_at: Joi.string().required().isoDate(),
+        updated_at: Joi.date().timestamp('unix').raw().required(),
+        created_at: Joi.date().timestamp('unix').raw().required(),
 
         mobile_status: Joi.valid([
           'active',
@@ -33,8 +43,8 @@ class CustomerIoIdentifyMessage extends Message {
         ]).default(undefined),
 
         // Optional, defaults to null when provided as empty string or null.
-        last_authenticated_at: optionalDateDefaultsToUndefined,
-        birthdate: optionalDateDefaultsToUndefined,
+        last_authenticated_at: optionalTimestampDefaultsToUndefined,
+        birthdate: optionalTimestampDefaultsToUndefined,
         first_name: optionalStringDefaultsToUndefined,
         last_name: optionalStringDefaultsToUndefined,
         addr_city: optionalStringDefaultsToUndefined,
@@ -78,6 +88,28 @@ class CustomerIoIdentifyMessage extends Message {
       const mobile = customerData.mobile;
       delete customerData.mobile;
       customerData.phone = mobile;
+    }
+
+    if (customerData.created_at) {
+      customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();
+    }
+
+    if (customerData.updated_at) {
+      customerData.updated_at = moment(customerData.updated_at, moment.ISO_8601).unix();
+    }
+
+    if (customerData.last_authenticated_at) {
+      customerData.last_authenticated_at = moment(
+        customerData.last_authenticated_at,
+        moment.ISO_8601
+      ).unix();
+    }
+
+    if (customerData.birthdate) {
+      customerData.birthdate = moment(
+        `${customerData.birthdate}T00:00:00Z`,
+        moment.ISO_8601
+      ).unix();
     }
 
     // TODO: Transform timestamps

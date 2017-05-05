@@ -46,6 +46,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       console.dir(error, { colors: true, showHidden: true });
       return false;
     }
+    console.dir(cioIdentifyResponse, { colors: true, showHidden: true });
 
 
     // const result = this.cioClient.identify(
