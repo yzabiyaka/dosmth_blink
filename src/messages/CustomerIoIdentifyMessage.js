@@ -57,7 +57,7 @@ class CustomerIoIdentifyMessage extends Message {
         source_detail: optionalStringDefaultsToUndefined,
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
-        subscribed: Joi.any(),
+        unsubscribed: Joi.any(),
 
               // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
@@ -107,7 +107,7 @@ class CustomerIoIdentifyMessage extends Message {
       ).unix();
     }
 
-    customerData.subscribed = true;
+    customerData.unsubscribed = false;
 
     // TODO: Transform timestamps
 
