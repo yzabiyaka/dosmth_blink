@@ -61,7 +61,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     } catch (error) {
       this.log(
         'warning',
-        userMessage,
+        customerIoIdentifyMessage,
         `${error}`,
         'error_cio_update_cant_update_consumer'
       );
@@ -73,7 +73,8 @@ class CustomerIoUpdateCustomerWorker extends Worker {
 
     this.log(
       'debug',
-      userMessage,
+      customerIoIdentifyMessage,
+      'Customer.io updated',
       'success_cio_consumer_updated'
     );
 

@@ -77,7 +77,7 @@ class CustomerIoIdentifyMessage extends Message {
     const user = userMessage.payload.data;
     // Copy user fields.
     const customerData = Object.assign({}, user);
-    // Remove id
+    // Remove id from data, as it's available on top level.
     delete customerData.id;
 
     // Rename mobilecommon_status to mobile_status
