@@ -44,7 +44,7 @@ class CustomerIoIdentifyMessage extends Message {
           null,
         ]).default(undefined),
 
-        // Optional, defaults to null when provided as empty string or null.
+        // Optional, defaults to undefined when provided as empty string or null.
         last_authenticated_at: optionalTimestampDefaultsToUndefined,
         // Exception: kept as an isodate
         birthdate: Joi.string().isoDate().empty(whenNullOrEmpty).default(null),
