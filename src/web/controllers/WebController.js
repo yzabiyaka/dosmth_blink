@@ -36,6 +36,8 @@ class WebController {
       message: 'Message queued',
       code: 'success_message_queued',
     };
+    // Accepted.
+    ctx.status = 202;
     this.log('info', ctx);
   }
 
