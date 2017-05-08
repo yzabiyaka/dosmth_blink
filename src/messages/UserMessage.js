@@ -54,7 +54,7 @@ class UserMessage extends Message {
       // When interests not present, make them an empty array.
       interests: Joi.array().items(Joi.string()).empty(null).default(null),
     })
-    // Require presence at least one of: keyword, args, mms_image_url.
+    // Require presence at least one of: email, mobile.
     .or('email', 'mobile');
   }
 

@@ -59,18 +59,17 @@ class CustomerIoIdentifyMessage extends Message {
         country: optionalStringDefaultsToUndefined,
         unsubscribed: Joi.boolean(),
 
-              // Allow anything as a role, but default to user.
+        // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
 
         // When interests not present, make them an empty array.
         interests: Joi.array().items(Joi.string()).empty(null).default(undefined),
 
-        // TODO: add cio specific fields, like unsubscribe
+        // TODO: add cio specific fields, like unsubscribed_at
       }),
       // TODO: Bring back when phone is formatted in Northstar
       // .or('email', 'phone'),
     });
-  // Require presence at least one of: keyword, args, mms_image_url.
   }
 
   static fromUser(userMessage) {
