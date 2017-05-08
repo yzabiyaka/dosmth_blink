@@ -3,6 +3,7 @@
 const Joi = require('joi');
 
 const Message = require('./Message');
+const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
 class UserMessage extends Message {
 
@@ -27,7 +28,7 @@ class UserMessage extends Message {
       created_at: Joi.string().required().isoDate(),
       // TODO: rename to mobile_status when this is closed:
       // https://github.com/DoSomething/northstar/issues/570
-      mobilecommons_status: Joi.required().valid([
+      mobilecommons_status: Joi.valid([
         'active',
         'undeliverable',
         'unknown',
@@ -51,9 +52,9 @@ class UserMessage extends Message {
       role: Joi.string().empty(whenNullOrEmpty).default('user'),
 
       // When interests not present, make them an empty array.
-      interests: Joi.array().items(Joi.string()).empty(whenNullOrEmpty).default([]),
+      interests: Joi.array().items(Joi.string()).empty(null).default(null),
     })
-    // Require presence at least one of: keyword, args, mms_image_url.
+    // Require presence at least one of: email, mobile.
     .or('email', 'mobile');
   }
 
@@ -66,6 +67,22 @@ class UserMessage extends Message {
         request_id: ctx.id,
       },
     });
+    return userMessage;
+  }
+
+  static fromRabbitMessage(rabbitMessage) {
+    const payload = this.parseIncomingPayload(rabbitMessage);
+    if (!payload.data || !payload.meta) {
+      throw new MessageParsingBlinkError('No data in message', payload);
+    }
+
+    // TODO: save more metadata
+    // TODO: metadata parse helper
+    const userMessage = new UserMessage({
+      data: payload.data,
+      meta: payload.meta,
+    });
+    userMessage.fields = rabbitMessage.fields;
     return userMessage;
   }
 
