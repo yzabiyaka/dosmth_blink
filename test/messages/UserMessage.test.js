@@ -5,8 +5,8 @@
 const test = require('ava');
 const chai = require('chai');
 
-const DataHelper = require('../helpers/DataHelper');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
+const MessageValidationHelper = require('../helpers/MessageValidationHelper');
 
 
 // ------- Init ----------------------------------------------------------------
@@ -16,7 +16,7 @@ chai.should();
 // ------- Tests ---------------------------------------------------------------
 
 test(() => {
-  DataHelper.testMessageFailsValidationWithout('id', MessageFactoryHelper.getValidUser);
+  MessageValidationHelper.failsWithout('id', MessageFactoryHelper.getValidUser);
 });
 
 // ------- End -----------------------------------------------------------------

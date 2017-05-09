@@ -2,9 +2,9 @@
 
 const MessageValidationBlinkError = require('../../src/errors/MessageValidationBlinkError');
 
-class DataHelper {
+class MessageValidationHelper {
 
-  static mutateMessage({ remove, change, value, message }) {
+  static mutate({ remove, change, value, message }) {
     const mutant = message;
     if (remove) {
       delete mutant.payload.data[remove];
@@ -13,12 +13,12 @@ class DataHelper {
     return false;
   }
 
-  static testMessageFailsValidationWithout(fieldName, generator) {
+  static failsWithout(fieldName, generator) {
     let mutant;
-    mutant = DataHelper.mutateMessage({ remove: fieldName, message: generator() });
+    mutant = MessageValidationHelper.mutate({ remove: fieldName, message: generator() });
     mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
   }
 
 }
 
-module.exports = DataHelper;
+module.exports = MessageValidationHelper;
