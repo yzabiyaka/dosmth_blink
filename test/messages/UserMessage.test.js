@@ -21,4 +21,8 @@ test('User Message should fail is missing required fields', () => {
   });
 });
 
+test(() => {
+  MessageValidationHelper.removesWhenEmpty('email', MessageFactoryHelper.getValidUser);
+});
+
 // ------- End -----------------------------------------------------------------

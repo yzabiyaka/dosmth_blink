@@ -10,6 +10,10 @@ class MessageValidationHelper {
       delete mutant.payload.data[remove];
       return mutant;
     }
+    if (change) {
+      mutant.payload.data[change] = value;
+      return mutant;
+    }
     return false;
   }
 
@@ -17,6 +21,20 @@ class MessageValidationHelper {
     let mutant;
     mutant = MessageValidationHelper.mutate({ remove: fieldName, message: generator() });
     mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
+
+    // TODO: validate null, undefined, empty string
+  }
+
+  static removesWhenEmpty(fieldName, generator) {
+    let mutant;
+
+    mutant = MessageValidationHelper.mutate({
+      change: fieldName,
+      value: '',
+      message: generator(),
+    });
+    mutant.validateStrict();
+    mutant.getData().should.not.have.property(fieldName);
   }
 
 }
