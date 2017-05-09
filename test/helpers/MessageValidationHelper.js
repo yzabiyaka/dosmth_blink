@@ -46,7 +46,7 @@ class MessageValidationHelper {
   }
 
   static defaultToNullWhenEmpty(fieldName, generator) {
-    let mutant;
+    const mutant;
 
     mutant = MessageValidationHelper.mutate({
       remove: fieldName,
