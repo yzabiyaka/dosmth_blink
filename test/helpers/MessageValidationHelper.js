@@ -70,13 +70,23 @@ class MessageValidationHelper {
     mutant.getData().should.not.have.property(fieldName);
   }
 
-  static defaultToNullWhenEmpty(fieldName, generator) {
+  static defaultsToWhenEmpty(fieldName, defaultValue, generator) {
     const mutant = MessageValidationHelper.mutate({
       remove: fieldName,
       message: generator(),
     });
     mutant.validateStrict();
-    mutant.getData().should.have.property(fieldName).and.be.equal(null);
+    mutant.getData().should.have.property(fieldName).and.be.equal(defaultValue);
+  }
+
+
+  static ensureType(fieldName, incorrectValue, generator) {
+    const mutant = MessageValidationHelper.mutate({
+      change: fieldName,
+      value: incorrectValue,
+      message: generator(),
+    });
+    mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" must be a`);
   }
 
 }
