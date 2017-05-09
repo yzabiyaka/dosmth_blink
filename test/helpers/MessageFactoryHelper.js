@@ -47,9 +47,9 @@ class MessageFactoryHelper {
         country: faker.address.countryCode(),
         drupal_id: faker.random.number(4091040),
         role: underscore.sample(roles),
-        last_authenticated_at: faker.date.past(),
-        updated_at: faker.date.past(),
-        created_at: faker.date.past(),
+        last_authenticated_at: faker.date.past().toISOString(),
+        updated_at: faker.date.past().toISOString(),
+        created_at: faker.date.past().toISOString(),
       },
       meta: {},
     });
