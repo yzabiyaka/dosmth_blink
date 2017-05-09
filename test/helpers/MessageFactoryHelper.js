@@ -11,6 +11,7 @@ const UserMessage = require('../../src/messages/UserMessage');
 class MessageFactoryHelper {
 
   static getValidUser() {
+    const fakeMobile = `+1555${faker.random.number({ min: 1111111, max: 9999999 })}`;
     const fakeId = `57d1aa6142a06${Date.now().toString(16)}`;
     const roles = ['user', 'admin', 'staff'];
     const sources = ['niche', 'phoenix', 'after_school'];
@@ -25,7 +26,7 @@ class MessageFactoryHelper {
         last_initial: '',
         photo: faker.image.imageUrl(),
         email: faker.internet.email(),
-        mobile: null,
+        mobile: fakeMobile,
         facebook_id: faker.random.number(4091040),
         interests: [
           faker.random.word(),
