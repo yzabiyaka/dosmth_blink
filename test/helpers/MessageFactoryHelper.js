@@ -3,7 +3,7 @@
 // Libraries
 const faker = require('faker');
 const underscore = require('underscore');
-const moment = required('moment');
+const moment = require('moment');
 
 // App modules
 const UserMessage = require('../../src/messages/UserMessage');
