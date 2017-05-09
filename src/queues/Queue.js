@@ -45,8 +45,8 @@ class Queue {
 
   retry(reason, message) {
     let retry = 0;
-    if (message.payload.meta.retry) {
-      retry = message.payload.meta.retry;
+    if (message.getMeta().retry) {
+      retry = message.getMeta().retry;
     }
     retry += 1;
     const retryMessage = message;
@@ -88,7 +88,7 @@ class Queue {
         if (error instanceof BlinkRetryError) {
           // Todo: move to setting
           const retryLimit = 100;
-          const retry = message.payload.meta.retry || 0;
+          const retry = message.getMeta().retry || 0;
           const retryDelay = Queue.retryDelay(retry);
           if (retry < retryLimit) {
             this.log(
@@ -208,7 +208,7 @@ class Queue {
       // Todo: log env
       code,
       queue: this.name,
-      request_id: message ? message.payload.meta.request_id : 'not_parsed',
+      request_id: message ? message.getRequestId() : 'not_parsed',
     };
 
     logger.log(level, logMessage, meta);

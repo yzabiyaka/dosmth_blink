@@ -27,14 +27,14 @@ class CustomerIoUpdateCustomerWorker extends Worker {
   async consume(userMessage) {
     let meta;
     // Exclude mobile-only users
-    if (!userMessage.payload.data.email) {
+    if (!userMessage.getData().email) {
       meta = {
         env: this.blink.config.app.env,
         code: 'cio_update_skip_mobile_only',
         worker: this.constructor.name,
-        request_id: userMessage ? userMessage.payload.meta.request_id : 'not_parsed',
+        request_id: userMessage ? userMessage.getRequestId() : 'not_parsed',
       };
-      logger.debug(`Skipping mobile only user ${userMessage.payload.data.id}`, meta);
+      logger.debug(`Skipping mobile only user ${userMessage.getData().id}`, meta);
     }
 
     let customerIoIdentifyMessage;
@@ -46,15 +46,15 @@ class CustomerIoUpdateCustomerWorker extends Worker {
         env: this.blink.config.app.env,
         code: 'error_cio_update_cant_convert_user',
         worker: this.constructor.name,
-        request_id: userMessage ? userMessage.payload.meta.request_id : 'not_parsed',
+        request_id: userMessage ? userMessage.getRequestId() : 'not_parsed',
       };
       logger.warning(
-        `Can't convert user to cio customer: ${userMessage.payload.data.id} error ${error}`,
+        `Can't convert user to cio customer: ${userMessage.getData().id} error ${error}`,
         meta
       );
     }
 
-    const { id, data } = customerIoIdentifyMessage.payload.data;
+    const { id, data } = customerIoIdentifyMessage.getData();
 
     try {
       await this.cioClient.identify(id, data);
@@ -86,7 +86,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       env: this.blink.config.app.env,
       code,
       worker: this.constructor.name,
-      request_id: message ? message.payload.meta.request_id : 'not_parsed',
+      request_id: message ? message.getRequestId() : 'not_parsed',
     };
     // Todo: log error?
     logger.log(level, `${text}, message ${message.toString()}`, meta);

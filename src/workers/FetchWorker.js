@@ -19,7 +19,7 @@ class FetchWorker extends Worker {
   }
 
   async consume(fetchMessage) {
-    const { url, options } = fetchMessage.payload.data;
+    const { url, options } = fetchMessage.getData();
     const response = await fetch(url, options);
     if (response.status === 200) {
       this.log(
@@ -48,7 +48,7 @@ class FetchWorker extends Worker {
       // Todo: log env
       code,
       worker: this.constructor.name,
-      request_id: message ? message.payload.meta.request_id : 'not_parsed',
+      request_id: message ? message.getRequestId() : 'not_parsed',
       response_status: response.status,
       response_status_text: `"${response.statusText}"`,
     };
