@@ -15,7 +15,7 @@ const generator = MessageFactoryHelper.getValidUser;
 
 // ------- Tests ---------------------------------------------------------------
 
-test('User Message should fail is missing required fields', () => {
+test('User Message should fail if required fields are missing, undefined, null, or empty', () => {
   [
     'id',
     'created_at',

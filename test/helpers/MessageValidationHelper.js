@@ -19,10 +19,35 @@ class MessageValidationHelper {
 
   static failsWithout(fieldName, generator) {
     let mutant;
-    mutant = MessageValidationHelper.mutate({ remove: fieldName, message: generator() });
+    mutant = MessageValidationHelper.mutate({
+      remove: fieldName,
+      message: generator(),
+    });
     mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
 
-    // TODO: validate null, undefined, empty string
+    mutant = MessageValidationHelper.mutate({
+      change: fieldName,
+      value: undefined,
+      message: generator(),
+    });
+    mutant.validateStrict.should.throw(MessageValidationBlinkError,
+      `child "${fieldName}" fails because ["${fieldName}" is required]`);
+
+    mutant = MessageValidationHelper.mutate({
+      change: fieldName,
+      value: null,
+      message: generator(),
+    });
+    mutant.validateStrict.should.throw(MessageValidationBlinkError,
+      `child "${fieldName}" fails because ["${fieldName}" must be a string]`);
+
+    mutant = MessageValidationHelper.mutate({
+      change: fieldName,
+      value: '',
+      message: generator(),
+    });
+    mutant.validateStrict.should.throw(MessageValidationBlinkError,
+      `child "${fieldName}" fails because ["${fieldName}" is not allowed to be empty]`);
   }
 
   static removesWhenEmpty(fieldName, generator) {
