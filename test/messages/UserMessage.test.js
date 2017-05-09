@@ -15,8 +15,10 @@ chai.should();
 
 // ------- Tests ---------------------------------------------------------------
 
-test(() => {
-  MessageValidationHelper.failsWithout('id', MessageFactoryHelper.getValidUser);
+test('User Message should fail is missing required fields', () => {
+  ['id', 'created_at', 'updated_at'].forEach((field) => {
+    MessageValidationHelper.failsWithout(field, MessageFactoryHelper.getValidUser);
+  });
 });
 
 // ------- End -----------------------------------------------------------------
