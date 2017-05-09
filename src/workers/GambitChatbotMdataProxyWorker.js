@@ -37,7 +37,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
   }
 
   async consume(mdataMessage) {
-    const data = mdataMessage.payload.data;
+    const data = mdataMessage.getData();
 
     const url = `${this.gambitBaseUrl}/chatbot`;
     const response = await fetch(
@@ -46,7 +46,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
         method: 'POST',
         headers: {
           'x-gambit-api-key': this.gambitApiKey,
-          'X-Request-ID': mdataMessage.payload.meta.request_id,
+          'X-Request-ID': mdataMessage.getRequestId(),
           'Content-type': 'application/json',
         },
         body: JSON.stringify(data),
@@ -94,7 +94,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
       env: this.blink.config.app.env,
       code,
       worker: this.constructor.name,
-      request_id: message ? message.payload.meta.request_id : 'not_parsed',
+      request_id: message ? message.getRequestId() : 'not_parsed',
       response_status: response.status,
       response_status_text: `"${response.statusText}"`,
     };

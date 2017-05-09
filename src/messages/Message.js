@@ -14,12 +14,24 @@ class Message {
     this.payload.meta.request_id = this.payload.meta.request_id || uuidV4();
   }
 
+  getData() {
+    return this.payload.data;
+  }
+
+  getMeta() {
+    return this.payload.meta;
+  }
+
+  getRequestId() {
+    return this.payload.meta.request_id;
+  }
+
   toString() {
     return JSON.stringify(this.payload);
   }
 
   validate() {
-    const { error } = Joi.validate(this.payload.data, this.schema || {});
+    const { error } = Joi.validate(this.getData(), this.schema || {});
     if (error) {
       throw new MessageValidationBlinkError(error.message, this.toString());
     }
@@ -28,7 +40,7 @@ class Message {
 
   validateStrict() {
     const { error, value } = Joi.validate(
-      this.payload.data,
+      this.getData(),
       this.schema || {},
       {
         stripUnknown: true,

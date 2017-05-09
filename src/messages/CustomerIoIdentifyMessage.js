@@ -73,10 +73,10 @@ class CustomerIoIdentifyMessage extends Message {
   }
 
   static fromUser(userMessage) {
-    const user = userMessage.payload.data;
+    const user = userMessage.getData();
     // Copy user fields.
     const customerData = Object.assign({}, user);
-    // Remove id from data, as it's available on top level.
+    // Remove id from data, as it's available on the top level.
     delete customerData.id;
 
     // Rename mobilecommon_status to mobile_status
@@ -117,7 +117,7 @@ class CustomerIoIdentifyMessage extends Message {
         data: customerData,
       },
       meta: {
-        request_id: userMessage.payload.meta.request_id,
+        request_id: userMessage.getRequestId(),
       },
     });
     return customerIoIdentifyMessage;
