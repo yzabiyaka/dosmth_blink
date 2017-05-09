@@ -90,7 +90,7 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
       slack_id: null,
       mobilecommons_id: '167181555',
       parse_installation_ids: null,
-      mobilecommons_status: 'undeliverable',
+      mobile_status: 'undeliverable',
       language: 'en',
       country: 'UA',
       drupal_id: '4091040',
