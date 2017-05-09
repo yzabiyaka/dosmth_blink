@@ -3,6 +3,7 @@
 // Libraries
 const faker = require('faker');
 const underscore = require('underscore');
+const moment = required('moment');
 
 // App modules
 const UserMessage = require('../../src/messages/UserMessage');
@@ -10,7 +11,6 @@ const UserMessage = require('../../src/messages/UserMessage');
 class MessageFactoryHelper {
 
   static getValidUser() {
-    const bDay = faker.date.past();
     const fakeId = `57d1aa6142a06${Date.now().toString(16)}`;
     const roles = ['user', 'admin', 'staff'];
     const sources = ['niche', 'phoenix', 'after_school'];
@@ -31,7 +31,7 @@ class MessageFactoryHelper {
           faker.random.word(),
           faker.random.word(),
         ],
-        birthdate: `${bDay.getFullYear()}-${bDay.getMonth()}-${bDay.getDate()}`,
+        birthdate: moment().format('YYYY-MM-DD'),
         addr_street1: faker.address.streetAddress(),
         addr_street2: faker.address.secondaryAddress(),
         addr_city: faker.address.city(3),
