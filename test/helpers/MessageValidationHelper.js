@@ -35,6 +35,25 @@ class MessageValidationHelper {
     });
     mutant.validateStrict();
     mutant.getData().should.not.have.property(fieldName);
+
+    mutant = MessageValidationHelper.mutate({
+      change: fieldName,
+      value: null,
+      message: generator(),
+    });
+    mutant.validateStrict();
+    mutant.getData().should.not.have.property(fieldName);
+  }
+
+  static defaultToNullWhenEmpty(fieldName, generator) {
+    let mutant;
+
+    mutant = MessageValidationHelper.mutate({
+      remove: fieldName,
+      message: generator(),
+    });
+    mutant.validateStrict();
+    mutant.getData().should.have.property(fieldName).and.be.equal(null);
   }
 
 }

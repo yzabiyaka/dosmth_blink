@@ -32,4 +32,21 @@ test('User Message should remove certain optional fields when empty', () => {
   .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator));
 });
 
+test('User Message should reset certain optional fields to null when empty', () => {
+  [
+    'last_authenticated_at',
+    'birthdate',
+    'first_name',
+    'last_name',
+    'addr_city',
+    'addr_state',
+    'addr_zip',
+    'source',
+    'source_detail',
+    'language',
+    'country',
+    'interests',
+  ].forEach(field => MessageValidationHelper.defaultToNullWhenEmpty(field, generator));
+});
+
 // ------- End -----------------------------------------------------------------
