@@ -30,24 +30,21 @@ class MessageValidationHelper {
       value: undefined,
       message: generator(),
     });
-    mutant.validateStrict.should.throw(MessageValidationBlinkError,
-      `child "${fieldName}" fails because ["${fieldName}" is required]`);
+    mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
 
     mutant = MessageValidationHelper.mutate({
       change: fieldName,
       value: null,
       message: generator(),
     });
-    mutant.validateStrict.should.throw(MessageValidationBlinkError,
-      `child "${fieldName}" fails because ["${fieldName}" must be a string]`);
+    mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
 
     mutant = MessageValidationHelper.mutate({
       change: fieldName,
       value: '',
       message: generator(),
     });
-    mutant.validateStrict.should.throw(MessageValidationBlinkError,
-      `child "${fieldName}" fails because ["${fieldName}" is not allowed to be empty]`);
+    mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
   }
 
   static removesWhenEmpty(fieldName, generator) {
