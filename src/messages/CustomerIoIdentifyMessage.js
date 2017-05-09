@@ -79,13 +79,6 @@ class CustomerIoIdentifyMessage extends Message {
     // Remove id from data, as it's available on the top level.
     delete customerData.id;
 
-    // Rename mobilecommon_status to mobile_status
-    if (customerData.mobilecommon_status) {
-      const mobileStatus = customerData.mobilecommon_status;
-      delete customerData.mobilecommon_status;
-      customerData.mobileStatus = mobileStatus;
-    }
-
     // Rename mobile to phone
     // TODO: format phone
 
