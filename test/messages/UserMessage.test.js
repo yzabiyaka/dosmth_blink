@@ -19,10 +19,9 @@ const generator = MessageFactoryHelper.getValidUser;
 // ------- Tests ---------------------------------------------------------------
 
 test('Validate a hundred fake users', () => {
-  let user;
   let count = 100;
   while (count > 0) {
-    let user = generator();
+    const user = generator();
     user.validateStrict.should.not.throw(MessageValidationBlinkError);
     count -= 1;
   }
