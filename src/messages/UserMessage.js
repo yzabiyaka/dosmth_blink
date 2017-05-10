@@ -17,21 +17,21 @@ class UserMessage extends Message {
     const optionalDateDefaultsToNull = Joi.string().isoDate().empty(whenNullOrEmpty).default(null);
 
     this.schema = Joi.object().keys({
-      id: Joi.string().required().regex(/^[0-9a-f]{24}$/, 'valid object id'),
+      id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
 
       // Remove field when provided as empty string or null.
       email: Joi.string().empty(whenNullOrEmpty).default(undefined),
       mobile: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
       // Required:
-      updated_at: Joi.string().required().isoDate(),
-      created_at: Joi.string().required().isoDate(),
+      updated_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
+      created_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
       mobile_status: Joi.valid([
         'active',
         'undeliverable',
         'unknown',
         null,
-      ]),
+      ]).default(null),
 
       // Optional, defaults to null when provided as empty string or null.
       last_authenticated_at: optionalDateDefaultsToNull,

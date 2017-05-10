@@ -12,6 +12,14 @@ class Message {
     this.payload = { data, meta };
     // Generate unique message id or reuse request id.
     this.payload.meta.request_id = this.payload.meta.request_id || uuidV4();
+
+    // Bind public functions.
+    this.getData = this.getData.bind(this);
+    this.getMeta = this.getMeta.bind(this);
+    this.getRequestId = this.getRequestId.bind(this);
+    this.toString = this.toString.bind(this);
+    this.validate = this.validate.bind(this);
+    this.validateStrict = this.validateStrict.bind(this);
   }
 
   getData() {

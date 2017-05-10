@@ -28,6 +28,7 @@
   "dependencies": {
     "amqp-uri": "^2.0.0",
     "amqplib": "^0.5.1",
+    "chance": "^1.0.8",
     "change-case": "^3.0.1",
     "customerio-node": "^0.2.0",
     "dotenv": "^4.0.0",
@@ -56,7 +57,7 @@
     "supertest": "^3.0.0"
   },
   "ava": {
-    "concurrency": 5,
+    "concurrency": 10,
     "powerAssert": false,
     "failWithoutAssertions": false
   },

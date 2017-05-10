@@ -5,7 +5,7 @@ const moment = require('moment');
 
 const Message = require('./Message');
 
-class CustomerIoIdentifyMessage extends Message {
+class CustomerIoUpdateCustomerMessage extends Message {
 
   constructor(...args) {
     super(...args);
@@ -25,8 +25,8 @@ class CustomerIoIdentifyMessage extends Message {
       .default(undefined);
 
     this.schema = Joi.object().keys({
-      id: Joi.string().required().regex(/^[0-9a-f]{24}$/, 'valid object id'),
-      data: Joi.object().keys({
+      id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
+      data: Joi.object().required().keys({
         // Remove field when provided as empty string or null.
         email: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
@@ -34,20 +34,32 @@ class CustomerIoIdentifyMessage extends Message {
         // phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
         // Required:
-        updated_at: Joi.date().timestamp('unix').raw().required(),
-        created_at: Joi.date().timestamp('unix').raw().required(),
+        updated_at: Joi.date()
+          .required()
+          .empty(whenNullOrEmpty)
+          .timestamp('unix')
+          .raw(),
+        created_at: Joi.date()
+          .required()
+          .empty(whenNullOrEmpty)
+          .timestamp('unix')
+          .raw(),
 
         mobile_status: Joi.valid([
           'active',
           'undeliverable',
           'unknown',
           null,
-        ]).default(undefined),
+        ]).empty(whenNullOrEmpty).default(undefined),
 
         // Optional, defaults to undefined when provided as empty string or null.
         last_authenticated_at: optionalTimestampDefaultsToUndefined,
         // Exception: kept as an isodate
-        birthdate: Joi.string().isoDate().empty(whenNullOrEmpty).default(null),
+        birthdate: Joi.string()
+          .empty(whenNullOrEmpty)
+          .isoDate()
+          .regex(/^(\d{4})-(\d{2})-(\d{2})$/, 'valid birthdate')
+          .default(undefined),
         first_name: optionalStringDefaultsToUndefined,
         last_name: optionalStringDefaultsToUndefined,
         addr_city: optionalStringDefaultsToUndefined,
@@ -57,7 +69,9 @@ class CustomerIoIdentifyMessage extends Message {
         source_detail: optionalStringDefaultsToUndefined,
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
-        unsubscribed: Joi.boolean(),
+        // TODO: Only explicitly set for new users.
+        unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
+        unsubscribed_at: optionalTimestampDefaultsToUndefined,
 
         // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
@@ -72,7 +86,7 @@ class CustomerIoIdentifyMessage extends Message {
     });
   }
 
-  static fromUser(userMessage) {
+  static fromUser(userMessage, isNew = false) {
     const user = userMessage.getData();
     // Copy user fields.
     const customerData = Object.assign({}, user);
@@ -99,12 +113,12 @@ class CustomerIoIdentifyMessage extends Message {
       ).unix();
     }
 
-    // TODO: Only explicitly set for new users.
-    customerData.unsubscribed = false;
+    if (isNew) {
+      customerData.unsubscribed = false;
+      customerData.subscribed_at = moment().unix();
+    }
 
-    // TODO: Transform timestamps
-
-    const customerIoIdentifyMessage = new CustomerIoIdentifyMessage({
+    const customerIoUpdateCustomerMessage = new CustomerIoUpdateCustomerMessage({
       data: {
         id: user.id,
         data: customerData,
@@ -113,9 +127,9 @@ class CustomerIoIdentifyMessage extends Message {
         request_id: userMessage.getRequestId(),
       },
     });
-    return customerIoIdentifyMessage;
+    return customerIoUpdateCustomerMessage;
   }
 
 }
 
-module.exports = CustomerIoIdentifyMessage;
+module.exports = CustomerIoUpdateCustomerMessage;
