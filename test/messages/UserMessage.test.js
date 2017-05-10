@@ -7,6 +7,7 @@ const chai = require('chai');
 const Chance = require('chance');
 
 const MessageValidationBlinkError = require('../../src/errors/MessageValidationBlinkError');
+const UserMessage = require('../../src/messages/UserMessage');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 const MessageValidationHelper = require('../helpers/MessageValidationHelper');
 
@@ -18,11 +19,14 @@ const generator = MessageFactoryHelper.getValidUser;
 
 // ------- Tests ---------------------------------------------------------------
 
+test('User message generator', () => {
+  generator().should.be.an.instanceof(UserMessage);
+});
+
 test('Validate a hundred fake users', () => {
   let count = 100;
   while (count > 0) {
-    const user = generator();
-    user.validateStrict.should.not.throw(MessageValidationBlinkError);
+    generator().validateStrict.should.not.throw(MessageValidationBlinkError);
     count -= 1;
   }
 });

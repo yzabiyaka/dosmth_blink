@@ -26,7 +26,7 @@ class CustomerIoIdentifyMessage extends Message {
 
     this.schema = Joi.object().keys({
       id: Joi.string().required().regex(/^[0-9a-f]{24}$/, 'valid object id'),
-      data: Joi.object().keys({
+      data: Joi.object().required().keys({
         // Remove field when provided as empty string or null.
         email: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
