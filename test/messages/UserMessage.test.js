@@ -4,17 +4,29 @@
 
 const test = require('ava');
 const chai = require('chai');
-const faker = require('faker');
+const Chance = require('chance');
 
+const MessageValidationBlinkError = require('../../src/errors/MessageValidationBlinkError');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 const MessageValidationHelper = require('../helpers/MessageValidationHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
+const chance = new Chance();
 const generator = MessageFactoryHelper.getValidUser;
 
 // ------- Tests ---------------------------------------------------------------
+
+test('Validate a hundred fake users', () => {
+  let user;
+  let count = 100;
+  while (count > 0) {
+    let user = generator();
+    user.validateStrict.should.not.throw(MessageValidationBlinkError);
+    count -= 1;
+  }
+});
 
 test('User Message should fail if required fields are missing, undefined, null, or empty', () => {
   [
@@ -56,24 +68,24 @@ test('User Message should default certain optional fields when empty', () => {
 
 test('User Message should fail on incorrect types', () => {
   const mapping = {
-    id: faker.random.number(),
-    email: faker.random.number(),
-    mobile: faker.random.number(),
-    updated_at: faker.random.number(),
-    created_at: faker.random.number(),
-    last_authenticated_at: faker.random.number(),
-    birthdate: faker.random.number(),
-    first_name: faker.random.number(),
-    last_name: faker.random.number(),
-    addr_city: faker.random.number(),
-    addr_state: faker.random.number(),
-    addr_zip: faker.random.number(),
-    source: faker.random.number(),
-    source_detail: faker.random.number(),
-    language: faker.random.number(),
-    country: faker.random.number(),
-    role: faker.random.number(),
-    interests: faker.random.word(),
+    id: chance.integer(),
+    email: chance.integer(),
+    mobile: chance.integer(),
+    updated_at: chance.integer(),
+    created_at: chance.integer(),
+    last_authenticated_at: chance.integer(),
+    birthdate: chance.integer(),
+    first_name: chance.integer(),
+    last_name: chance.integer(),
+    addr_city: chance.integer(),
+    addr_state: chance.integer(),
+    addr_zip: chance.integer(),
+    source: chance.integer(),
+    source_detail: chance.integer(),
+    language: chance.integer(),
+    country: chance.integer(),
+    role: chance.integer(),
+    interests: chance.word(),
   };
   Object.entries(mapping).forEach(([field, incorrectValue]) => {
     MessageValidationHelper.ensureType(field, incorrectValue, generator);

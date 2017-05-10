@@ -28,6 +28,7 @@
   "dependencies": {
     "amqp-uri": "^2.0.0",
     "amqplib": "^0.5.1",
+    "chance": "^1.0.8",
     "change-case": "^3.0.1",
     "customerio-node": "^0.2.0",
     "dotenv": "^4.0.0",
@@ -52,10 +53,8 @@
     "codecov": "^2.1.0",
     "eslint": "^3.19.0",
     "eslint-plugin-ava": "^4.2.0",
-    "faker": "^4.1.0",
     "nyc": "^10.3.2",
-    "supertest": "^3.0.0",
-    "underscore": "^1.8.3"
+    "supertest": "^3.0.0"
   },
   "ava": {
     "concurrency": 5,
