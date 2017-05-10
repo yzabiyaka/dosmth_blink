@@ -114,7 +114,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
     }
 
     if (isNew) {
-      customerData.unsubscribed = true;
+      customerData.unsubscribed = false;
       customerData.subscribed_at = moment().unix();
     }
 
