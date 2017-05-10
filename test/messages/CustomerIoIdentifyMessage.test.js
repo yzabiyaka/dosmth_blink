@@ -7,7 +7,7 @@ const chai = require('chai');
 const Chance = require('chance');
 
 const MessageValidationBlinkError = require('../../src/errors/MessageValidationBlinkError');
-const CustomerIoIdentifyMessage = require('../../src/messages/CustomerIoIdentifyMessage');
+const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 const MessageValidationHelper = require('../helpers/MessageValidationHelper');
 
@@ -45,7 +45,7 @@ const mutator = function ({ remove, change, value, message }) {
 // ------- Tests ---------------------------------------------------------------
 
 test('User message generator', () => {
-  generator().should.be.an.instanceof(CustomerIoIdentifyMessage);
+  generator().should.be.an.instanceof(CustomerIoUpdateCustomerMessage);
 });
 
 test('Validate a hundred fake identify messages', () => {

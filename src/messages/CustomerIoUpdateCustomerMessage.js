@@ -5,7 +5,7 @@ const moment = require('moment');
 
 const Message = require('./Message');
 
-class CustomerIoIdentifyMessage extends Message {
+class CustomerIoUpdateCustomerMessage extends Message {
 
   constructor(...args) {
     super(...args);
@@ -118,7 +118,7 @@ class CustomerIoIdentifyMessage extends Message {
       customerData.subscribed_at = moment().unix();
     }
 
-    const customerIoIdentifyMessage = new CustomerIoIdentifyMessage({
+    const customerIoUpdateCustomerMessage = new CustomerIoUpdateCustomerMessage({
       data: {
         id: user.id,
         data: customerData,
@@ -127,9 +127,9 @@ class CustomerIoIdentifyMessage extends Message {
         request_id: userMessage.getRequestId(),
       },
     });
-    return customerIoIdentifyMessage;
+    return customerIoUpdateCustomerMessage;
   }
 
 }
 
-module.exports = CustomerIoIdentifyMessage;
+module.exports = CustomerIoUpdateCustomerMessage;

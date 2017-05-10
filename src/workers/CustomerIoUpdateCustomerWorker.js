@@ -4,7 +4,7 @@ const CIO = require('customerio-node');
 const logger = require('winston');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
-const CustomerIoIdentifyMessage = require('../messages/CustomerIoIdentifyMessage');
+const CustomerIoUpdateCustomerMessage = require('../messages/CustomerIoUpdateCustomerMessage');
 const Worker = require('./Worker');
 
 class CustomerIoUpdateCustomerWorker extends Worker {
@@ -37,14 +37,14 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       logger.debug(`Skipping mobile only user ${userMessage.getData().id}`, meta);
     }
 
-    let customerIoIdentifyMessage;
+    let customerIoUpdateCustomerMessage;
     try {
       // For now all messages are new
-      customerIoIdentifyMessage = CustomerIoIdentifyMessage.fromUser(
+      customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(
         userMessage,
         true
       );
-      customerIoIdentifyMessage.validateStrict();
+      customerIoUpdateCustomerMessage.validateStrict();
     } catch (error) {
       meta = {
         env: this.blink.config.app.env,
@@ -58,14 +58,14 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       );
     }
 
-    const { id, data } = customerIoIdentifyMessage.getData();
+    const { id, data } = customerIoUpdateCustomerMessage.getData();
 
     try {
       await this.cioClient.identify(id, data);
     } catch (error) {
       this.log(
         'warning',
-        customerIoIdentifyMessage,
+        customerIoUpdateCustomerMessage,
         `${error}`,
         'error_cio_update_cant_update_consumer'
       );
@@ -77,7 +77,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
 
     this.log(
       'debug',
-      customerIoIdentifyMessage,
+      customerIoUpdateCustomerMessage,
       'Customer.io updated',
       'success_cio_consumer_updated'
     );

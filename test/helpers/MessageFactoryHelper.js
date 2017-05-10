@@ -7,7 +7,7 @@ const Chance = require('chance');
 const moment = require('moment');
 
 // App modules
-const CustomerIoIdentifyMessage = require('../../src/messages/CustomerIoIdentifyMessage');
+const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
@@ -68,7 +68,7 @@ class MessageFactoryHelper {
 
   static getValidCustomerIoIdentify() {
     const fakeId = chance.hash({ length: 24 });
-    return new CustomerIoIdentifyMessage({
+    return new CustomerIoUpdateCustomerMessage({
       data: {
         id: fakeId,
         data: {
