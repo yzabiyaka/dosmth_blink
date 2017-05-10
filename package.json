@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
-    "node": "7.9.0"
+    "node": "7.10.0"
   },
   "scripts": {
     "test": "NODE_ENV=test ava",
@@ -57,7 +57,7 @@
     "supertest": "^3.0.0"
   },
   "ava": {
-    "concurrency": 10,
+    "concurrency": 1,
     "powerAssert": false,
     "failWithoutAssertions": false
   },
