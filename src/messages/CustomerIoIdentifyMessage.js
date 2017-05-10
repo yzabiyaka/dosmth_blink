@@ -70,7 +70,8 @@ class CustomerIoIdentifyMessage extends Message {
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
         // TODO: Only explicitly set for new users.
-        unsubscribed: Joi.boolean().default(false),
+        unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
+        unsubscribed_at: optionalTimestampDefaultsToUndefined,
 
         // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
@@ -85,7 +86,7 @@ class CustomerIoIdentifyMessage extends Message {
     });
   }
 
-  static fromUser(userMessage) {
+  static fromUser(userMessage, isNew = false) {
     const user = userMessage.getData();
     // Copy user fields.
     const customerData = Object.assign({}, user);
@@ -112,6 +113,10 @@ class CustomerIoIdentifyMessage extends Message {
       ).unix();
     }
 
+    if (isNew) {
+      customerData.unsubscribed = true;
+      customerData.subscribed_at = moment().unix();
+    }
 
     const customerIoIdentifyMessage = new CustomerIoIdentifyMessage({
       data: {

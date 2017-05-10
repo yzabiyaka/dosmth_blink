@@ -39,7 +39,11 @@ class CustomerIoUpdateCustomerWorker extends Worker {
 
     let customerIoIdentifyMessage;
     try {
-      customerIoIdentifyMessage = CustomerIoIdentifyMessage.fromUser(userMessage);
+      // For now all messages are new
+      customerIoIdentifyMessage = CustomerIoIdentifyMessage.fromUser(
+        userMessage,
+        true
+      );
       customerIoIdentifyMessage.validateStrict();
     } catch (error) {
       meta = {

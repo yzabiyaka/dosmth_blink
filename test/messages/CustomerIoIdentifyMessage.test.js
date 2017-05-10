@@ -79,6 +79,8 @@ test('Cio identify should remove certain optional fields when empty', () => {
     'source_detail',
     'language',
     'country',
+    'unsubscribed',
+    'unsubscribed_at',
   ]
   .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
 });
@@ -112,6 +114,7 @@ test('Cio identify should fail on incorrect types', () => {
     language: chance.integer(),
     country: chance.integer(),
     unsubscribed: chance.word(),
+    unsubscribed_at: chance.date().toISOString(),
     role: chance.integer(),
     interests: chance.word(),
   };
