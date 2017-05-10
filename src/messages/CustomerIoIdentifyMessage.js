@@ -25,7 +25,7 @@ class CustomerIoIdentifyMessage extends Message {
       .default(undefined);
 
     this.schema = Joi.object().keys({
-      id: Joi.string().required().regex(/^[0-9a-f]{24}$/, 'valid object id'),
+      id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
       data: Joi.object().required().keys({
         // Remove field when provided as empty string or null.
         email: Joi.string().empty(whenNullOrEmpty).default(undefined),
@@ -34,20 +34,32 @@ class CustomerIoIdentifyMessage extends Message {
         // phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
         // Required:
-        updated_at: Joi.date().timestamp('unix').raw().required(),
-        created_at: Joi.date().timestamp('unix').raw().required(),
+        updated_at: Joi.date()
+          .required()
+          .empty(whenNullOrEmpty)
+          .timestamp('unix')
+          .raw(),
+        created_at: Joi.date()
+          .required()
+          .empty(whenNullOrEmpty)
+          .timestamp('unix')
+          .raw(),
 
         mobile_status: Joi.valid([
           'active',
           'undeliverable',
           'unknown',
           null,
-        ]).default(undefined),
+        ]).empty(whenNullOrEmpty).default(undefined),
 
         // Optional, defaults to undefined when provided as empty string or null.
         last_authenticated_at: optionalTimestampDefaultsToUndefined,
         // Exception: kept as an isodate
-        birthdate: Joi.string().isoDate().empty(whenNullOrEmpty).default(null),
+        birthdate: Joi.string()
+          .empty(whenNullOrEmpty)
+          .isoDate()
+          .regex(/^(\d{4})-(\d{2})-(\d{2})$/, 'valid birthdate')
+          .default(undefined),
         first_name: optionalStringDefaultsToUndefined,
         last_name: optionalStringDefaultsToUndefined,
         addr_city: optionalStringDefaultsToUndefined,
@@ -57,7 +69,8 @@ class CustomerIoIdentifyMessage extends Message {
         source_detail: optionalStringDefaultsToUndefined,
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
-        unsubscribed: Joi.boolean(),
+        // TODO: Only explicitly set for new users.
+        unsubscribed: Joi.boolean().default(false),
 
         // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
@@ -99,10 +112,6 @@ class CustomerIoIdentifyMessage extends Message {
       ).unix();
     }
 
-    // TODO: Only explicitly set for new users.
-    customerData.unsubscribed = false;
-
-    // TODO: Transform timestamps
 
     const customerIoIdentifyMessage = new CustomerIoIdentifyMessage({
       data: {

@@ -4,42 +4,29 @@ const MessageValidationBlinkError = require('../../src/errors/MessageValidationB
 
 class MessageValidationHelper {
 
-  static mutate({ remove, change, value, message }) {
-    const mutant = message;
-    if (remove) {
-      delete mutant.payload.data[remove];
-      return mutant;
-    }
-    if (change) {
-      mutant.payload.data[change] = value;
-      return mutant;
-    }
-    return false;
-  }
-
-  static failsWithout(fieldName, generator) {
+  static failsWithout(fieldName, generator, mutator) {
     let mutant;
-    mutant = MessageValidationHelper.mutate({
+    mutant = mutator({
       remove: fieldName,
       message: generator(),
     });
     mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
 
-    mutant = MessageValidationHelper.mutate({
+    mutant = mutator({
       change: fieldName,
       value: undefined,
       message: generator(),
     });
     mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
 
-    mutant = MessageValidationHelper.mutate({
+    mutant = mutator({
       change: fieldName,
       value: null,
       message: generator(),
     });
     mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
 
-    mutant = MessageValidationHelper.mutate({
+    mutant = mutator({
       change: fieldName,
       value: '',
       message: generator(),
@@ -47,10 +34,10 @@ class MessageValidationHelper {
     mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" is required`);
   }
 
-  static removesWhenEmpty(fieldName, generator) {
+  static removesWhenEmpty(fieldName, generator, mutator) {
     let mutant;
 
-    mutant = MessageValidationHelper.mutate({
+    mutant = mutator({
       change: fieldName,
       value: '',
       message: generator(),
@@ -58,7 +45,7 @@ class MessageValidationHelper {
     mutant.validateStrict();
     mutant.getData().should.not.have.property(fieldName);
 
-    mutant = MessageValidationHelper.mutate({
+    mutant = mutator({
       change: fieldName,
       value: null,
       message: generator(),
@@ -67,8 +54,8 @@ class MessageValidationHelper {
     mutant.getData().should.not.have.property(fieldName);
   }
 
-  static defaultsToWhenEmpty(fieldName, defaultValue, generator) {
-    const mutant = MessageValidationHelper.mutate({
+  static defaultsToWhenEmpty(fieldName, defaultValue, generator, mutator) {
+    const mutant = mutator({
       remove: fieldName,
       message: generator(),
     });
@@ -77,8 +64,8 @@ class MessageValidationHelper {
   }
 
 
-  static ensureType(fieldName, incorrectValue, generator) {
-    const mutant = MessageValidationHelper.mutate({
+  static ensureType(fieldName, incorrectValue, generator, mutator) {
+    const mutant = mutator({
       change: fieldName,
       value: incorrectValue,
       message: generator(),

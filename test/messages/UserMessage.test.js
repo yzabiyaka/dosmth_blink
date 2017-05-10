@@ -16,6 +16,18 @@ const MessageValidationHelper = require('../helpers/MessageValidationHelper');
 chai.should();
 const chance = new Chance();
 const generator = MessageFactoryHelper.getValidUser;
+const mutator = function ({ remove, change, value, message }) {
+  const mutant = message;
+  if (remove) {
+    delete mutant.payload.data[remove];
+    return mutant;
+  }
+  if (change) {
+    mutant.payload.data[change] = value;
+    return mutant;
+  }
+  return false;
+};
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -37,7 +49,7 @@ test('User Message should fail if required fields are missing, undefined, null, 
     'created_at',
     'updated_at',
   ]
-  .forEach(field => MessageValidationHelper.failsWithout(field, generator));
+  .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
 });
 
 test('User Message should remove certain optional fields when empty', () => {
@@ -45,10 +57,10 @@ test('User Message should remove certain optional fields when empty', () => {
     'email',
     'mobile',
   ]
-  .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator));
+  .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
 });
 
-test('User Message should default certain optional fields when empty', () => {
+test('User Message optional fields should have correct default values', () => {
   const mapping = {
     last_authenticated_at: null,
     birthdate: null,
@@ -66,7 +78,7 @@ test('User Message should default certain optional fields when empty', () => {
     mobile_status: null,
   };
   Object.entries(mapping).forEach(([field, defaultValue]) => {
-    MessageValidationHelper.defaultsToWhenEmpty(field, defaultValue, generator);
+    MessageValidationHelper.defaultsToWhenEmpty(field, defaultValue, generator, mutator);
   });
 });
 
@@ -77,6 +89,7 @@ test('User Message should fail on incorrect types', () => {
     mobile: chance.integer(),
     updated_at: chance.integer(),
     created_at: chance.integer(),
+    // no mobile_status
     last_authenticated_at: chance.integer(),
     birthdate: chance.integer(),
     first_name: chance.integer(),
@@ -92,7 +105,7 @@ test('User Message should fail on incorrect types', () => {
     interests: chance.word(),
   };
   Object.entries(mapping).forEach(([field, incorrectValue]) => {
-    MessageValidationHelper.ensureType(field, incorrectValue, generator);
+    MessageValidationHelper.ensureType(field, incorrectValue, generator, mutator);
   });
 });
 
