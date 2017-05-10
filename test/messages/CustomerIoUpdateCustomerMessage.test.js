@@ -127,80 +127,84 @@ test('Cio identify should fail on incorrect types', () => {
 
 
 test('Cio identify created from Northsar is correct', () => {
-  const userMessage = MessageFactoryHelper.getValidUser();
-  userMessage.validateStrict();
-  const userData = userMessage.getData();
-  const customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(
-    userMessage,
-    true
-  );
-
-  customerIoUpdateCustomerMessage.validateStrict.should.not.throw(MessageValidationBlinkError);
-  const cioUpdateData = customerIoUpdateCustomerMessage.getData();
-
-  // Compare properties.
-
-  // Required:
-  cioUpdateData.should.have.property('id', userData.id);
-  cioUpdateData.should.have.property('data').and.to.be.an('object');
-  cioUpdateData.data.should.have.property('email', userData.email);
-
-  const cioUpdateAttributes = cioUpdateData.data;
-  cioUpdateAttributes.should.have.property(
-    'updated_at',
-    moment(userData.updated_at).unix()
-  );
-  cioUpdateAttributes.should.have.property(
-    'created_at',
-    moment(userData.created_at).unix()
-  );
-
-  // Optional:
-  if (cioUpdateAttributes.mobile_status) {
-    expect(cioUpdateAttributes.mobile_status).to.be.equal(
-      userData.mobile_status
+  let count = 100;
+  while (count > 0) {
+    const userMessage = MessageFactoryHelper.getValidUser();
+    userMessage.validateStrict();
+    const userData = userMessage.getData();
+    const customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(
+      userMessage,
+      true
     );
+
+    customerIoUpdateCustomerMessage.validateStrict.should.not.throw(MessageValidationBlinkError);
+    const cioUpdateData = customerIoUpdateCustomerMessage.getData();
+
+    // Compare properties.
+
+    // Required:
+    cioUpdateData.should.have.property('id', userData.id);
+    cioUpdateData.should.have.property('data').and.to.be.an('object');
+    cioUpdateData.data.should.have.property('email', userData.email);
+
+    const cioUpdateAttributes = cioUpdateData.data;
+    cioUpdateAttributes.should.have.property(
+      'updated_at',
+      moment(userData.updated_at).unix()
+    );
+    cioUpdateAttributes.should.have.property(
+      'created_at',
+      moment(userData.created_at).unix()
+    );
+
+    // Optional:
+    if (cioUpdateAttributes.mobile_status) {
+      expect(cioUpdateAttributes.mobile_status).to.be.equal(
+        userData.mobile_status
+      );
+    }
+    expect(cioUpdateAttributes.last_authenticated_at).to.be.equal(
+      moment(userData.last_authenticated_at).unix()
+    );
+    expect(cioUpdateAttributes.first_name).to.be.equal(
+      userData.first_name
+    );
+    expect(cioUpdateAttributes.last_name).to.be.equal(
+      userData.last_name
+    );
+    expect(cioUpdateAttributes.addr_city).to.be.equal(
+      userData.addr_city
+    );
+    expect(cioUpdateAttributes.addr_state).to.be.equal(
+      userData.addr_state
+    );
+    expect(cioUpdateAttributes.addr_zip).to.be.equal(
+      userData.addr_zip
+    );
+    expect(cioUpdateAttributes.source).to.be.equal(
+      userData.source
+    );
+    expect(cioUpdateAttributes.source_detail).to.be.equal(
+      userData.source_detail
+    );
+    expect(cioUpdateAttributes.language).to.be.equal(
+      userData.language
+    );
+    expect(cioUpdateAttributes.country).to.be.equal(
+      userData.country
+    );
+    expect(cioUpdateAttributes.unsubscribed).to.be.equal(false);
+    expect(cioUpdateAttributes.subscribed_at).to.be.equal(
+      userData.subscribed_at
+    );
+    expect(cioUpdateAttributes.role).to.be.equal(
+      userData.role
+    );
+    expect(cioUpdateAttributes.interests).to.deep.equal(
+      userData.interests
+    );
+    count -= 1;
   }
-  expect(cioUpdateAttributes.last_authenticated_at).to.be.equal(
-    moment(userData.last_authenticated_at).unix()
-  );
-  expect(cioUpdateAttributes.first_name).to.be.equal(
-    userData.first_name
-  );
-  expect(cioUpdateAttributes.last_name).to.be.equal(
-    userData.last_name
-  );
-  expect(cioUpdateAttributes.addr_city).to.be.equal(
-    userData.addr_city
-  );
-  expect(cioUpdateAttributes.addr_state).to.be.equal(
-    userData.addr_state
-  );
-  expect(cioUpdateAttributes.addr_zip).to.be.equal(
-    userData.addr_zip
-  );
-  expect(cioUpdateAttributes.source).to.be.equal(
-    userData.source
-  );
-  expect(cioUpdateAttributes.source_detail).to.be.equal(
-    userData.source_detail
-  );
-  expect(cioUpdateAttributes.language).to.be.equal(
-    userData.language
-  );
-  expect(cioUpdateAttributes.country).to.be.equal(
-    userData.country
-  );
-  expect(cioUpdateAttributes.unsubscribed).to.be.equal(false);
-  expect(cioUpdateAttributes.subscribed_at).to.be.equal(
-    userData.subscribed_at
-  );
-  expect(cioUpdateAttributes.role).to.be.equal(
-    userData.role
-  );
-  expect(cioUpdateAttributes.interests).to.deep.equal(
-    userData.interests
-  );
 });
 
 // ------- End -----------------------------------------------------------------
