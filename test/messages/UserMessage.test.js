@@ -59,6 +59,7 @@ test('User Message should default certain optional fields when empty', () => {
     country: null,
     role: 'user',
     interests: null,
+    mobile_status: null,
   };
   Object.entries(mapping).forEach(([field, defaultValue]) => {
     MessageValidationHelper.defaultsToWhenEmpty(field, defaultValue, generator);

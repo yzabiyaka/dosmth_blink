@@ -31,7 +31,7 @@ class UserMessage extends Message {
         'undeliverable',
         'unknown',
         null,
-      ]),
+      ]).default(null),
 
       // Optional, defaults to null when provided as empty string or null.
       last_authenticated_at: optionalDateDefaultsToNull,
