@@ -30,7 +30,7 @@ class WebController {
     });
   }
 
-  sendOK(ctx) {
+  sendOK(ctx, message) {
     ctx.body = {
       ok: true,
       message: 'Message queued',
@@ -38,7 +38,7 @@ class WebController {
     };
     // Accepted.
     ctx.status = 202;
-    this.log('info', ctx);
+    this.log('info', ctx, message);
   }
 
   sendError(ctx, error) {
@@ -64,8 +64,11 @@ class WebController {
     this.log(level, ctx);
   }
 
-  log(level, ctx) {
-    const message = ctx.body.message;
+  log(level, ctx, message) {
+    let text = ctx.body.message;
+    if (message) {
+      text = `${text}, message ${message.toString()}`;
+    }
     const meta = {
       env: this.blink.config.app.env,
       code: ctx.body.code || 'unexpected_code',
@@ -76,7 +79,7 @@ class WebController {
       fwd: ctx.request.ip,
       protocol: ctx.request.protocol,
     };
-    logger.log(level, message, meta);
+    logger.log(level, text, meta);
   }
 }
 
