@@ -30,14 +30,14 @@ class WebController {
     });
   }
 
-  sendOK(ctx, message) {
+  sendOK(ctx, message, status = 202) {
     ctx.body = {
       ok: true,
       message: 'Message queued',
       code: 'success_message_queued',
     };
     // Accepted.
-    ctx.status = 202;
+    ctx.status = status;
     this.log('info', ctx, message);
   }
 

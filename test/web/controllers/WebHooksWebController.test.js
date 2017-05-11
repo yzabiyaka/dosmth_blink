@@ -124,7 +124,7 @@ test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming messag
     .post('/api/v1/webhooks/gambit-chatbot-mdata')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(minimalViablePayload);
-  responseToMinimalViablePayload.status.should.be.equal(202);
+  responseToMinimalViablePayload.status.should.be.equal(200);
   responseToMinimalViablePayload.body.should.have.property('ok', true);
 
   // Test empty message
@@ -169,7 +169,7 @@ test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming messag
     .post('/api/v1/webhooks/gambit-chatbot-mdata')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(fullPayload);
-  responseToFullPayload.status.should.be.equal(202);
+  responseToFullPayload.status.should.be.equal(200);
   responseToFullPayload.body.should.have.property('ok', true);
 });
 
