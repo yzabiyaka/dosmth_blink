@@ -26,7 +26,7 @@ class WebHooksWebController extends WebController {
       customerIoWebhookMessage.validate();
       const { quasarCustomerIoEmailActivityQ } = this.blink.queues;
       quasarCustomerIoEmailActivityQ.publish(customerIoWebhookMessage);
-      this.sendOK(ctx, quasarCustomerIoEmailActivityQ);
+      this.sendOK(ctx, customerIoWebhookMessage);
     } catch (error) {
       this.sendError(ctx, error);
     }
@@ -38,7 +38,7 @@ class WebHooksWebController extends WebController {
       mdataMessage.validate();
       const { gambitChatbotMdataQ } = this.blink.queues;
       gambitChatbotMdataQ.publish(mdataMessage);
-      this.sendOK(ctx, gambitChatbotMdataQ);
+      this.sendOK(ctx, mdataMessage);
     } catch (error) {
       this.sendError(ctx, error);
     }
