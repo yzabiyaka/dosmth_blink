@@ -71,7 +71,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         country: optionalStringDefaultsToUndefined,
         // TODO: Only explicitly set for new users.
         unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
-        unsubscribed_at: optionalTimestampDefaultsToUndefined,
+        subscribed_at: optionalTimestampDefaultsToUndefined,
 
         // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
@@ -79,7 +79,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         // When interests not present, make them an empty array.
         interests: Joi.array().items(Joi.string()).empty(null).default(undefined),
 
-        // TODO: add cio specific fields, like unsubscribed_at
+        // TODO: add more cio specific fields, like unsubscribed_at
       }),
       // TODO: Bring back when phone is formatted in Northstar
       // .or('email', 'phone'),
