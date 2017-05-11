@@ -25,11 +25,10 @@ class EventsWebController extends WebController {
         'create.user.event',
         userMessage
       );
+      this.sendOK(ctx, userMessage);
     } catch (error) {
       this.sendError(ctx, error);
-      return;
     }
-    this.sendOK(ctx);
   }
 }
 

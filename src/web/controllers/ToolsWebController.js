@@ -23,11 +23,10 @@ class ToolsWebController extends WebController {
       fetchMessage.validate();
       const { fetchQ } = this.blink.queues;
       fetchQ.publish(fetchMessage);
+      this.sendOK(ctx, fetchMessage);
     } catch (error) {
       this.sendError(ctx, error);
-      return;
     }
-    this.sendOK(ctx);
   }
 }
 
