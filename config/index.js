@@ -13,6 +13,7 @@ config.app = require('./app');
 config.web = require('./web');
 config.amqp = require('./amqp');
 config.amqpManagement = require('./amqpManagement');
+config.customerio = require('./customerio');
 config.gambit = require('./gambit');
 
 // Require env-dependent configs

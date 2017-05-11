@@ -8,12 +8,13 @@ const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
 const logger = require('winston');
 
+const ApiWebController = require('../web/controllers/ApiWebController');
+const EventsWebController = require('../web/controllers/EventsWebController');
+const ToolsWebController = require('../web/controllers/ToolsWebController');
+const WebHooksWebController = require('../web/controllers/WebHooksWebController');
 const basicAuthCustom401 = require('../web/middleware/basicAuthCustom401');
 const generateRequestId = require('../web/middleware/generateRequestId');
 const BlinkApp = require('./BlinkApp');
-const ApiWebController = require('../web/controllers/ApiWebController');
-const ToolsWebController = require('../web/controllers/ToolsWebController');
-const WebHooksWebController = require('../web/controllers/WebHooksWebController');
 
 class BlinkWebApp extends BlinkApp {
   constructor(config) {
@@ -23,6 +24,7 @@ class BlinkWebApp extends BlinkApp {
     // Dynamically create and assign controllers.
     this.web.controllers = this.initControllers([
       ApiWebController,
+      EventsWebController,
       ToolsWebController,
       WebHooksWebController,
     ]);
@@ -40,6 +42,7 @@ class BlinkWebApp extends BlinkApp {
       apiWebController,
       toolsWebController,
       webHooksWebController,
+      eventsWebController,
     } = this.web.controllers;
 
     const router = new Router();
@@ -49,6 +52,14 @@ class BlinkWebApp extends BlinkApp {
     router.get('api.v1', '/api/v1', apiWebController.v1);
     router.get('api.v1.tools', '/api/v1/tools', toolsWebController.index);
     router.post('api.v1.tools.fetch', '/api/v1/tools/fetch', toolsWebController.fetch);
+
+    // Events
+    router.get('api.v1.events', '/api/v1/events', eventsWebController.index);
+    router.post(
+      'api.v1.events.user-create',
+      '/api/v1/events/user-create',
+      eventsWebController.userCreate
+    );
 
     // Webhooks
     router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);

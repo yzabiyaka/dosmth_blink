@@ -1,7 +1,9 @@
 'use strict';
 
+// libraries
 const supertest = require('supertest');
 
+// App modules
 const BlinkWebApp = require('../../src/app/BlinkWebApp');
 
 class HooksHelper {

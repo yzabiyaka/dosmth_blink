@@ -58,7 +58,7 @@ test('POST /api/v1/webhooks/customerio-email-activity should publish message to 
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
-  res.status.should.be.equal(200);
+  res.status.should.be.equal(202);
 
   // Check response to be json
   res.header.should.have.property('content-type');
@@ -124,7 +124,7 @@ test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming messag
     .post('/api/v1/webhooks/gambit-chatbot-mdata')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(minimalViablePayload);
-  responseToMinimalViablePayload.status.should.be.equal(200);
+  responseToMinimalViablePayload.status.should.be.equal(202);
   responseToMinimalViablePayload.body.should.have.property('ok', true);
 
   // Test empty message
@@ -169,7 +169,7 @@ test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming messag
     .post('/api/v1/webhooks/gambit-chatbot-mdata')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(fullPayload);
-  responseToFullPayload.status.should.be.equal(200);
+  responseToFullPayload.status.should.be.equal(202);
   responseToFullPayload.body.should.have.property('ok', true);
 });
 

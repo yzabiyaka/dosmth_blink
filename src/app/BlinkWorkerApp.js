@@ -1,6 +1,7 @@
 'use strict';
 
 const BlinkError = require('../errors/BlinkError');
+const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
 const FetchWorker = require('../workers/FetchWorker');
 const GambitChatbotMdataProxyWorker = require('../workers/GambitChatbotMdataProxyWorker');
 const BlinkApp = require('./BlinkApp');
@@ -29,6 +30,7 @@ class BlinkWorkerApp extends BlinkApp {
   static getAvailableWorkers() {
     return {
       fetch: FetchWorker,
+      'customer-io-update-customer': CustomerIoUpdateCustomerWorker,
       'gambit-chatbot-mdata-proxy': GambitChatbotMdataProxyWorker,
     };
   }

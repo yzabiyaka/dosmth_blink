@@ -45,8 +45,8 @@ class Queue {
 
   retry(reason, message) {
     let retry = 0;
-    if (message.payload.meta.retry) {
-      retry = message.payload.meta.retry;
+    if (message.getMeta().retry) {
+      retry = message.getMeta().retry;
     }
     retry += 1;
     const retryMessage = message;
@@ -87,19 +87,19 @@ class Queue {
       } catch (error) {
         if (error instanceof BlinkRetryError) {
           // Todo: move to setting
-          const retryTimeout = 2000;
           const retryLimit = 100;
-          const retry = message.payload.meta.retry || 0;
+          const retry = message.getMeta().retry || 0;
+          const retryDelay = Queue.retryDelay(retry);
           if (retry < retryLimit) {
             this.log(
               'warning',
-              `Got error ${error}, retrying after ${retryTimeout}ms`,
+              `Got error ${error}, retry ${retry}, retrying after ${retryDelay}ms`,
               message,
               'error_got_retry_request'
             );
             setTimeout(() => {
               this.retry(error.toString(), message);
-            }, retryTimeout);
+            }, retryDelay);
           } else {
             this.log(
               'warning',
@@ -208,10 +208,17 @@ class Queue {
       // Todo: log env
       code,
       queue: this.name,
-      request_id: message ? message.payload.meta.request_id : 'not_parsed',
+      request_id: message ? message.getRequestId() : 'not_parsed',
     };
 
     logger.log(level, logMessage, meta);
+  }
+
+  static retryDelay(currentRetryNumber) {
+    // Make longer delays as number of retries increases.
+    // https://docs.google.com/spreadsheets/d/1AECd5YrOXJnYlH7BW9wtPBL2Tqp5Wjd3c0VnYGqA780/edit?usp=sharing
+    // eslint-disable-next-line no-mixed-operators
+    return ((currentRetryNumber ** 2) / 4 + 1) * 1000;
   }
 
 }

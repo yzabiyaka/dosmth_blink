@@ -30,13 +30,15 @@ class WebController {
     });
   }
 
-  sendOK(ctx) {
+  sendOK(ctx, message) {
     ctx.body = {
       ok: true,
       message: 'Message queued',
       code: 'success_message_queued',
     };
-    this.log('info', ctx);
+    // Accepted.
+    ctx.status = 202;
+    this.log('info', ctx, message);
   }
 
   sendError(ctx, error) {
@@ -46,21 +48,27 @@ class WebController {
     };
 
     // Check error type.
+    let level;
     if (error instanceof MessageValidationBlinkError) {
       // Machine-readable error code.
       ctx.body.code = 'error_validation_failed';
       ctx.status = 422;
+      level = 'warning';
     } else {
       ctx.body.code = 'error_unexpected_controller_error';
       ctx.status = 400;
+      level = 'error';
     }
     ctx.body.message = error.toString();
 
-    this.log('warning', ctx);
+    this.log(level, ctx);
   }
 
-  log(level, ctx) {
-    const message = ctx.body.message;
+  log(level, ctx, message) {
+    let text = ctx.body.message;
+    if (message) {
+      text = `${text}, message ${message.toString()}`;
+    }
     const meta = {
       env: this.blink.config.app.env,
       code: ctx.body.code || 'unexpected_code',
@@ -71,7 +79,7 @@ class WebController {
       fwd: ctx.request.ip,
       protocol: ctx.request.protocol,
     };
-    logger.log(level, message, meta);
+    logger.log(level, text, meta);
   }
 }
 
