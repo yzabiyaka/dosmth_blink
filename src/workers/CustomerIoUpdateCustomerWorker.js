@@ -26,8 +26,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
 
   async consume(userMessage) {
     let meta;
-    // Exclude mobile-only users
-    if (!userMessage.getData().email) {
+    if (userMessage.isMobileOnly()) {
       meta = {
         env: this.blink.config.app.env,
         code: 'cio_update_skip_mobile_only',
@@ -35,6 +34,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
         request_id: userMessage ? userMessage.getRequestId() : 'not_parsed',
       };
       logger.debug(`Skipping mobile only user ${userMessage.getData().id}`, meta);
+      return true;
     }
 
     let customerIoUpdateCustomerMessage;
