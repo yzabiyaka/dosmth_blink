@@ -37,19 +37,24 @@ class GambitChatbotMdataProxyWorker extends Worker {
   }
 
   async consume(mdataMessage) {
-    const data = mdataMessage.getData();
-
     const url = `${this.gambitBaseUrl}/chatbot`;
+    const body = JSON.stringify(mdataMessage.getData());
+    const headers = {
+      'x-gambit-api-key': this.gambitApiKey,
+      'X-Request-ID': mdataMessage.getRequestId(),
+      'Content-type': 'application/json',
+    };
+
+    if (mdataMessage.getMeta().retry && mdataMessage.getMeta().retry > 0) {
+      headers['x-blink-retry-count'] = mdataMessage.getMeta().retry;
+    }
+
     const response = await fetch(
       url,
       {
         method: 'POST',
-        headers: {
-          'x-gambit-api-key': this.gambitApiKey,
-          'X-Request-ID': mdataMessage.getRequestId(),
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        headers,
+        body,
       }
     );
 
