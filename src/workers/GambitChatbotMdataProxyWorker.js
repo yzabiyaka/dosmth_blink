@@ -37,19 +37,15 @@ class GambitChatbotMdataProxyWorker extends Worker {
   }
 
   async consume(mdataMessage) {
-    const data = mdataMessage.getData();
+    const body = JSON.stringify(mdataMessage.getData());
+    const headers = this.getRequestHeaders(mdataMessage);
 
-    const url = `${this.gambitBaseUrl}/chatbot`;
     const response = await fetch(
-      url,
+      `${this.gambitBaseUrl}/chatbot`,
       {
         method: 'POST',
-        headers: {
-          'x-gambit-api-key': this.gambitApiKey,
-          'X-Request-ID': mdataMessage.getRequestId(),
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        headers,
+        body,
       }
     );
 
@@ -101,6 +97,21 @@ class GambitChatbotMdataProxyWorker extends Worker {
     // Todo: log error?
     logger.log(level, cleanedBody, meta);
   }
+
+  getRequestHeaders(mdataMessage) {
+    const headers = {
+      'x-gambit-api-key': this.gambitApiKey,
+      'X-Request-ID': mdataMessage.getRequestId(),
+      'Content-type': 'application/json',
+    };
+
+    if (mdataMessage.getMeta().retry && mdataMessage.getMeta().retry > 0) {
+      headers['x-blink-retry-count'] = mdataMessage.getMeta().retry;
+    }
+
+    return headers;
+  }
+
 }
 
 module.exports = GambitChatbotMdataProxyWorker;
