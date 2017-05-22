@@ -1,5 +1,6 @@
 'use strict';
 
+require('isomorphic-fetch');
 const logger = require('winston');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
@@ -59,6 +60,16 @@ class GambitChatbotMdataProxyWorker extends Worker {
       return true;
     }
 
+    if (GambitChatbotMdataProxyWorker.checkRetrySuppress(response)) {
+      this.log(
+        'debug',
+        mdataMessage,
+        response,
+        'success_gambit_proxy_retry_suppress'
+      );
+      return true;
+    }
+
     if (response.status === 422) {
       this.log(
         'warning',
@@ -110,6 +121,15 @@ class GambitChatbotMdataProxyWorker extends Worker {
     }
 
     return headers;
+  }
+
+  checkRetrySuppress(response) {
+    // TODO: create common helper
+    const headerResult = response.headers.get(this.blink.config.app.retrySuppressHeader);
+    if (!headerResult) {
+      return false;
+    }
+    return headerResult.toLowerCase() === 'true';
   }
 
 }
