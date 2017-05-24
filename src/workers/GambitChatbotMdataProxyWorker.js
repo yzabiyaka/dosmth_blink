@@ -60,7 +60,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
       return true;
     }
 
-    if (GambitChatbotMdataProxyWorker.checkRetrySuppress(response)) {
+    if (this.checkRetrySuppress(response)) {
       this.log(
         'debug',
         mdataMessage,
