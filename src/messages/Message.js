@@ -51,7 +51,7 @@ class Message {
       this.schema || {},
       {
         stripUnknown: true,
-      }
+      },
     );
     if (error) {
       throw new MessageValidationBlinkError(error.message, this.toString());

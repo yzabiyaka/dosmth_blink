@@ -108,7 +108,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
     if (customerData.last_authenticated_at) {
       customerData.last_authenticated_at = moment(
         customerData.last_authenticated_at,
-        moment.ISO_8601
+        moment.ISO_8601,
       ).unix();
     }
 

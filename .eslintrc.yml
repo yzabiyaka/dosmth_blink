@@ -1,5 +1,5 @@
 ---
-  extends: "@dosomething/eslint-config/node/node-7"
+  extends: "@dosomething/eslint-config/node"
   globals:
     # Support fetch mechanism through isomorphic-fetch module
     fetch: true

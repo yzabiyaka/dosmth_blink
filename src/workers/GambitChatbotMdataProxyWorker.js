@@ -29,7 +29,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
 
       logger.debug(
         `Setting Gambit concurrency to ${this.proxyConcurrency}`,
-        meta
+        meta,
       );
       this.blink.exchange.limitConsumerPrefetchCount(this.proxyConcurrency);
     }
@@ -46,7 +46,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
         method: 'POST',
         headers,
         body,
-      }
+      },
     );
 
     if (response.status === 200) {
@@ -54,7 +54,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
         'debug',
         mdataMessage,
         response,
-        'success_gambit_proxy_response_200'
+        'success_gambit_proxy_response_200',
       );
       return true;
     }
@@ -64,7 +64,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
         'debug',
         mdataMessage,
         response,
-        'success_gambit_proxy_retry_suppress'
+        'success_gambit_proxy_retry_suppress',
       );
       return true;
     }
@@ -74,7 +74,7 @@ class GambitChatbotMdataProxyWorker extends Worker {
         'warning',
         mdataMessage,
         response,
-        'error_gambit_proxy_response_422'
+        'error_gambit_proxy_response_422',
       );
       return false;
     }
@@ -84,12 +84,12 @@ class GambitChatbotMdataProxyWorker extends Worker {
       'warning',
       mdataMessage,
       response,
-      'error_gambit_proxy_response_not_200_retry'
+      'error_gambit_proxy_response_not_200_retry',
     );
 
     throw new BlinkRetryError(
       `${response.status} ${response.statusText}`,
-      mdataMessage
+      mdataMessage,
     );
   }
 

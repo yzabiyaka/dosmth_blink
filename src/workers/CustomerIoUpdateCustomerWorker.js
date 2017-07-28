@@ -41,7 +41,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       // For now all messages are new
       customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(
         userMessage,
-        true
+        true,
       );
       customerIoUpdateCustomerMessage.validateStrict();
     } catch (error) {
@@ -53,7 +53,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       };
       logger.warning(
         `Can't convert user to cio customer: ${userMessage.getData().id} error ${error}`,
-        meta
+        meta,
       );
     }
 
@@ -66,11 +66,11 @@ class CustomerIoUpdateCustomerWorker extends Worker {
         'warning',
         customerIoUpdateCustomerMessage,
         `${error}`,
-        'error_cio_update_cant_update_consumer'
+        'error_cio_update_cant_update_consumer',
       );
       throw new BlinkRetryError(
         `Unknown customer.io error: ${error}`,
-        userMessage
+        userMessage,
       );
     }
 
@@ -78,7 +78,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       'debug',
       customerIoUpdateCustomerMessage,
       'Customer.io updated',
-      'success_cio_consumer_updated'
+      'success_cio_consumer_updated',
     );
 
     return true;
