@@ -220,7 +220,6 @@ class Queue {
     // eslint-disable-next-line no-mixed-operators
     return ((currentRetryNumber ** 2) / 4 + 1) * 1000;
   }
-
 }
 
 module.exports = Queue;

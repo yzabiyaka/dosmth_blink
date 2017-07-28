@@ -64,7 +64,7 @@ test('Cio identify should fail if required fields are missing, undefined, null, 
     'created_at',
     'updated_at',
   ]
-  .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
+    .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
 });
 
 test('Cio identify should remove certain optional fields when empty', () => {
@@ -84,7 +84,7 @@ test('Cio identify should remove certain optional fields when empty', () => {
     'unsubscribed',
     'subscribed_at',
   ]
-  .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
+    .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
 });
 
 test.skip('Cio identify optional fields should have correct default values', () => {

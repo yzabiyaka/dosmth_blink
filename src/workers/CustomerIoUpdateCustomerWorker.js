@@ -8,7 +8,6 @@ const CustomerIoUpdateCustomerMessage = require('../messages/CustomerIoUpdateCus
 const Worker = require('./Worker');
 
 class CustomerIoUpdateCustomerWorker extends Worker {
-
   constructor(blink) {
     super(blink);
     this.blink = blink;

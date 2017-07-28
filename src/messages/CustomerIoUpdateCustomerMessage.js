@@ -6,7 +6,6 @@ const moment = require('moment');
 const Message = require('./Message');
 
 class CustomerIoUpdateCustomerMessage extends Message {
-
   constructor(...args) {
     super(...args);
     // Data validation rules.
@@ -129,7 +128,6 @@ class CustomerIoUpdateCustomerMessage extends Message {
     });
     return customerIoUpdateCustomerMessage;
   }
-
 }
 
 module.exports = CustomerIoUpdateCustomerMessage;

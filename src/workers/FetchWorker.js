@@ -5,7 +5,6 @@ const logger = require('winston');
 const Worker = require('./Worker');
 
 class FetchWorker extends Worker {
-
   constructor(blink) {
     super(blink);
     this.blink = blink;

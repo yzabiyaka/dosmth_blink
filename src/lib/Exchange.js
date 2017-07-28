@@ -91,7 +91,6 @@ class Exchange {
   limitConsumerPrefetchCount(count) {
     this.channel.prefetch(count);
   }
-
 }
 
 module.exports = Exchange;

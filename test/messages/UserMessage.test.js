@@ -49,7 +49,7 @@ test('User Message should fail if required fields are missing, undefined, null, 
     'created_at',
     'updated_at',
   ]
-  .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
+    .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
 });
 
 test('User Message should remove certain optional fields when empty', () => {
@@ -57,7 +57,7 @@ test('User Message should remove certain optional fields when empty', () => {
     'email',
     'mobile',
   ]
-  .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
+    .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
 });
 
 test('User Message optional fields should have correct default values', () => {

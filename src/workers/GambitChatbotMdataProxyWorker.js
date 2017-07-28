@@ -7,7 +7,6 @@ const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 
 class GambitChatbotMdataProxyWorker extends Worker {
-
   constructor(blink) {
     super(blink);
     this.blink = blink;
@@ -131,7 +130,6 @@ class GambitChatbotMdataProxyWorker extends Worker {
     }
     return headerResult.toLowerCase() === 'true';
   }
-
 }
 
 module.exports = GambitChatbotMdataProxyWorker;

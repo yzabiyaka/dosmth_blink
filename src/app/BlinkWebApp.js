@@ -167,7 +167,6 @@ class BlinkWebApp extends BlinkApp {
       logger.debug('Blink Web is stopped', meta);
     });
   }
-
 }
 
 module.exports = BlinkWebApp;
