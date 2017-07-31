@@ -93,6 +93,7 @@ test('User Message should fail on incorrect types', () => {
     // no mobile_status
     last_authenticated_at: chance.integer(),
     birthdate: chance.integer(),
+    facebook_id: chance.fbid(),
     first_name: chance.integer(),
     last_name: chance.integer(),
     addr_city: chance.integer(),

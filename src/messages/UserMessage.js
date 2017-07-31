@@ -36,7 +36,7 @@ class UserMessage extends Message {
       // Optional, defaults to null when provided as empty string or null.
       last_authenticated_at: optionalDateDefaultsToNull,
       birthdate: optionalDateDefaultsToNull,
-      facebook_id: optionalDateDefaultsToNull,
+      facebook_id: optionalStringDefaultsToNull,
       first_name: optionalStringDefaultsToNull,
       last_name: optionalStringDefaultsToNull,
       addr_city: optionalStringDefaultsToNull,
