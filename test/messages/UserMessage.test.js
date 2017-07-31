@@ -64,6 +64,7 @@ test('User Message optional fields should have correct default values', () => {
   const mapping = {
     last_authenticated_at: null,
     birthdate: null,
+    facebook_id: null,
     first_name: null,
     last_name: null,
     addr_city: null,

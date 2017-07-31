@@ -69,6 +69,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         source_detail: optionalStringDefaultsToUndefined,
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
+        facebook_id: optionalStringDefaultsToUndefined,
         // TODO: Only explicitly set for new users.
         unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
         subscribed_at: optionalTimestampDefaultsToUndefined,

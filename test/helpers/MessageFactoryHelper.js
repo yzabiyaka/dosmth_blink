@@ -85,6 +85,7 @@ class MessageFactoryHelper {
           ]),
           last_authenticated_at: chance.timestamp(),
           birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
+          facebook_id: chance.fbid(),
           first_name: chance.first(),
           last_name: chance.last(),
           addr_city: chance.city(),
