@@ -16,12 +16,6 @@ class CustomerIoUpdateCustomerMessage extends Message {
       .empty(whenNullOrEmpty)
       .default(undefined);
 
-    const optionalNumberDefaultsToUndefined = Joi
-      .number()
-      .integer()
-      .empty(whenNullOrEmpty)
-      .default(undefined);
-
     const optionalTimestampDefaultsToUndefined = Joi
       .date()
       .timestamp('unix')
@@ -74,7 +68,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         source_detail: optionalStringDefaultsToUndefined,
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
-        facebook_id: optionalNumberDefaultsToUndefined,
+        facebook_id: optionalStringDefaultsToUndefined,
         // TODO: Only explicitly set for new users.
         unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
         subscribed_at: optionalTimestampDefaultsToUndefined,
