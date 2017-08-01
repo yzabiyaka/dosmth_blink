@@ -18,7 +18,6 @@ const chance = new Chance();
 // ------- Helpers -------------------------------------------------------------
 
 class MessageFactoryHelper {
-
   static getValidUser() {
     const fakeId = chance.hash({ length: 24 });
     return new UserMessage({
@@ -147,7 +146,6 @@ class MessageFactoryHelper {
       meta: {},
     });
   }
-
 }
 
 module.exports = MessageFactoryHelper;

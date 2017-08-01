@@ -6,7 +6,6 @@ const Message = require('./Message');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
 class UserMessage extends Message {
-
   constructor(...args) {
     super(...args);
 
@@ -56,7 +55,7 @@ class UserMessage extends Message {
       interests: Joi.array().items(Joi.string()).empty(null).default(null),
     })
     // Require presence at least one of: email, mobile.
-    .or('email', 'mobile');
+      .or('email', 'mobile');
   }
 
   isMobileOnly() {
@@ -103,7 +102,6 @@ class UserMessage extends Message {
     userMessage.fields = rabbitMessage.fields;
     return userMessage;
   }
-
 }
 
 module.exports = UserMessage;
