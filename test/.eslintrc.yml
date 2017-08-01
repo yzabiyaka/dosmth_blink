@@ -1,5 +1,0 @@
----
-  extends: "@dosomething/eslint-config/node/ava"
-  rules:
-    # Allow skipping tests for now
-    ava/no-skip-test: off
