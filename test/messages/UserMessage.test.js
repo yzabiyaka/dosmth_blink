@@ -64,6 +64,7 @@ test('User Message optional fields should have correct default values', () => {
   const mapping = {
     last_authenticated_at: null,
     birthdate: null,
+    facebook_id: null,
     first_name: null,
     last_name: null,
     addr_city: null,
@@ -92,6 +93,7 @@ test('User Message should fail on incorrect types', () => {
     // no mobile_status
     last_authenticated_at: chance.integer(),
     birthdate: chance.integer(),
+    facebook_id: chance.integer(),
     first_name: chance.integer(),
     last_name: chance.integer(),
     addr_city: chance.integer(),
