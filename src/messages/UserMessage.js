@@ -15,6 +15,8 @@ class UserMessage extends Message {
     const whenNullOrEmpty = Joi.valid(['', null]);
     const optionalStringDefaultsToNull = Joi.string().empty(whenNullOrEmpty).default(null);
     const optionalDateDefaultsToNull = Joi.string().isoDate().empty(whenNullOrEmpty).default(null);
+    const optionalNumberDefaultsToNull = Joi.number()
+      .integer().empty(whenNullOrEmpty).default(null);
 
     this.schema = Joi.object().keys({
       id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
@@ -36,7 +38,7 @@ class UserMessage extends Message {
       // Optional, defaults to null when provided as empty string or null.
       last_authenticated_at: optionalDateDefaultsToNull,
       birthdate: optionalDateDefaultsToNull,
-      facebook_id: optionalStringDefaultsToNull,
+      facebook_id: optionalNumberDefaultsToNull,
       first_name: optionalStringDefaultsToNull,
       last_name: optionalStringDefaultsToNull,
       addr_city: optionalStringDefaultsToNull,
