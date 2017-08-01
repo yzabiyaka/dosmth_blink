@@ -46,7 +46,7 @@
     "yargs": "^8.0.2"
   },
   "devDependencies": {
-    "@dosomething/eslint-config": "https://github.com/DoSomething/eslint-config.git",
+    "@dosomething/eslint-config": "^3.1.0",
     "ava": "^0.21.0",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.1.1",

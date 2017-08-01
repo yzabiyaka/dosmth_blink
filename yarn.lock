@@ -44,9 +44,9 @@
   dependencies:
     arrify "^1.0.1"
 
-"@dosomething/eslint-config@https://github.com/DoSomething/eslint-config.git":
-  version "3.0.0"
-  resolved "https://github.com/DoSomething/eslint-config.git#c35ff77e879e4c471d10b94d489a522d21507dd6"
+"@dosomething/eslint-config@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@dosomething/eslint-config/-/eslint-config-3.1.0.tgz#7562acdd2a29295ce025a9f885d73569ea4d3e56"
   dependencies:
     eslint "^4.3.0"
     eslint-config-airbnb "^15.0.1"
