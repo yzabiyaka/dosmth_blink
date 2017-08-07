@@ -73,6 +73,11 @@ class BlinkWebApp extends BlinkApp {
       '/api/v1/webhooks/gambit-chatbot-mdata',
       webHooksWebController.gambitChatbotMdata,
     );
+    router.post(
+      'api.v1.webhooks.moco-message-data',
+      '/api/v1/webhooks/moco-message-data',
+      webHooksWebController.mocoMessageData,
+    );
     return router;
   }
 
