@@ -39,6 +39,7 @@
     "koa-router": "^7.2.0",
     "moment": "^2.18.1",
     "newrelic": "^2.0.1",
+    "node-fetch": "^1.7.1",
     "throng": "^4.0.0",
     "uuid": "^3.1.0",
     "winston": "^2.3.1",
