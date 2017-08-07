@@ -4,9 +4,11 @@ const changeCase = require('change-case');
 const logger = require('winston');
 
 const Exchange = require('../lib/Exchange');
+
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const FetchQ = require('../queues/FetchQ');
 const GambitChatbotMdataQ = require('../queues/GambitChatbotMdataQ');
+const MocoMessageDataQ = require('../queues/MocoMessageDataQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 
 class BlinkApp {
@@ -44,6 +46,7 @@ class BlinkApp {
         CustomerIoUpdateCustomerQ,
         FetchQ,
         GambitChatbotMdataQ,
+        MocoMessageDataQ,
         QuasarCustomerIoEmailActivityQ,
       ]);
     } catch (error) {
