@@ -53,7 +53,7 @@ class WebHooksWebController extends WebController {
       freeFormMessage.validate();
       const { mocoMessageDataQ } = this.blink.queues;
       mocoMessageDataQ.publish(freeFormMessage);
-      this.sendOK(ctx, freeFormMessage, 200);
+      this.sendOK(ctx, freeFormMessage);
     } catch (error) {
       this.sendError(ctx, error);
     }
