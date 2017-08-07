@@ -24,7 +24,6 @@ class FreeFormMessage extends Message {
     });
     return freeFormMessage;
   }
-
 }
 
 module.exports = FreeFormMessage;
