@@ -9,11 +9,13 @@ class EventsWebController extends WebController {
     // Bind web methods to object context so they can be passed to router.
     this.index = this.index.bind(this);
     this.userCreate = this.userCreate.bind(this);
+    this.userSignup = this.userSignup.bind(this);
   }
 
   async index(ctx) {
     ctx.body = {
       'user-create': this.fullUrl('api.v1.events.user-create'),
+      'user-signup': this.fullUrl('api.v1.events.user-signup'),
     };
   }
 
@@ -29,6 +31,10 @@ class EventsWebController extends WebController {
     } catch (error) {
       this.sendError(ctx, error);
     }
+  }
+
+  async userSignup(ctx) {
+    ctx.status = 500;
   }
 }
 
