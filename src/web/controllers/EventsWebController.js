@@ -11,12 +11,14 @@ class EventsWebController extends WebController {
     this.index = this.index.bind(this);
     this.userCreate = this.userCreate.bind(this);
     this.userSignup = this.userSignup.bind(this);
+    this.userReportback = this.userReportback.bind(this);
   }
 
   async index(ctx) {
     ctx.body = {
       'user-create': this.fullUrl('api.v1.events.user-create'),
       'user-signup': this.fullUrl('api.v1.events.user-signup'),
+      'user-reportback': this.fullUrl('api.v1.events.user-reportback'),
     };
   }
 
@@ -40,6 +42,20 @@ class EventsWebController extends WebController {
       freeFormMessage.validate();
       this.blink.exchange.publish(
         'signup.user.event',
+        freeFormMessage,
+      );
+      this.sendOK(ctx, freeFormMessage);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
+  async userReportback(ctx) {
+    try {
+      const freeFormMessage = FreeFormMessage.fromCtx(ctx);
+      freeFormMessage.validate();
+      this.blink.exchange.publish(
+        'signup.user.reportback',
         freeFormMessage,
       );
       this.sendOK(ctx, freeFormMessage);

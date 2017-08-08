@@ -34,6 +34,8 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
     .and.have.string('/api/v1/events/user-create');
   res.body.should.have.property('user-signup')
     .and.have.string('/api/v1/events/user-signup');
+  res.body.should.have.property('user-reportback')
+    .and.have.string('/api/v1/events/user-reportback');
 });
 
 

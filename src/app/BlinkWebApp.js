@@ -65,6 +65,11 @@ class BlinkWebApp extends BlinkApp {
       '/api/v1/events/user-signup',
       eventsWebController.userSignup,
     );
+    router.post(
+      'api.v1.events.user-reportback',
+      '/api/v1/events/user-reportback',
+      eventsWebController.userReportback,
+    );
 
     // Webhooks
     router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);
