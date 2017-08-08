@@ -110,11 +110,10 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
     .and.equal('Message queued');
 });
 
-
 /**
- * POST /api/v1/webhooks/customerio
+ * POST /api/v1/events/user-signup
  */
-test('POST /api/v1/events/user-signup should publish message to moco-message-data queue', async (t) => {
+test('POST /api/v1/events/user-signup should publish message to user-signup-event', async (t) => {
   const data = {
     random: 'key',
     nested: {
@@ -139,6 +138,43 @@ test('POST /api/v1/events/user-signup should publish message to moco-message-dat
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
   const messages = await rabbit.getMessagesFrom('user-signup-event', 1);
+  messages.should.be.an('array').and.to.have.lengthOf(1);
+
+  messages[0].should.have.property('payload');
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+  messageData.data.should.be.eql(data);
+});
+
+/**
+ * POST /api/v1/events/user-signup
+ */
+test('POST /api/v1/events/user-reportback should publish message to user-reportback-event', async (t) => {
+  const data = {
+    random: 'key',
+    nested: {
+      random2: 'key2',
+    },
+  };
+
+  const res = await t.context.supertest.post('/api/v1/events/user-reportback')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(202);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+
+  // Check response.
+  res.body.should.have.property('ok', true);
+
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  // TODO: queue cleanup to make sure that it's not OLD message.
+  const messages = await rabbit.getMessagesFrom('user-reportback-event', 1);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');

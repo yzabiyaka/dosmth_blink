@@ -55,7 +55,7 @@ class EventsWebController extends WebController {
       const freeFormMessage = FreeFormMessage.fromCtx(ctx);
       freeFormMessage.validate();
       this.blink.exchange.publish(
-        'signup.user.reportback',
+        'repotback.user.event',
         freeFormMessage,
       );
       this.sendOK(ctx, freeFormMessage);
