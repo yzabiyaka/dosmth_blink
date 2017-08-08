@@ -1,5 +1,6 @@
 'use strict';
 
+const FreeFormMessage = require('../../messages/FreeFormMessage');
 const UserMessage = require('../../messages/UserMessage');
 const WebController = require('./WebController');
 
@@ -34,7 +35,17 @@ class EventsWebController extends WebController {
   }
 
   async userSignup(ctx) {
-    ctx.status = 500;
+    try {
+      const freeFormMessage = FreeFormMessage.fromCtx(ctx);
+      freeFormMessage.validate();
+      this.blink.exchange.publish(
+        'signup.user.event',
+        freeFormMessage,
+      );
+      this.sendOK(ctx, freeFormMessage);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
   }
 }
 
