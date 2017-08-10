@@ -3,12 +3,12 @@
 const FreeFormMessage = require('../messages/FreeFormMessage');
 const Queue = require('./Queue');
 
-class UserReportbackEventQ extends Queue {
+class UserSignupPostEventQ extends Queue {
   constructor(...args) {
     super(...args);
     this.messageClass = FreeFormMessage;
-    this.routes.push('repotback.user.event');
+    this.routes.push('signup-post.user.event');
   }
 }
 
-module.exports = UserReportbackEventQ;
+module.exports = UserSignupPostEventQ;
