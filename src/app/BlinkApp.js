@@ -10,7 +10,7 @@ const FetchQ = require('../queues/FetchQ');
 const GambitChatbotMdataQ = require('../queues/GambitChatbotMdataQ');
 const MocoMessageDataQ = require('../queues/MocoMessageDataQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
-const UserReportbackEventQ = require('../queues/UserReportbackEventQ');
+const UserSignupPostEventQ = require('../queues/UserSignupPostEventQ');
 const UserSignupEventQ = require('../queues/UserSignupEventQ');
 
 class BlinkApp {
@@ -50,7 +50,7 @@ class BlinkApp {
         GambitChatbotMdataQ,
         MocoMessageDataQ,
         QuasarCustomerIoEmailActivityQ,
-        UserReportbackEventQ,
+        UserSignupPostEventQ,
         UserSignupEventQ,
       ]);
     } catch (error) {

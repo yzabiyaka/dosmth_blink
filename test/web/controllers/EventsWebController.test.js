@@ -34,8 +34,8 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
     .and.have.string('/api/v1/events/user-create');
   res.body.should.have.property('user-signup')
     .and.have.string('/api/v1/events/user-signup');
-  res.body.should.have.property('user-reportback')
-    .and.have.string('/api/v1/events/user-reportback');
+  res.body.should.have.property('user-signup-post')
+    .and.have.string('/api/v1/events/user-signup-post');
 });
 
 
@@ -148,9 +148,9 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
 });
 
 /**
- * POST /api/v1/events/user-signup
+ * POST /api/v1/events/user-signup-post
  */
-test('POST /api/v1/events/user-reportback should publish message to user-reportback-event', async (t) => {
+test('POST /api/v1/events/user-signup-post should publish message to user-signup-post-event', async (t) => {
   const data = {
     random: 'key',
     nested: {
@@ -158,7 +158,7 @@ test('POST /api/v1/events/user-reportback should publish message to user-reportb
     },
   };
 
-  const res = await t.context.supertest.post('/api/v1/events/user-reportback')
+  const res = await t.context.supertest.post('/api/v1/events/user-signup-post')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
@@ -174,7 +174,7 @@ test('POST /api/v1/events/user-reportback should publish message to user-reportb
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
-  const messages = await rabbit.getMessagesFrom('user-reportback-event', 1);
+  const messages = await rabbit.getMessagesFrom('user-signup-post-event', 1);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');
