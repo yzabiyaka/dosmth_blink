@@ -24,6 +24,22 @@ class FreeFormMessage extends Message {
     });
     return freeFormMessage;
   }
+
+  static fromRabbitMessage(rabbitMessage) {
+    const payload = this.parseIncomingPayload(rabbitMessage);
+    if (!payload.data || !payload.meta) {
+      throw new MessageParsingBlinkError('No data in message', payload);
+    }
+
+    // TODO: save more metadata
+    // TODO: metadata parse helper
+    const message = new FreeFormMessage({
+      data: payload.data,
+      meta: payload.meta,
+    });
+    message.fields = rabbitMessage.fields;
+    return message;
+  }
 }
 
 module.exports = FreeFormMessage;

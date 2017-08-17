@@ -40,7 +40,7 @@ class GambitMessageDataRelayWorker extends Worker {
         'debug',
         message,
         response,
-        'success_gambit_proxy_response_200',
+        'success_gambit_message_data_relay_response_200',
       );
       return true;
     }
@@ -50,7 +50,7 @@ class GambitMessageDataRelayWorker extends Worker {
         'debug',
         message,
         response,
-        'success_gambit_proxy_retry_suppress',
+        'success_gambit_message_data_relay_retry_suppress',
       );
       return true;
     }
@@ -60,7 +60,7 @@ class GambitMessageDataRelayWorker extends Worker {
         'warning',
         message,
         response,
-        'error_gambit_proxy_response_422',
+        'error_gambit_message_data_relay_response_422',
       );
       return false;
     }
@@ -70,7 +70,7 @@ class GambitMessageDataRelayWorker extends Worker {
       'warning',
       message,
       response,
-      'error_gambit_proxy_response_not_200_retry',
+      'error_gambit_message_data_relay_response_not_200_retry',
     );
 
     throw new BlinkRetryError(
