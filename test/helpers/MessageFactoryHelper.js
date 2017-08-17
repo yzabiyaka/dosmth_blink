@@ -150,29 +150,29 @@ class MessageFactoryHelper {
 
   static getValidMessageData() {
     // TODO: randomize
-    const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({length: 32})}`
+    const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
     return new FreeFormMessage({
       data: {
-        ToCountry: "US",
-        MediaContentType0: "image/png",
-        ToState: "",
+        ToCountry: 'US',
+        MediaContentType0: 'image/png',
+        ToState: '',
         SmsMessageSid: sid,
-        NumMedia: "1",
-        ToCity: "",
+        NumMedia: '1',
+        ToCity: '',
         FromZip: chance.zip(),
         SmsSid: sid,
         FromState: chance.state({ territories: true }),
-        SmsStatus: "received",
+        SmsStatus: 'received',
         FromCity: chance.city(),
-        Body: "",
-        FromCountry: "US",
-        To: "38383",
-        ToZip: "",
-        NumSegments: "1",
+        Body: '',
+        FromCountry: 'US',
+        To: '38383',
+        ToZip: '',
+        NumSegments: '1',
         MessageSid: sid,
         From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
-        MediaUrl0: chance.avatar({protocol: 'https'}),
-        ApiVersion: "2010-04-01"
+        MediaUrl0: chance.avatar({ protocol: 'https' }),
+        ApiVersion: '2010-04-01',
       },
       meta: {},
     });

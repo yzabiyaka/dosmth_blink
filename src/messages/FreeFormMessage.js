@@ -3,6 +3,7 @@
 const Joi = require('joi');
 
 const Message = require('./Message');
+const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
 class FreeFormMessage extends Message {
   constructor(...args) {

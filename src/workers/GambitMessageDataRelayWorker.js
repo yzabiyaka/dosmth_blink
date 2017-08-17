@@ -96,7 +96,7 @@ class GambitMessageDataRelayWorker extends Worker {
 
   getRequestHeaders(message) {
     const headers = {
-      'Authorization': `Basic ${this.apiKey}`,
+      Authorization: `Basic ${this.apiKey}`,
       'X-Request-ID': message.getRequestId(),
       'Content-type': 'application/json',
     };
