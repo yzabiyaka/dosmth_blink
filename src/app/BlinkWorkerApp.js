@@ -4,6 +4,7 @@ const BlinkError = require('../errors/BlinkError');
 const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
 const FetchWorker = require('../workers/FetchWorker');
 const GambitChatbotMdataProxyWorker = require('../workers/GambitChatbotMdataProxyWorker');
+const GambitMessageDataRelayWorker = require('../workers/GambitMessageDataRelayWorker');
 const BlinkApp = require('./BlinkApp');
 
 class BlinkWorkerApp extends BlinkApp {
@@ -32,6 +33,7 @@ class BlinkWorkerApp extends BlinkApp {
       fetch: FetchWorker,
       'customer-io-update-customer': CustomerIoUpdateCustomerWorker,
       'gambit-chatbot-mdata-proxy': GambitChatbotMdataProxyWorker,
+      'gambit-message-data-relay': GambitMessageDataRelayWorker,
     };
   }
 }
