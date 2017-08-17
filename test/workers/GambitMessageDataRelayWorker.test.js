@@ -39,39 +39,39 @@ test('Gambit should recieve correct retry count if message has been retried', ()
 });
 
 
-// test('Test Gambit response with x-blink-retry-suppress header', () => {
-//   const config = require('../../config');
-//   const gambitWorkerApp = new BlinkWorkerApp(config, 'gambit-chatbot-mdata-proxy');
-//   const gambitWorker = gambitWorkerApp.worker;
+test('Test Gambit response with x-blink-retry-suppress header', () => {
+  const config = require('../../config');
+  const gambitWorkerApp = new BlinkWorkerApp(config, 'gambit-message-data-relay');
+  const gambitWorker = gambitWorkerApp.worker;
 
-//   // Gambit order retry suppression
-//   const retrySuppressResponse = new Response(
-//     'Unknown Gambit error',
-//     {
-//       status: 422,
-//       statusText: 'Unknown Gambit error',
-//       headers: {
-//         // Also make sure that blink recongnizes non standart header case
-//         'X-BlInK-RetRY-SuPPRESS': 'TRUE',
-//       },
-//     },
-//   );
+  // Gambit order retry suppression
+  const retrySuppressResponse = new Response(
+    'Unknown Gambit error',
+    {
+      status: 422,
+      statusText: 'Unknown Gambit error',
+      headers: {
+        // Also make sure that blink recongnizes non standart header case
+        'X-BlInK-RetRY-SuPPRESS': 'TRUE',
+      },
+    },
+  );
 
-//   gambitWorker.checkRetrySuppress(retrySuppressResponse).should.be.true;
+  gambitWorker.checkRetrySuppress(retrySuppressResponse).should.be.true;
 
 
-//   // Normal Gambit 422 response
-//   const normalFailedResponse = new Response(
-//     'Unknown Gambit error',
-//     {
-//       status: 422,
-//       statusText: 'Unknown Gambit error',
-//       headers: {
-//         'x-taco-count': 'infinity',
-//       },
-//     },
-//   );
-//   gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
-// });
+  // Normal Gambit 422 response
+  const normalFailedResponse = new Response(
+    'Unknown Gambit error',
+    {
+      status: 422,
+      statusText: 'Unknown Gambit error',
+      headers: {
+        'x-taco-count': 'infinity',
+      },
+    },
+  );
+  gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
+});
 
 // ------- End -----------------------------------------------------------------
