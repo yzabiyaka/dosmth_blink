@@ -14,6 +14,10 @@ class TwillioStatusCallbackMessage extends Message {
       .unknown();
   }
 
+  isInbound() {
+    return this.getData().SmsStatus === 'received';
+  }
+
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper

@@ -8,7 +8,6 @@ const moment = require('moment');
 
 // App modules
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
-const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
 const TwillioStatusCallbackMessage = require('../../src/messages/TwillioStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
