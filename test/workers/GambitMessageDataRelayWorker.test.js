@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const test = require('ava');
 
 const BlinkWorkerApp = require('../../src/app/BlinkWorkerApp');
-const GambitMessageDataRelayWorker = require('../../workers/GambitMessageDataRelayWorker');
+const GambitMessageDataRelayWorker = require('../../src/workers/GambitMessageDataRelayWorker');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
@@ -76,9 +76,9 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
 });
 
 test('Gambit should not process not inbound messages', async () => {
-  const notInboundMessage = MessageFactoryHelper.getValidMessageData();
-  notInboundMessage.data.SmsStatus = 'out';
-  GambitMessageDataRelayWorker.shouldSkip(message).should.be.true;
+  const messageData = MessageFactoryHelper.getValidMessageData();
+  messageData.payload.data.SmsStatus = 'out';
+  GambitMessageDataRelayWorker.shouldSkip(messageData).should.be.true;
 });
 
 // ------- End -----------------------------------------------------------------
