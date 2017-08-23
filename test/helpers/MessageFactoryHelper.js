@@ -8,8 +8,8 @@ const moment = require('moment');
 
 // App modules
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
-const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
+const TwillioStatusCallbackMessage = require('../../src/messages/TwillioStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
@@ -151,7 +151,7 @@ class MessageFactoryHelper {
   static getValidMessageData() {
     // TODO: randomize
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
-    return new FreeFormMessage({
+    return new TwillioStatusCallbackMessage({
       data: {
         ToCountry: 'US',
         MediaContentType0: 'image/png',
