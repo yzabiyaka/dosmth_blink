@@ -26,14 +26,13 @@ class GambitMessageDataRelayWorker extends Worker {
     const body = JSON.stringify(message.getData());
 
     // Send only inbound messages to Gambit.
-    if (!message.isInbound()) {
+    if (!this.shouldSkip(message)) {
       const meta = {
         env: this.blink.config.app.env,
         code: 'success_gambit_skip_not_inbound',
         worker: this.constructor.name,
         request_id: message ? message.getRequestId() : 'not_parsed',
       };
-      // Todo: log error?
       logger.log('debug', body, meta);
       return true;
     }
@@ -129,6 +128,10 @@ class GambitMessageDataRelayWorker extends Worker {
       return false;
     }
     return headerResult.toLowerCase() === 'true';
+  }
+
+  static shouldSkip(message) {
+    return message.isInbound();
   }
 }
 
