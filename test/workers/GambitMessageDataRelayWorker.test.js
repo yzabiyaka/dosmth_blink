@@ -75,7 +75,12 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
   gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
 });
 
-test('Gambit should not process not inbound messages', async () => {
+test('Gambit should process inbound messages', () => {
+  const messageData = MessageFactoryHelper.getValidMessageData();
+  GambitMessageDataRelayWorker.shouldSkip(messageData).should.be.false;
+});
+
+test('Gambit should not process not inbound messages', () => {
   const messageData = MessageFactoryHelper.getValidMessageData();
   messageData.payload.data.SmsStatus = 'out';
   GambitMessageDataRelayWorker.shouldSkip(messageData).should.be.true;
