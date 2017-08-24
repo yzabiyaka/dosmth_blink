@@ -26,7 +26,7 @@ class GambitMessageDataRelayWorker extends Worker {
     const body = JSON.stringify(message.getData());
 
     // Send only inbound messages to Gambit.
-    if (this.shouldSkip(message)) {
+    if (GambitMessageDataRelayWorker.shouldSkip(message)) {
       const meta = {
         env: this.blink.config.app.env,
         code: 'success_gambit_message_data_relay_expected_skip',
