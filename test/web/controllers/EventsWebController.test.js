@@ -124,6 +124,19 @@ test('POST /api/v1/events/user-signup should validate incoming message', async (
   responseToEmptyPayload.body.should.have.property('ok', false);
   responseToEmptyPayload.body.should.have.property('message')
     .and.have.string('"id" is required');
+
+  // Test incorrect northstar_id
+  const responseToNotUuid = await t.context.supertest
+    .post('/api/v1/events/user-signup')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send({
+      id: 'any-id-is-ok',
+      northstar_id: 'not-an-uuid',
+    });
+  responseToNotUuid.status.should.be.equal(422);
+  responseToNotUuid.body.should.have.property('ok', false);
+  responseToNotUuid.body.should.have.property('message')
+    .and.have.string('fails to match the valid object id pattern');
 });
 
 /**

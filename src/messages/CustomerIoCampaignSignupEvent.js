@@ -13,11 +13,15 @@ class CustomerIoCampaignSignupEventMessage extends Message {
     const whenNullOrEmpty = Joi.valid(['', null]);
 
     this.schema = Joi.object().keys({
-        id: Joi.number().integer().required().empty(whenNullOrEmpty),
-        northstar_id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
-      })
-      // Allow presence of all other keys.
-      .unknown();
+      id: Joi.required().empty(whenNullOrEmpty),
+      northstar_id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
+      campaign_id: Joi.string().required().empty(whenNullOrEmpty),
+      campaign_run_id: Joi.string().required().empty(whenNullOrEmpty),
+      source: Joi.string(),
+      created_at: Joi.string().required().empty(whenNullOrEmpty).isoDate(),
+    })
+    // Allow presence of all other keys.
+    .unknown();
   }
 
   static fromCtx(ctx) {
