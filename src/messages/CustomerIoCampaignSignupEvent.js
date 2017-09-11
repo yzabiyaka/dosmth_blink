@@ -20,9 +20,7 @@ class CustomerIoCampaignSignupEventMessage extends Message {
         campaign_run_id: Joi.string().required().empty(whenNullOrEmpty),
         source: Joi.string().empty(whenNullOrEmpty).default(undefined),
         created_at: Joi.string().required().empty(whenNullOrEmpty).isoDate(),
-      })
-      // Allow presence of all other keys.
-      .unknown();
+      });
   }
 
   static fromCtx(ctx) {
