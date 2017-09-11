@@ -12,16 +12,17 @@ class CustomerIoCampaignSignupEventMessage extends Message {
     // TODO: move to helpers.
     const whenNullOrEmpty = Joi.valid(['', null]);
 
-    this.schema = Joi.object().keys({
-      id: Joi.required().empty(whenNullOrEmpty),
-      northstar_id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
-      campaign_id: Joi.string().required().empty(whenNullOrEmpty),
-      campaign_run_id: Joi.string().required().empty(whenNullOrEmpty),
-      source: Joi.string().empty(whenNullOrEmpty).default(undefined),
-      created_at: Joi.string().required().empty(whenNullOrEmpty).isoDate(),
-    })
-    // Allow presence of all other keys.
-    .unknown();
+    this.schema = Joi.object()
+      .keys({
+        id: Joi.required().empty(whenNullOrEmpty),
+        northstar_id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
+        campaign_id: Joi.string().required().empty(whenNullOrEmpty),
+        campaign_run_id: Joi.string().required().empty(whenNullOrEmpty),
+        source: Joi.string().empty(whenNullOrEmpty).default(undefined),
+        created_at: Joi.string().required().empty(whenNullOrEmpty).isoDate(),
+      })
+      // Allow presence of all other keys.
+      .unknown();
   }
 
   static fromCtx(ctx) {
