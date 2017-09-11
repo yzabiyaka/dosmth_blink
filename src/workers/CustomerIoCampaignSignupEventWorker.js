@@ -3,8 +3,7 @@
 const CIO = require('customerio-node');
 const logger = require('winston');
 
-const BlinkRetryError = require('../errors/BlinkRetryError');
-const CustomerIoUpdateCustomerMessage = require('../messages/CustomerIoUpdateCustomerMessage');
+// const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 
 class CustomerIoCampaignSignupEventWorker extends Worker {
@@ -25,18 +24,25 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
 
   async consume(campaignSignupEventMessage) {
     console.dir(campaignSignupEventMessage.getData(), { colors: true, showHidden: true });
+
+    this.log(
+      'debug',
+      campaignSignupEventMessage,
+      'Customer.io signup tracked',
+      'success_cio_signup_tracked',
+    );
   }
 
-  // async log(level, message, text, code = 'unexpected_code') {
-  //   const meta = {
-  //     env: this.blink.config.app.env,
-  //     code,
-  //     worker: this.constructor.name,
-  //     request_id: message ? message.getRequestId() : 'not_parsed',
-  //   };
-  //   // Todo: log error?
-  //   logger.log(level, `${text}, message ${message.toString()}`, meta);
-  // }
+  async log(level, message, text, code = 'unexpected_code') {
+    const meta = {
+      env: this.blink.config.app.env,
+      code,
+      worker: this.constructor.name,
+      request_id: message ? message.getRequestId() : 'not_parsed',
+    };
+    // Todo: log error?
+    logger.log(level, `${text}, message ${message.toString()}`, meta);
+  }
 }
 
 module.exports = CustomerIoCampaignSignupEventWorker;

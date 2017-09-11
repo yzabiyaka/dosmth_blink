@@ -16,4 +16,3 @@
 // test('Factory should create correct object', () => {
 //   factory('')
 // });
- 

@@ -19,3 +19,5 @@ class CustomerIoEvent {
     return this.data;
   }
 }
+
+module.exports = CustomerIoEvent;
