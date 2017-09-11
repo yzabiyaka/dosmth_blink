@@ -110,6 +110,22 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
     .and.equal('Message queued');
 });
 
+
+/**
+ * POST /api/v1/events/user-signup
+ */
+test('POST /api/v1/events/user-signup should validate incoming message', async (t) => {
+  // Test empty message
+  const responseToEmptyPayload = await t.context.supertest
+    .post('/api/v1/events/user-signup')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send({});
+  responseToEmptyPayload.status.should.be.equal(422);
+  responseToEmptyPayload.body.should.have.property('ok', false);
+  responseToEmptyPayload.body.should.have.property('message')
+    .and.have.string('"id" is required');
+});
+
 /**
  * POST /api/v1/events/user-signup
  */

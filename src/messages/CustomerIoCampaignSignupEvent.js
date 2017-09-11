@@ -8,8 +8,14 @@ const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 class CustomerIoCampaignSignupEventMessage extends Message {
   constructor(...args) {
     super(...args);
+    // Data validation rules.
+    // TODO: move to helpers.
+    const whenNullOrEmpty = Joi.valid(['', null]);
 
-    this.schema = Joi.object()
+    this.schema = Joi.object().keys({
+        id: Joi.number().integer().required().empty(whenNullOrEmpty),
+        northstar_id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
+      })
       // Allow presence of all other keys.
       .unknown();
   }
