@@ -7,7 +7,7 @@ const BlinkRetryError = require('../errors/BlinkRetryError');
 const CustomerIoUpdateCustomerMessage = require('../messages/CustomerIoUpdateCustomerMessage');
 const Worker = require('./Worker');
 
-class CustomerIoUpdateCustomerWorker extends Worker {
+class CustomerIoCampaignSignupEventWorker extends Worker {
   constructor(blink) {
     super(blink);
     this.blink = blink;
@@ -24,7 +24,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
   }
 
   async consume(campaignSignupEventMessage) {
-    console.dir(campaignSignupEventMessage, { colors: true, showHidden: true });
+    console.dir(campaignSignupEventMessage.getData(), { colors: true, showHidden: true });
   }
 
   // async log(level, message, text, code = 'unexpected_code') {
@@ -39,4 +39,4 @@ class CustomerIoUpdateCustomerWorker extends Worker {
   // }
 }
 
-module.exports = CustomerIoUpdateCustomerWorker;
+module.exports = CustomerIoCampaignSignupEventWorker;
