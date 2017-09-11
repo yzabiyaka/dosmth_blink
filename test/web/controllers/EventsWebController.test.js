@@ -115,10 +115,15 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
  */
 test('POST /api/v1/events/user-signup should publish message to user-signup-event', async (t) => {
   const data = {
-    random: 'key',
-    nested: {
-      random2: 'key2',
-    },
+    id: 4036991,
+    northstar_id: "50b0397010707d72594d699f",
+    campaign_id: "2063",
+    campaign_run_id: "6268",
+    quantity: null,
+    why_participated: null,
+    source: "campaigns",
+    created_at: "2017-09-06T18:10:22+00:00",
+    updated_at: "2017-09-06T18:10:22+00:00"
   };
 
   const res = await t.context.supertest.post('/api/v1/events/user-signup')
