@@ -40,7 +40,7 @@ class EventsWebController extends WebController {
   async userSignup(ctx) {
     try {
       const message = CustomerIoCampaignSignupEvent.fromCtx(ctx);
-      message.validate();
+      message.validateStrict();
       this.blink.exchange.publish(
         'signup.user.event',
         message,
