@@ -50,6 +50,21 @@ class CustomerIoCampaignSignupEventMessage extends Message {
     message.fields = rabbitMessage.fields;
     return message;
   }
+
+  toCustomerIoEvent() {
+    // const data = this.getData();
+    // const eventData = {
+    //   signup_id: data.id,
+    //   campaign_id: data.campaign_id,
+    //   campaign_run_id: data.campaign_run_id,
+    // }
+    // if (data.source) {
+    //   // eventData.source = data
+    // }
+
+    // return new CustomerIoEvent(data.northstar_id, 'signup', eventData);
+
+  }
 }
 
 module.exports = CustomerIoCampaignSignupEventMessage;

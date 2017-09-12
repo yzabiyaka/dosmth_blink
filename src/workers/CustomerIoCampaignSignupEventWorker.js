@@ -23,7 +23,7 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
   }
 
   async consume(campaignSignupEventMessage) {
-    console.dir(campaignSignupEventMessage.getData(), { colors: true, showHidden: true });
+    console.dir(campaignSignupEventMessage.toCustomerIoEvent(), { colors: true, showHidden: true });
 
     this.log(
       'debug',

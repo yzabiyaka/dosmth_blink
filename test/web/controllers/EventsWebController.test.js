@@ -178,7 +178,14 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
   const payload = messages[0].payload;
   const messageData = JSON.parse(payload);
   messageData.should.have.property('data');
-  messageData.data.should.be.eql(data);
+  messageData.data.should.be.eql({
+    campaign_id: data.campaign_id,
+    campaign_run_id: data.campaign_run_id,
+    created_at: data.created_at,
+    id: data.id,
+    northstar_id: data.northstar_id,
+    source: data.source,
+  });
 });
 
 /**
