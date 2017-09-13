@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
+const moment = require('moment');
 
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const CustomerIoEvent = require('../models/CustomerIoEvent');
@@ -60,14 +61,13 @@ class CustomerIoCampaignSignupEventMessage extends Message {
       campaign_run_id: data.campaign_run_id,
     }
     // TODO: transform iso to timestamp with correct TZ.
-    data.created_at = 0;
-
+    eventData.created_at = moment(data.created_at).unix();
 
     if (data.source) {
       eventData.source = data.source;
     }
 
-    return new CustomerIoEvent(data.northstar_id, 'signup', eventData);
+    return new CustomerIoEvent(data.northstar_id, 'campaign_signup', eventData);
   }
 }
 
