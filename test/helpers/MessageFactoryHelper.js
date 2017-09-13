@@ -191,7 +191,7 @@ class MessageFactoryHelper {
         campaign_run_id: { length: 4, pool: '1234567890' },
         quantity: null,
         why_participated: null,
-        source: "campaigns",
+        source: 'campaigns',
         created_at: createdAt,
         updated_at: updatedAt,
       },

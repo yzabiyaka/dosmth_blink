@@ -59,7 +59,7 @@ class CustomerIoCampaignSignupEventMessage extends Message {
       signup_id: data.id,
       campaign_id: data.campaign_id,
       campaign_run_id: data.campaign_run_id,
-    }
+    };
     // TODO: transform iso to timestamp with correct TZ.
     eventData.created_at = moment(data.created_at).unix();
 

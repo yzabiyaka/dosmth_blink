@@ -4,7 +4,6 @@
 
 const test = require('ava');
 const chai = require('chai');
-const Chance = require('chance');
 const moment = require('moment');
 
 const CustomerIoCampaignSignupEventMessage = require('../../src/messages/CustomerIoCampaignSignupEventMessage');
@@ -15,21 +14,7 @@ const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 chai.should();
 const expect = chai.expect;
-const chance = new Chance();
 const generator = MessageFactoryHelper.getValidCampaignSignupEvent;
-const mutator = function ({ remove, change, value, message }) {
-  const mutant = message;
-  if (remove) {
-    delete mutant.payload.data[remove];
-    return mutant;
-  }
-  if (change) {
-    mutant.payload.data[change] = value;
-    return mutant;
-  }
-  return false;
-};
-
 
 // ------- Tests ---------------------------------------------------------------
 
