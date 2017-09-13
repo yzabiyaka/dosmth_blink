@@ -3,7 +3,7 @@
 const CIO = require('customerio-node');
 const logger = require('winston');
 
-// const BlinkRetryError = require('../errors/BlinkRetryError');
+const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 
 class CustomerIoCampaignSignupEventWorker extends Worker {
@@ -25,6 +25,7 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
   async consume(campaignSignupEventMessage) {
     // Helper variables.
     const msgData = campaignSignupEventMessage.getData();
+    let meta;
 
     // Convert campaign signup event to cio event.
     let customerIoEvent;
