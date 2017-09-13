@@ -68,6 +68,8 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
       'Customer.io campaign signup tracked',
       'success_cio_track_campaign_signup',
     );
+
+    return true;
   }
 
   async log(level, message, text, code = 'unexpected_code') {
