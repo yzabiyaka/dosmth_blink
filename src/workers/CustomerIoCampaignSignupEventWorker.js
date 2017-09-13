@@ -26,6 +26,8 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
     // console.dir(campaignSignupEventMessage.toCustomerIoEvent()
     // , { colors: true, showHidden: true });
 
+    // TODO: implement
+
     this.log(
       'debug',
       campaignSignupEventMessage,
