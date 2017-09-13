@@ -7,6 +7,7 @@ const Chance = require('chance');
 const moment = require('moment');
 
 // App modules
+const CustomerIoCampaignSignupEventMessage = require('../../src/messages/CustomerIoCampaignSignupEventMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
 const TwillioStatusCallbackMessage = require('../../src/messages/TwillioStatusCallbackMessage');
@@ -173,6 +174,26 @@ class MessageFactoryHelper {
         From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
         MediaUrl0: chance.avatar({ protocol: 'https' }),
         ApiVersion: '2010-04-01',
+      },
+      meta: {},
+    });
+  }
+
+  static getValidCampaignSignupEvent() {
+    const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
+    const updatedAt = moment(createdAt).add(1, 'days').toISOString();
+
+    return new CustomerIoCampaignSignupEventMessage({
+      data: {
+        id: chance.integer(),
+        northstar_id: chance.hash({ length: 24 }),
+        campaign_id: { length: 4, pool: '1234567890' },
+        campaign_run_id: { length: 4, pool: '1234567890' },
+        quantity: null,
+        why_participated: null,
+        source: 'campaigns',
+        created_at: createdAt,
+        updated_at: updatedAt,
       },
       meta: {},
     });

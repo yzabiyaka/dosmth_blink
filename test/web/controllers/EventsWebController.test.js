@@ -110,15 +110,49 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
     .and.equal('Message queued');
 });
 
+
+/**
+ * POST /api/v1/events/user-signup
+ */
+test('POST /api/v1/events/user-signup should validate incoming message', async (t) => {
+  // Test empty message
+  const responseToEmptyPayload = await t.context.supertest
+    .post('/api/v1/events/user-signup')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send({});
+  responseToEmptyPayload.status.should.be.equal(422);
+  responseToEmptyPayload.body.should.have.property('ok', false);
+  responseToEmptyPayload.body.should.have.property('message')
+    .and.have.string('"id" is required');
+
+  // Test incorrect northstar_id
+  const responseToNotUuid = await t.context.supertest
+    .post('/api/v1/events/user-signup')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send({
+      id: 'any-id-is-ok',
+      northstar_id: 'not-an-uuid',
+    });
+  responseToNotUuid.status.should.be.equal(422);
+  responseToNotUuid.body.should.have.property('ok', false);
+  responseToNotUuid.body.should.have.property('message')
+    .and.have.string('fails to match the valid object id pattern');
+});
+
 /**
  * POST /api/v1/events/user-signup
  */
 test('POST /api/v1/events/user-signup should publish message to user-signup-event', async (t) => {
   const data = {
-    random: 'key',
-    nested: {
-      random2: 'key2',
-    },
+    id: 4036991,
+    northstar_id: '50b0397010707d72594d699f',
+    campaign_id: '2063',
+    campaign_run_id: '6268',
+    quantity: null,
+    why_participated: null,
+    source: 'campaigns',
+    created_at: '2017-09-06T18:10:22+00:00',
+    updated_at: '2017-09-06T18:10:22+00:00',
   };
 
   const res = await t.context.supertest.post('/api/v1/events/user-signup')
@@ -144,7 +178,14 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
   const payload = messages[0].payload;
   const messageData = JSON.parse(payload);
   messageData.should.have.property('data');
-  messageData.data.should.be.eql(data);
+  messageData.data.should.be.eql({
+    campaign_id: data.campaign_id,
+    campaign_run_id: data.campaign_run_id,
+    created_at: data.created_at,
+    id: data.id,
+    northstar_id: data.northstar_id,
+    source: data.source,
+  });
 });
 
 /**
