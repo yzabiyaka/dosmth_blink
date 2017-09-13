@@ -2,8 +2,9 @@
 
 const Joi = require('joi');
 
-const Message = require('./Message');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
+const CustomerIoEvent = require('../models/CustomerIoEvent');
+const Message = require('./Message');
 
 class CustomerIoCampaignSignupEventMessage extends Message {
   constructor(...args) {
@@ -52,18 +53,21 @@ class CustomerIoCampaignSignupEventMessage extends Message {
   }
 
   toCustomerIoEvent() {
-    // const data = this.getData();
-    // const eventData = {
-    //   signup_id: data.id,
-    //   campaign_id: data.campaign_id,
-    //   campaign_run_id: data.campaign_run_id,
-    // }
-    // if (data.source) {
-    //   // eventData.source = data
-    // }
+    const data = this.getData();
+    const eventData = {
+      signup_id: data.id,
+      campaign_id: data.campaign_id,
+      campaign_run_id: data.campaign_run_id,
+    }
+    // TODO: transform iso to timestamp with correct TZ.
+    data.created_at = 0;
 
-    // return new CustomerIoEvent(data.northstar_id, 'signup', eventData);
 
+    if (data.source) {
+      eventData.source = data.source;
+    }
+
+    return new CustomerIoEvent(data.northstar_id, 'signup', eventData);
   }
 }
 

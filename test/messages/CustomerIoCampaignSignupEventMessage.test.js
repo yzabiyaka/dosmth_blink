@@ -7,6 +7,7 @@ const chai = require('chai');
 const Chance = require('chance');
 
 const CustomerIoCampaignSignupEventMessage = require('../../src/messages/CustomerIoCampaignSignupEventMessage');
+const CustomerIoEvent = require('../../src/models/CustomerIoEvent');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
@@ -35,8 +36,16 @@ test('Campaign signup event message generator', () => {
   generator().should.be.an.instanceof(CustomerIoCampaignSignupEventMessage);
 });
 
-test('CustomerIoCampaignSignupEventMessage should have toCustomerIoEvent', () => {
+test('Campaign signup message should have toCustomerIoEvent', () => {
   generator().should.respondsTo('toCustomerIoEvent');
+});
+
+test('Campaign signup message should be correctly transformed to CustomerIoEvent', () => {
+  const msg = generator();
+  const data = msg.getData();
+  const cioEvent = msg.toCustomerIoEvent();
+
+  expect(cioEvent).to.be.an.instanceof(CustomerIoEvent);
 });
 
 // ------- End -----------------------------------------------------------------
