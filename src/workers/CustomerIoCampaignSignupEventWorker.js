@@ -27,10 +27,9 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
     const msgData = campaignSignupEventMessage.getData();
     let meta;
 
-    // Convert campaign signup event to cio event.
+    // Convert campaign signup to customer.io event.
     let customerIoEvent;
     try {
-      // Convert campaign signup to customer.io event.
       customerIoEvent = campaignSignupEventMessage.toCustomerIoEvent();
     } catch (error) {
       meta = {
