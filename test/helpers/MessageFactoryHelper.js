@@ -185,7 +185,7 @@ class MessageFactoryHelper {
 
     return new CustomerIoCampaignSignupEventMessage({
       data: {
-        id: chance.integer(),
+        id: chance.integer({ min: 0 }),
         northstar_id: chance.hash({ length: 24 }),
         campaign_id: { length: 4, pool: '1234567890' },
         campaign_run_id: { length: 4, pool: '1234567890' },
