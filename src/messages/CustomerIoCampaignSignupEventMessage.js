@@ -56,7 +56,8 @@ class CustomerIoCampaignSignupEventMessage extends Message {
   toCustomerIoEvent() {
     const data = this.getData();
     const eventData = {
-      signup_id: data.id,
+      // Convert signup id to a string for consistency.
+      signup_id: String(data.id),
       campaign_id: data.campaign_id,
       campaign_run_id: data.campaign_run_id,
     };

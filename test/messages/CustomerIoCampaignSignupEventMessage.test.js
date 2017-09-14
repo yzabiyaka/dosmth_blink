@@ -39,7 +39,7 @@ test('Campaign signup message should be correctly transformed to CustomerIoEvent
     cioEvent.getName().should.equal('campaign_signup');
     const eventData = cioEvent.getData();
 
-    eventData.signup_id.should.equal(data.id);
+    eventData.signup_id.should.equal(String(data.id));
     eventData.campaign_id.should.equal(data.campaign_id);
     eventData.campaign_run_id.should.equal(data.campaign_run_id);
 

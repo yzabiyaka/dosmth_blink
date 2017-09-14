@@ -3,7 +3,7 @@
 const CIO = require('customerio-node');
 const logger = require('winston');
 
-// const BlinkRetryError = require('../errors/BlinkRetryError');
+const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 
 class CustomerIoCampaignSignupEventWorker extends Worker {
@@ -23,17 +23,53 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
   }
 
   async consume(campaignSignupEventMessage) {
-    // console.dir(campaignSignupEventMessage.toCustomerIoEvent()
-    // , { colors: true, showHidden: true });
+    // Helper variables.
+    const msgData = campaignSignupEventMessage.getData();
+    let meta;
 
-    // TODO: implement
+    // Convert campaign signup to customer.io event.
+    let customerIoEvent;
+    try {
+      customerIoEvent = campaignSignupEventMessage.toCustomerIoEvent();
+    } catch (error) {
+      meta = {
+        env: this.blink.config.app.env,
+        code: 'error_cio_update_cant_convert_campaign_signup',
+        worker: this.constructor.name,
+        request_id: campaignSignupEventMessage.getRequestId(),
+      };
+      logger.warning(
+        `Can't convert signup event to cio event: ${msgData.id} error ${error}`,
+        meta,
+      );
+    }
+
+    try {
+      await this.cioClient.track(customerIoEvent.getId(), {
+        name: customerIoEvent.getName(),
+        data: customerIoEvent.getData(),
+      });
+    } catch (error) {
+      this.log(
+        'warning',
+        campaignSignupEventMessage,
+        `${error}`,
+        'error_cio_update_cant_track_campaign_signup',
+      );
+      throw new BlinkRetryError(
+        `Unexpected customer.io error: ${error}`,
+        campaignSignupEventMessage,
+      );
+    }
 
     this.log(
       'debug',
       campaignSignupEventMessage,
-      'Customer.io signup tracked',
-      'success_cio_signup_tracked',
+      'Customer.io campaign signup tracked',
+      'success_cio_track_campaign_signup',
     );
+
+    return true;
   }
 
   async log(level, message, text, code = 'unexpected_code') {
