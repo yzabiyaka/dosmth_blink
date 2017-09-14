@@ -30,7 +30,7 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
     // Convert campaign signup event to cio event.
     let customerIoEvent;
     try {
-      // For now all messages are new
+      // Convert campaign signup to customer.io event.
       customerIoEvent = campaignSignupEventMessage.toCustomerIoEvent();
     } catch (error) {
       meta = {
