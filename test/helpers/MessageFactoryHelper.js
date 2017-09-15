@@ -7,6 +7,7 @@ const Chance = require('chance');
 const moment = require('moment');
 
 // App modules
+const CustomerIoCampaignSignupPostMessage = require('../../src/messages/CustomerIoCampaignSignupPostMessage');
 const CustomerIoCampaignSignupEventMessage = require('../../src/messages/CustomerIoCampaignSignupEventMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
@@ -194,6 +195,17 @@ class MessageFactoryHelper {
         source: 'campaigns',
         created_at: createdAt,
         updated_at: updatedAt,
+      },
+      meta: {},
+    });
+  }
+
+  static getValidCampaignSignupPost() {
+    return new CustomerIoCampaignSignupPostMessage({
+      data: {
+        id: chance.integer({ min: 0 }),
+        signuip_id: chance.integer({ min: 0 }),
+        northstar_id: chance.hash({ length: 24 }),
       },
       meta: {},
     });
