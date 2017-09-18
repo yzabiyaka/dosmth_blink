@@ -1,6 +1,6 @@
 'use strict';
 
-const CustomerIoCampaignSignupEventMessage = require('../../messages/CustomerIoCampaignSignupEventMessage');
+const CustomerIoCampaignSignupMessage = require('../../messages/CustomerIoCampaignSignupMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const UserMessage = require('../../messages/UserMessage');
 const WebController = require('./WebController');
@@ -39,7 +39,7 @@ class EventsWebController extends WebController {
 
   async userSignup(ctx) {
     try {
-      const message = CustomerIoCampaignSignupEventMessage.fromCtx(ctx);
+      const message = CustomerIoCampaignSignupMessage.fromCtx(ctx);
       message.validateStrict();
       this.blink.exchange.publish(
         'signup.user.event',
