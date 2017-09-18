@@ -85,11 +85,12 @@ class CustomerIoCampaignSignupPostMessage extends Message {
       'url',
       'why_participated',
     ];
-    for (const field of optionalFields) {
+
+    optionalFields.forEach((field) => {
       if (data[field]) {
         eventData[field] = data[field];
       }
-    }
+    });
 
     return new CustomerIoEvent(data.northstar_id, 'campaign_signup_post', eventData);
   }

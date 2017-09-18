@@ -4,16 +4,16 @@
 
 const test = require('ava');
 const chai = require('chai');
-const moment = require('moment');
+// const moment = require('moment');
 
 const CustomerIoCampaignSignupPostMessage = require('../../src/messages/CustomerIoCampaignSignupPostMessage');
-const CustomerIoEvent = require('../../src/models/CustomerIoEvent');
+// const CustomerIoEvent = require('../../src/models/CustomerIoEvent');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-const expect = chai.expect;
+// const expect = chai.expect;
 const generator = MessageFactoryHelper.getValidCampaignSignupPost;
 
 // ------- Tests ---------------------------------------------------------------
