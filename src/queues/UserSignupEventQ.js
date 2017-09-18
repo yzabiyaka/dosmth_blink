@@ -1,12 +1,12 @@
 'use strict';
 
-const CustomerIoCampaignSignupEventMessage = require('../messages/CustomerIoCampaignSignupEventMessage');
+const CustomerIoCampaignSignupMessage = require('../messages/CustomerIoCampaignSignupMessage');
 const Queue = require('./Queue');
 
 class UserSignupEventQ extends Queue {
   constructor(...args) {
     super(...args);
-    this.messageClass = CustomerIoCampaignSignupEventMessage;
+    this.messageClass = CustomerIoCampaignSignupMessage;
     this.routes.push('signup.user.event');
   }
 }

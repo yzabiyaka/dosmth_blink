@@ -7,7 +7,7 @@ const Chance = require('chance');
 const moment = require('moment');
 
 // App modules
-const CustomerIoCampaignSignupEventMessage = require('../../src/messages/CustomerIoCampaignSignupEventMessage');
+const CustomerIoCampaignSignupMessage = require('../../src/messages/CustomerIoCampaignSignupMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
 const TwillioStatusCallbackMessage = require('../../src/messages/TwillioStatusCallbackMessage');
@@ -183,7 +183,7 @@ class MessageFactoryHelper {
     const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
     const updatedAt = moment(createdAt).add(1, 'days').toISOString();
 
-    return new CustomerIoCampaignSignupEventMessage({
+    return new CustomerIoCampaignSignupMessage({
       data: {
         id: chance.integer({ min: 0 }),
         northstar_id: chance.hash({ length: 24 }),
