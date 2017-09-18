@@ -14,7 +14,7 @@ const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 chai.should();
 const expect = chai.expect;
-const generator = MessageFactoryHelper.getValidCampaignSignupEvent;
+const generator = MessageFactoryHelper.getValidCampaignSignup;
 
 // ------- Tests ---------------------------------------------------------------
 
