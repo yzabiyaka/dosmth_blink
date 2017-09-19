@@ -202,15 +202,37 @@ class MessageFactoryHelper {
 
   static getValidCampaignSignupPost() {
     const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
+    const data = {
+      // Required
+      id: chance.integer({ min: 0 }),
+      signup_id: chance.integer({ min: 0 }),
+      northstar_id: chance.hash({ length: 24 }),
+
+      // Optional
+      source: chance.pickone(['campaigns', 'phoenix-web']),
+      caption: chance.sentence({ words: 5 }),
+      why_participated: chance.sentence(),
+      url: chance.avatar({ protocol: 'https' }),
+
+      // Timestamps
+      created_at: createdAt,
+    };
+
+    // Optional, may be empty.
+    const optionalFields = [
+      'source',
+      'caption',
+      'why_participated',
+      'url',
+    ];
+    optionalFields.forEach((key) => {
+      if (chance.bool({ likelihood: 40 })) {
+        delete data[key];
+      }
+    });
 
     return new CustomerIoCampaignSignupPostMessage({
-      data: {
-        id: chance.integer({ min: 0 }),
-        signup_id: chance.integer({ min: 0 }),
-        northstar_id: chance.hash({ length: 24 }),
-        source: chance.pickone(['campaigns', 'phoenix-web']),
-        created_at: createdAt,
-      },
+      data,
       meta: {},
     });
   }
