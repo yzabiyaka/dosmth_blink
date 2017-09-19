@@ -4,7 +4,7 @@
 
 const test = require('ava');
 const chai = require('chai');
-// const moment = require('moment');
+const moment = require('moment');
 
 const CustomerIoCampaignSignupPostMessage = require('../../src/messages/CustomerIoCampaignSignupPostMessage');
 const CustomerIoEvent = require('../../src/models/CustomerIoEvent');
@@ -38,20 +38,31 @@ test('Campaign signup post message should be correctly transformed to CustomerIo
     cioEvent.getId().should.equal(data.northstar_id);
     cioEvent.getName().should.equal('campaign_signup_post');
 
-    // const eventData = cioEvent.getData();
+    const eventData = cioEvent.getData();
 
-    // eventData.signup_id.should.equal(String(data.id));
-    // eventData.campaign_id.should.equal(data.campaign_id);
-    // eventData.campaign_run_id.should.equal(data.campaign_run_id);
+    eventData.signup_post_id.should.equal(String(data.id));
+    eventData.signup_id.should.equal(String(data.signup_id));
+    eventData.campaign_id.should.equal(data.campaign_id);
+    eventData.campaign_run_id.should.equal(data.campaign_run_id);
 
-    // // Todo: make sure TZ is corrected
-    // const originalCreatedAt = moment(data.created_at).milliseconds(0);
-    // const eventCreatedAt = moment.unix(eventData.created_at);
-    // eventCreatedAt.toISOString().should.be.equal(originalCreatedAt.toISOString());
+    // Todo: make sure TZ is corrected
+    const originalCreatedAt = moment(data.created_at).milliseconds(0);
+    const eventCreatedAt = moment.unix(eventData.created_at);
+    eventCreatedAt.toISOString().should.be.equal(originalCreatedAt.toISOString());
 
-    // if (data.source) {
-    //   expect(eventData.source).to.be.equal(data.source);
-    // }
+    // Optional fields.
+    const optionalFields = [
+      'source',
+      'caption',
+      'url',
+      'why_participated',
+    ];
+    optionalFields.forEach((field) => {
+      if (data[field]) {
+        eventData[field].should.to.be.equal(data[field]);
+      }
+    });
+
     count -= 1;
   }
 });

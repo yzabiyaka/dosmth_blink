@@ -211,6 +211,7 @@ class MessageFactoryHelper {
       northstar_id: chance.hash({ length: 24 }),
       campaign_id: chance.string({ length: 4, pool: '1234567890' }),
       campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
+      quantity: chance.integer({ min: 0 }),
 
       // Optional
       source: chance.pickone(['campaigns', 'phoenix-web']),

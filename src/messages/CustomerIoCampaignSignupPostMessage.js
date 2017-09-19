@@ -22,6 +22,7 @@ class CustomerIoCampaignSignupPostMessage extends Message {
         northstar_id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
         campaign_id: Joi.string().required().empty(whenNullOrEmpty),
         campaign_run_id: Joi.string().required().empty(whenNullOrEmpty),
+        quantity: Joi.number().required(),
 
         // Optional fields
         source: Joi.string().empty(whenNullOrEmpty).default(undefined),
@@ -67,10 +68,9 @@ class CustomerIoCampaignSignupPostMessage extends Message {
     const eventData = {
       // Convert ids to strings for consistency.
       signup_post_id: String(data.id),
-      signup_id: String(data.id),
-      // Format?
-      // campaign_id: data.campaign_id,
-      // campaign_run_id: data.campaign_run_id,
+      signup_id: String(data.signup_id),
+      campaign_id: data.campaign_id,
+      campaign_run_id: data.campaign_run_id,
       quantity: Number(this.quantity),
     };
     // TODO: transform iso to timestamp with correct TZ.
