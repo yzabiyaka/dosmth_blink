@@ -6,7 +6,7 @@ const test = require('ava');
 const chai = require('chai');
 const moment = require('moment');
 
-const CustomerIoCampaignSignupPostMessage = require('../../src/messages/CustomerIoCampaignSignupPostMessage');
+const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
 const CustomerIoEvent = require('../../src/models/CustomerIoEvent');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
@@ -19,7 +19,7 @@ const generator = MessageFactoryHelper.getValidCampaignSignupPost;
 // ------- Tests ---------------------------------------------------------------
 
 test('Campaign signup post message generator', () => {
-  generator().should.be.an.instanceof(CustomerIoCampaignSignupPostMessage);
+  generator().should.be.an.instanceof(CampaignSignupPostMessage);
 });
 
 test('Campaign signup post message should have toCustomerIoEvent', () => {

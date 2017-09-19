@@ -160,7 +160,7 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('user-signup-event', 1, false);
+  const messages = await rabbit.getMessagesFrom('customer-io-campaign-signup', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');
@@ -198,7 +198,7 @@ test('POST /api/v1/events/user-signup-post should publish message to user-signup
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('user-signup-post-event', 1, false);
+  const messages = await rabbit.getMessagesFrom('customer-io-campaign-signup-post', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');
