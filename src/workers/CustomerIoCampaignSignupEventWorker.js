@@ -18,7 +18,7 @@ class CustomerIoCampaignSignupEventWorker extends Worker {
   }
 
   setup() {
-    this.queue = this.blink.queues.userSignupEventQ;
+    this.queue = this.blink.queues.customerIoCampaignSignupQ;
     this.cioClient = new CIO(this.cioConfig.apiKey, this.cioConfig.siteId);
   }
 

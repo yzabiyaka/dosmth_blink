@@ -7,7 +7,7 @@ const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const CustomerIoEvent = require('../models/CustomerIoEvent');
 const Message = require('./Message');
 
-class CustomerIoCampaignSignupPostMessage extends Message {
+class CampaignSignupPostMessage extends Message {
   constructor(...args) {
     super(...args);
     // Data validation rules.
@@ -38,7 +38,7 @@ class CustomerIoCampaignSignupPostMessage extends Message {
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper
-    const message = new CustomerIoCampaignSignupPostMessage({
+    const message = new CampaignSignupPostMessage({
       data: ctx.request.body,
       meta: {
         request_id: ctx.id,
@@ -55,7 +55,7 @@ class CustomerIoCampaignSignupPostMessage extends Message {
 
     // TODO: save more metadata
     // TODO: metadata parse helper
-    const message = new CustomerIoCampaignSignupPostMessage({
+    const message = new CampaignSignupPostMessage({
       data: payload.data,
       meta: payload.meta,
     });
@@ -94,4 +94,4 @@ class CustomerIoCampaignSignupPostMessage extends Message {
   }
 }
 
-module.exports = CustomerIoCampaignSignupPostMessage;
+module.exports = CampaignSignupPostMessage;
