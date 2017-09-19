@@ -8,6 +8,7 @@ const moment = require('moment');
 
 // App modules
 const CustomerIoCampaignSignupMessage = require('../../src/messages/CustomerIoCampaignSignupMessage');
+const CustomerIoCampaignSignupPostMessage = require('../../src/messages/CustomerIoCampaignSignupPostMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
 const TwillioStatusCallbackMessage = require('../../src/messages/TwillioStatusCallbackMessage');
@@ -179,7 +180,7 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidCampaignSignupEvent() {
+  static getValidCampaignSignup() {
     const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
     const updatedAt = moment(createdAt).add(1, 'days').toISOString();
 
@@ -187,14 +188,58 @@ class MessageFactoryHelper {
       data: {
         id: chance.integer({ min: 0 }),
         northstar_id: chance.hash({ length: 24 }),
-        campaign_id: { length: 4, pool: '1234567890' },
-        campaign_run_id: { length: 4, pool: '1234567890' },
+        campaign_id: chance.string({ length: 4, pool: '1234567890' }),
+        campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
         quantity: null,
         why_participated: null,
-        source: 'campaigns',
+        source: chance.pickone(['campaigns', 'phoenix-web']),
         created_at: createdAt,
         updated_at: updatedAt,
       },
+      meta: {},
+    });
+  }
+
+  static getValidCampaignSignupPost() {
+    const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
+    const updatedAt = moment(createdAt).add(1, 'days').toISOString();
+
+    const data = {
+      // Required
+      id: chance.integer({ min: 0 }),
+      signup_id: chance.integer({ min: 0 }),
+      northstar_id: chance.hash({ length: 24 }),
+      campaign_id: chance.string({ length: 4, pool: '1234567890' }),
+      campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
+      quantity: chance.integer({ min: 0 }),
+
+      // Optional
+      source: chance.pickone(['campaigns', 'phoenix-web']),
+      caption: chance.sentence({ words: 5 }),
+      why_participated: chance.sentence(),
+      url: chance.avatar({ protocol: 'https' }),
+
+      // Timestamps
+      created_at: createdAt,
+      updatead_at: updatedAt,
+      deleted_at: null,
+    };
+
+    // Optional, may be empty.
+    const optionalFields = [
+      'source',
+      'caption',
+      'why_participated',
+      'url',
+    ];
+    optionalFields.forEach((key) => {
+      if (chance.bool({ likelihood: 40 })) {
+        delete data[key];
+      }
+    });
+
+    return new CustomerIoCampaignSignupPostMessage({
+      data,
       meta: {},
     });
   }

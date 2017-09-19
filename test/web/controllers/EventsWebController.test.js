@@ -7,6 +7,7 @@ const chai = require('chai');
 
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
 const HooksHelper = require('../../helpers/HooksHelper');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -143,18 +144,7 @@ test('POST /api/v1/events/user-signup should validate incoming message', async (
  * POST /api/v1/events/user-signup
  */
 test('POST /api/v1/events/user-signup should publish message to user-signup-event', async (t) => {
-  const data = {
-    id: 4036991,
-    northstar_id: '50b0397010707d72594d699f',
-    campaign_id: '2063',
-    campaign_run_id: '6268',
-    quantity: null,
-    why_participated: null,
-    source: 'campaigns',
-    created_at: '2017-09-06T18:10:22+00:00',
-    updated_at: '2017-09-06T18:10:22+00:00',
-  };
-
+  const data = MessageFactoryHelper.getValidCampaignSignup().getData();
   const res = await t.context.supertest.post('/api/v1/events/user-signup')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
@@ -170,8 +160,7 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  // TODO: queue cleanup to make sure that it's not OLD message.
-  const messages = await rabbit.getMessagesFrom('user-signup-event', 1);
+  const messages = await rabbit.getMessagesFrom('user-signup-event', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');
@@ -192,12 +181,7 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
  * POST /api/v1/events/user-signup-post
  */
 test('POST /api/v1/events/user-signup-post should publish message to user-signup-post-event', async (t) => {
-  const data = {
-    random: 'key',
-    nested: {
-      random2: 'key2',
-    },
-  };
+  const data = MessageFactoryHelper.getValidCampaignSignupPost().getData();
 
   const res = await t.context.supertest.post('/api/v1/events/user-signup-post')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
@@ -214,15 +198,34 @@ test('POST /api/v1/events/user-signup-post should publish message to user-signup
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  // TODO: queue cleanup to make sure that it's not OLD message.
-  const messages = await rabbit.getMessagesFrom('user-signup-post-event', 1);
+  const messages = await rabbit.getMessagesFrom('user-signup-post-event', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');
   const payload = messages[0].payload;
   const messageData = JSON.parse(payload);
   messageData.should.have.property('data');
-  messageData.data.should.be.eql(data);
+
+  // Required.
+  messageData.data.id.should.be.eql(data.id);
+  messageData.data.campaign_id.should.be.eql(data.campaign_id);
+  messageData.data.campaign_run_id.should.be.eql(data.campaign_run_id);
+  messageData.data.northstar_id.should.be.eql(data.northstar_id);
+  messageData.data.signup_id.should.be.eql(data.signup_id);
+  messageData.data.created_at.should.be.eql(data.created_at);
+
+  // Optional.
+  const optionalFields = [
+    'source',
+    'caption',
+    'why_participated',
+    'url',
+  ];
+  optionalFields.forEach((key) => {
+    if (messageData.data[key]) {
+      messageData.data[key].should.be.eql(data[key]);
+    }
+  });
 });
 
 // ------- End -----------------------------------------------------------------

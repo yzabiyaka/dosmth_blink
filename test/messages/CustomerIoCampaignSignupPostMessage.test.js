@@ -6,7 +6,7 @@ const test = require('ava');
 const chai = require('chai');
 const moment = require('moment');
 
-const CustomerIoCampaignSignupMessage = require('../../src/messages/CustomerIoCampaignSignupMessage');
+const CustomerIoCampaignSignupPostMessage = require('../../src/messages/CustomerIoCampaignSignupPostMessage');
 const CustomerIoEvent = require('../../src/models/CustomerIoEvent');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
@@ -14,19 +14,19 @@ const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 chai.should();
 const expect = chai.expect;
-const generator = MessageFactoryHelper.getValidCampaignSignup;
+const generator = MessageFactoryHelper.getValidCampaignSignupPost;
 
 // ------- Tests ---------------------------------------------------------------
 
-test('Campaign signup event message generator', () => {
-  generator().should.be.an.instanceof(CustomerIoCampaignSignupMessage);
+test('Campaign signup post message generator', () => {
+  generator().should.be.an.instanceof(CustomerIoCampaignSignupPostMessage);
 });
 
-test('Campaign signup message should have toCustomerIoEvent', () => {
+test('Campaign signup post message should have toCustomerIoEvent', () => {
   generator().should.respondsTo('toCustomerIoEvent');
 });
 
-test('Campaign signup message should be correctly transformed to CustomerIoEvent', () => {
+test('Campaign signup post message should be correctly transformed to CustomerIoEvent', () => {
   let count = 100;
   while (count > 0) {
     const msg = generator();
@@ -36,10 +36,12 @@ test('Campaign signup message should be correctly transformed to CustomerIoEvent
     expect(cioEvent).to.be.an.instanceof(CustomerIoEvent);
 
     cioEvent.getId().should.equal(data.northstar_id);
-    cioEvent.getName().should.equal('campaign_signup');
+    cioEvent.getName().should.equal('campaign_signup_post');
+
     const eventData = cioEvent.getData();
 
-    eventData.signup_id.should.equal(String(data.id));
+    eventData.signup_post_id.should.equal(String(data.id));
+    eventData.signup_id.should.equal(String(data.signup_id));
     eventData.campaign_id.should.equal(data.campaign_id);
     eventData.campaign_run_id.should.equal(data.campaign_run_id);
 
@@ -48,9 +50,19 @@ test('Campaign signup message should be correctly transformed to CustomerIoEvent
     const eventCreatedAt = moment.unix(eventData.created_at);
     eventCreatedAt.toISOString().should.be.equal(originalCreatedAt.toISOString());
 
-    if (data.source) {
-      expect(eventData.source).to.be.equal(data.source);
-    }
+    // Optional fields.
+    const optionalFields = [
+      'source',
+      'caption',
+      'url',
+      'why_participated',
+    ];
+    optionalFields.forEach((field) => {
+      if (data[field]) {
+        eventData[field].should.to.be.equal(data[field]);
+      }
+    });
+
     count -= 1;
   }
 });

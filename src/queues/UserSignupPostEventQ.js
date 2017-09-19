@@ -1,12 +1,12 @@
 'use strict';
 
-const FreeFormMessage = require('../messages/FreeFormMessage');
+const CustomerIoCampaignSignupPostMessage = require('../messages/CustomerIoCampaignSignupPostMessage');
 const Queue = require('./Queue');
 
 class UserSignupPostEventQ extends Queue {
   constructor(...args) {
     super(...args);
-    this.messageClass = FreeFormMessage;
+    this.messageClass = CustomerIoCampaignSignupPostMessage;
     this.routes.push('signup-post.user.event');
   }
 }
