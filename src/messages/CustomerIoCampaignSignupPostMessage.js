@@ -20,10 +20,8 @@ class CustomerIoCampaignSignupPostMessage extends Message {
         id: Joi.required().empty(whenNullOrEmpty),
         signup_id: Joi.required().empty(whenNullOrEmpty),
         northstar_id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
-
-        // Not formatted for now.
-        // campaign_id: Joi.string().required().empty(whenNullOrEmpty),
-        // campaign_run_id: Joi.string().required().empty(whenNullOrEmpty),
+        campaign_id: Joi.string().required().empty(whenNullOrEmpty),
+        campaign_run_id: Joi.string().required().empty(whenNullOrEmpty),
 
         // Optional fields
         source: Joi.string().empty(whenNullOrEmpty).default(undefined),

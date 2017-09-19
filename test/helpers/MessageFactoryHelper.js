@@ -202,11 +202,15 @@ class MessageFactoryHelper {
 
   static getValidCampaignSignupPost() {
     const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
+    const updatedAt = moment(createdAt).add(1, 'days').toISOString();
+
     const data = {
       // Required
       id: chance.integer({ min: 0 }),
       signup_id: chance.integer({ min: 0 }),
       northstar_id: chance.hash({ length: 24 }),
+      campaign_id: chance.string({ length: 4, pool: '1234567890' }),
+      campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
 
       // Optional
       source: chance.pickone(['campaigns', 'phoenix-web']),
@@ -216,6 +220,8 @@ class MessageFactoryHelper {
 
       // Timestamps
       created_at: createdAt,
+      updatead_at: updatedAt,
+      deleted_at: null,
     };
 
     // Optional, may be empty.
