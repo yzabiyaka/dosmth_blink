@@ -2,11 +2,11 @@
 
 const CustomerIoTrackEventWorker = require('./CustomerIoTrackEventWorker');
 
-class CustomerIoCampaignSignupEventWorker extends CustomerIoTrackEventWorker {
+class CustomerIoCampaignSignupWorker extends CustomerIoTrackEventWorker {
   setup() {
     this.queue = this.blink.queues.customerIoCampaignSignupQ;
     this.eventName = 'track_campaign_signup';
   }
 }
 
-module.exports = CustomerIoCampaignSignupEventWorker;
+module.exports = CustomerIoCampaignSignupWorker;
