@@ -71,7 +71,7 @@ class CampaignSignupPostMessage extends Message {
       signup_id: String(data.signup_id),
       campaign_id: data.campaign_id,
       campaign_run_id: data.campaign_run_id,
-      quantity: Number(this.quantity),
+      quantity: Number(data.quantity),
     };
     // TODO: transform iso to timestamp with correct TZ.
     eventData.created_at = moment(data.created_at).unix();
