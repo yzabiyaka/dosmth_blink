@@ -90,6 +90,12 @@ class CampaignSignupPostMessage extends Message {
       }
     });
 
+    // In future, Rogue will pass different campaign_signup_post types
+    // for different kind of member actions. Now everything is considered
+    // as 'action', which corresponds with "classic" Phoenix reportback.
+    // @see https://github.com/DoSomething/blink/issues/125
+    eventData.type = 'action';
+
     const event = new CustomerIoEvent(
       data.northstar_id,
       'campaign_signup_post',
