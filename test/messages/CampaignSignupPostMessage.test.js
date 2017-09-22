@@ -38,7 +38,9 @@ test('Campaign signup post message should be correctly transformed to CustomerIo
     cioEvent.getId().should.equal(data.northstar_id);
     cioEvent.getName().should.equal('campaign_signup_post');
 
+    // Event data.
     const eventData = cioEvent.getData();
+    eventData.version.should.equal(1);
 
     eventData.signup_post_id.should.equal(String(data.id));
     eventData.signup_id.should.equal(String(data.signup_id));

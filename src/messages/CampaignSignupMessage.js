@@ -68,7 +68,17 @@ class CampaignSignupMessage extends Message {
       eventData.source = data.source;
     }
 
-    return new CustomerIoEvent(data.northstar_id, 'campaign_signup', eventData);
+    const event = new CustomerIoEvent(
+      data.northstar_id,
+      'campaign_signup',
+      eventData,
+    );
+
+    // Signup -> customer.io event transformation would only happen in this class.
+    // It's safe to hardcode schema event version here.
+    // Please bump it this when data schema changes.
+    event.setVersion(1);
+    return event;
   }
 }
 

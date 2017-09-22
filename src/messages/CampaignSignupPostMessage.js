@@ -90,7 +90,16 @@ class CampaignSignupPostMessage extends Message {
       }
     });
 
-    return new CustomerIoEvent(data.northstar_id, 'campaign_signup_post', eventData);
+    const event = new CustomerIoEvent(
+      data.northstar_id,
+      'campaign_signup_post',
+      eventData,
+    );
+    // Signup post -> customer.io event transformation would only happen in this class.
+    // It's safe to hardcode schema event version here.
+    // Please bump it this when data schema changes.
+    event.setVersion(1);
+    return event;
   }
 }
 

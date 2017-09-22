@@ -18,6 +18,11 @@ class CustomerIoEvent {
   getData() {
     return this.data;
   }
+
+  // Schema version of event data.
+  setVersion(version) {
+    this.data.version = version;
+  }
 }
 
 module.exports = CustomerIoEvent;
