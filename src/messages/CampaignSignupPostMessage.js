@@ -90,7 +90,13 @@ class CampaignSignupPostMessage extends Message {
       }
     });
 
-    return new CustomerIoEvent(data.northstar_id, 'campaign_signup_post', eventData);
+    const event = new CustomerIoEvent(
+      data.northstar_id,
+      'campaign_signup_post',
+      eventData,
+    );
+    event.setVersion(1);
+    return event;
   }
 }
 

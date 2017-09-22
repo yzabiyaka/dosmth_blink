@@ -68,7 +68,13 @@ class CampaignSignupMessage extends Message {
       eventData.source = data.source;
     }
 
-    return new CustomerIoEvent(data.northstar_id, 'campaign_signup', eventData);
+    const event = new CustomerIoEvent(
+      data.northstar_id,
+      'campaign_signup',
+      eventData,
+    );
+    event.setVersion(1);
+    return event;
   }
 }
 
