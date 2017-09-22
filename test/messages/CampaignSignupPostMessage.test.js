@@ -42,6 +42,7 @@ test('Campaign signup post message should be correctly transformed to CustomerIo
     const eventData = cioEvent.getData();
     eventData.version.should.equal(1);
 
+    eventData.type.should.equal('action');
     eventData.signup_post_id.should.equal(String(data.id));
     eventData.signup_id.should.equal(String(data.signup_id));
     eventData.campaign_id.should.equal(data.campaign_id);
