@@ -73,6 +73,10 @@ class CampaignSignupMessage extends Message {
       'campaign_signup',
       eventData,
     );
+
+    // Signup -> customer.io event transformation would only happen in this class.
+    // It's safe to hardcode schema event version here.
+    // Please bump it this when data schema changes.
     event.setVersion(1);
     return event;
   }
