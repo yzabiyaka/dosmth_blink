@@ -19,6 +19,7 @@ class CustomerIoEvent {
     return this.data;
   }
 
+  // Schema version of event data.
   setVersion(version) {
     this.data.version = version;
   }
