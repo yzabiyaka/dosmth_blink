@@ -1,7 +1,7 @@
 'use strict';
 
 class CustomerIoEvent {
-  constructor(id, name, data, version) {
+  constructor(id, name, data) {
     this.id = id;
     this.name = name;
     this.data = data;
