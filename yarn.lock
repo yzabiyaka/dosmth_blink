@@ -44,7 +44,7 @@
   dependencies:
     arrify "^1.0.1"
 
-"@dosomething/eslint-config@^3.1.0":
+"@dosomething/eslint-config@^3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@dosomething/eslint-config/-/eslint-config-3.1.1.tgz#4885efca261b83fe17d271a08bc403463c02fe09"
   dependencies:
@@ -872,7 +872,7 @@ chai-as-promised@^7.1.1:
   dependencies:
     check-error "^1.0.2"
 
-chai@^4.1.1:
+chai@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.1.2.tgz#0f64584ba642f0f2ace2806279f4f06ca23ad73c"
   dependencies:
@@ -909,7 +909,7 @@ chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0:
     escape-string-regexp "^1.0.5"
     supports-color "^4.0.0"
 
-chance@^1.0.10:
+chance@^1.0.11:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/chance/-/chance-1.0.11.tgz#48e82f7583df356053e0ad122d4654c5066c570d"
 
@@ -1492,7 +1492,7 @@ eslint-module-utils@^2.1.1:
     debug "^2.6.8"
     pkg-dir "^1.0.0"
 
-eslint-plugin-ava@^4.2.1:
+eslint-plugin-ava@^4.2.2:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/eslint-plugin-ava/-/eslint-plugin-ava-4.2.2.tgz#0a20395ddf6d7452f4f9d6fd1a90f0bf4a5fc4d5"
   dependencies:
@@ -1551,7 +1551,7 @@ eslint-scope@^3.7.1:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint@4.6.1, eslint@^4.4.1:
+eslint@4.6.1:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.6.1.tgz#ddc7fc7fd70bf93205b0b3449bb16a1e9e7d4950"
   dependencies:
@@ -1585,6 +1585,48 @@ eslint@4.6.1, eslint@^4.4.1:
     optionator "^0.8.2"
     path-is-inside "^1.0.2"
     pluralize "^4.0.0"
+    progress "^2.0.0"
+    require-uncached "^1.0.3"
+    semver "^5.3.0"
+    strip-ansi "^4.0.0"
+    strip-json-comments "~2.0.1"
+    table "^4.0.1"
+    text-table "~0.2.0"
+
+eslint@^4.7.2:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.7.2.tgz#ff6f5f5193848a27ee9b627be3e73fb9cb5e662e"
+  dependencies:
+    ajv "^5.2.0"
+    babel-code-frame "^6.22.0"
+    chalk "^2.1.0"
+    concat-stream "^1.6.0"
+    cross-spawn "^5.1.0"
+    debug "^3.0.1"
+    doctrine "^2.0.0"
+    eslint-scope "^3.7.1"
+    espree "^3.5.1"
+    esquery "^1.0.0"
+    estraverse "^4.2.0"
+    esutils "^2.0.2"
+    file-entry-cache "^2.0.0"
+    functional-red-black-tree "^1.0.1"
+    glob "^7.1.2"
+    globals "^9.17.0"
+    ignore "^3.3.3"
+    imurmurhash "^0.1.4"
+    inquirer "^3.0.6"
+    is-resolvable "^1.0.0"
+    js-yaml "^3.9.1"
+    json-stable-stringify "^1.0.1"
+    levn "^0.3.0"
+    lodash "^4.17.4"
+    minimatch "^3.0.2"
+    mkdirp "^0.5.1"
+    natural-compare "^1.4.0"
+    optionator "^0.8.2"
+    path-is-inside "^1.0.2"
+    pluralize "^7.0.0"
     progress "^2.0.0"
     require-uncached "^1.0.3"
     semver "^5.3.0"
@@ -2970,7 +3012,7 @@ negotiator@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
 
-newrelic@^2.1.0:
+newrelic@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/newrelic/-/newrelic-2.2.1.tgz#14c9f01c0310f8d670cbed5469c3e42efd270de8"
   dependencies:
@@ -2988,7 +3030,7 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-node-fetch@^1.7.2:
+node-fetch@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
   dependencies:
@@ -3050,7 +3092,7 @@ number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
 
-nyc@^11.1.0:
+nyc@^11.2.1:
   version "11.2.1"
   resolved "https://registry.yarnpkg.com/nyc/-/nyc-11.2.1.tgz#ad850afe9dbad7f4970728b4b2e47fed1c38721c"
   dependencies:
