@@ -35,9 +35,9 @@ class UserMessage extends Message {
       // Optional, defaults to null when provided as empty string or null.
       last_authenticated_at: optionalDateDefaultsToNull,
       birthdate: Joi.string()
-          .empty(whenNullOrEmpty)
-          .regex(/^(\d{4})-(\d{2})-(\d{2})$/, 'valid birthdate')
-          .default(null),
+        .empty(whenNullOrEmpty)
+        .regex(/^(\d{4})-(\d{2})-(\d{2})$/, 'valid birthdate')
+        .default(null),
       facebook_id: optionalStringDefaultsToNull,
       first_name: optionalStringDefaultsToNull,
       last_name: optionalStringDefaultsToNull,
