@@ -32,7 +32,7 @@
     "change-case": "^3.0.1",
     "customerio-node": "^0.2.0",
     "dotenv": "^4.0.0",
-    "joi": "^10.6.0",
+    "joi": "^11.1.1",
     "koa": "^2.3.0",
     "koa-basic-auth": "^2.0.0",
     "koa-bodyparser": "^4.2.0",
@@ -43,7 +43,7 @@
     "throng": "^4.0.0",
     "uuid": "^3.1.0",
     "winston": "^2.3.1",
-    "yargs": "^8.0.2"
+    "yargs": "^9.0.1"
   },
   "devDependencies": {
     "@dosomething/eslint-config": "^3.1.1",
