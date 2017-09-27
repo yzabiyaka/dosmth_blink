@@ -56,7 +56,6 @@ class CustomerIoUpdateCustomerMessage extends Message {
         // Exception: kept as an isodate
         birthdate: Joi.string()
           .empty(whenNullOrEmpty)
-          .isoDate()
           .regex(/^(\d{4})-(\d{2})-(\d{2})$/, 'valid birthdate')
           .default(undefined),
         first_name: optionalStringDefaultsToUndefined,
