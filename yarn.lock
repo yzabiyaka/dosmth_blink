@@ -55,8 +55,8 @@
     eslint-plugin-react "^7.0.1"
 
 "@newrelic/native-metrics@^2.1.0":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@newrelic/native-metrics/-/native-metrics-2.1.1.tgz#2a7abd87373e46b3c957a08124a72c0c41968dc8"
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@newrelic/native-metrics/-/native-metrics-2.1.2.tgz#9a595dc602654b717188a294507087a51e79fba3"
   dependencies:
     nan "^2.4.0"
 
@@ -3032,8 +3032,8 @@ negotiator@0.6.1:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
 
 newrelic@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/newrelic/-/newrelic-2.2.1.tgz#14c9f01c0310f8d670cbed5469c3e42efd270de8"
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/newrelic/-/newrelic-2.2.2.tgz#ea896bd2d3803a6a77f9be3cff882845ccbf4fb0"
   dependencies:
     concat-stream "^1.5.0"
     https-proxy-agent "^0.3.5"
@@ -3703,8 +3703,8 @@ request@2.81.0:
     uuid "^3.0.0"
 
 request@^2.58.0:
-  version "2.82.0"
-  resolved "https://registry.yarnpkg.com/request/-/request-2.82.0.tgz#2ba8a92cd7ac45660ea2b10a53ae67cd247516ea"
+  version "2.83.0"
+  resolved "https://registry.yarnpkg.com/request/-/request-2.83.0.tgz#ca0b65da02ed62935887808e6f510381034e3356"
   dependencies:
     aws-sign2 "~0.7.0"
     aws4 "^1.6.0"
@@ -3725,7 +3725,7 @@ request@^2.58.0:
     qs "~6.5.1"
     safe-buffer "^5.1.1"
     stringstream "~0.0.5"
-    tough-cookie "~2.3.2"
+    tough-cookie "~2.3.3"
     tunnel-agent "^0.6.0"
     uuid "^3.1.0"
 
@@ -4231,7 +4231,7 @@ topo@2.x.x:
   dependencies:
     hoek "4.x.x"
 
-tough-cookie@~2.3.0, tough-cookie@~2.3.2:
+tough-cookie@~2.3.0, tough-cookie@~2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.3.3.tgz#0b618a5565b6dea90bf3425d04d55edc475a7561"
   dependencies:
