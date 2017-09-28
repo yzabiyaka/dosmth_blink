@@ -161,7 +161,7 @@ test('Cio identify created from Northstar is correct', () => {
     );
 
     // Optional:
-    if (cioUpdateAttributes.mobile_status) {
+    if (cioUpdateAttributes.sms_status) {
       expect(cioUpdateAttributes.sms_status).to.be.equal(
         userData.sms_status,
       );
