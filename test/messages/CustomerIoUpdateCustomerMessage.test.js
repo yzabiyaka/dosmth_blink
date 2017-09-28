@@ -128,7 +128,7 @@ test('Cio identify should fail on incorrect types', () => {
 });
 
 
-test('Cio identify created from Northsar is correct', () => {
+test('Cio identify created from Northstar is correct', () => {
   let count = 100;
   while (count > 0) {
     const userMessage = MessageFactoryHelper.getValidUser();
@@ -148,6 +148,7 @@ test('Cio identify created from Northsar is correct', () => {
     cioUpdateData.should.have.property('id', userData.id);
     cioUpdateData.should.have.property('data').and.to.be.an('object');
     cioUpdateData.data.should.have.property('email', userData.email);
+    cioUpdateData.data.should.have.property('phone', userData.mobile);
 
     const cioUpdateAttributes = cioUpdateData.data;
     cioUpdateAttributes.should.have.property(
