@@ -23,6 +23,7 @@ const chance = new Chance();
 class MessageFactoryHelper {
   static getValidUser() {
     const fakeId = chance.hash({ length: 24 });
+    const createdAt = chance.date({ year: chance.year({ min: 2000, max: 2010 }) }).toISOString();
     return new UserMessage({
       data: {
         id: fakeId,
@@ -62,8 +63,8 @@ class MessageFactoryHelper {
         last_authenticated_at: chance.date({
           year: chance.year({ min: 2013, max: 2015 }),
         }).toISOString(),
-        updated_at: chance.date({ year: chance.year({ min: 2011, max: 2012 }) }).toISOString(),
-        created_at: chance.date({ year: chance.year({ min: 2000, max: 2010 }) }).toISOString(),
+        updated_at: createdAt,
+        created_at: createdAt,
       },
       meta: {},
     });

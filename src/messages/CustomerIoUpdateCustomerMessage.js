@@ -85,7 +85,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
     });
   }
 
-  static fromUser(userMessage, isNew = false) {
+  static fromUser(userMessage) {
     const user = userMessage.getData();
     // Copy user fields.
     const customerData = Object.assign({}, user);
@@ -112,7 +112,10 @@ class CustomerIoUpdateCustomerMessage extends Message {
       ).unix();
     }
 
-    if (isNew) {
+    // If a user is newly created (created_at & updated_at are the same)
+    // then set them as "subscribed" to emails in Customer.io!
+    const isNew = customerData.created_at === customerData.updated_at;
+    if (customerData.email && isNew) {
       customerData.unsubscribed = false;
       customerData.subscribed_at = moment().unix();
     }
