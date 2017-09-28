@@ -44,8 +44,9 @@ class CustomerIoUpdateCustomerMessage extends Message {
           .timestamp('unix')
           .raw(),
 
-        mobile_status: Joi.valid([
+        sms_status: Joi.valid([
           'active',
+          'less',
           'undeliverable',
           'unknown',
           null,

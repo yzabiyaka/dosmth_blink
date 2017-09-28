@@ -69,7 +69,7 @@ test('Cio identify should fail if required fields are missing, undefined, null, 
 
 test('Cio identify should remove certain optional fields when empty', () => {
   [
-    'mobile_status',
+    'sms_status',
     'last_authenticated_at',
     'birthdate',
     'facebook_id',
@@ -161,8 +161,8 @@ test('Cio identify created from Northsar is correct', () => {
 
     // Optional:
     if (cioUpdateAttributes.mobile_status) {
-      expect(cioUpdateAttributes.mobile_status).to.be.equal(
-        userData.mobile_status,
+      expect(cioUpdateAttributes.sms_status).to.be.equal(
+        userData.sms_status,
       );
     }
     expect(cioUpdateAttributes.last_authenticated_at).to.be.equal(
