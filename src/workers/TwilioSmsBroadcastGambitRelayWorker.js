@@ -40,8 +40,8 @@ class TwilioSmsBroadcastGambitRelayWorker extends Worker {
     // Check that the message has broadcastId query string.
     // If it hasn't, something is wrong. We expect broadcastId to be
     // provided with all reciepts.
-    const meta = message.getMeta();
-    if (!meta.query || !meta.query.broadcastId) {
+    const query = message.getMeta().query;
+    if (!query || !query.broadcastId) {
       const meta = {
         env: this.blink.config.app.env,
         code: 'error_gambit_broadcast_relay_missing_broadcastId',
@@ -54,7 +54,7 @@ class TwilioSmsBroadcastGambitRelayWorker extends Worker {
 
     const headers = this.getRequestHeaders(message);
     const response = await fetch(
-      `${this.baseURL}/import-message?broadcastId=${meta.query.broadcastId}`,
+      `${this.baseURL}/import-message?broadcastId=${query.broadcastId}`,
       {
         method: 'POST',
         headers,
