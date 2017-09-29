@@ -18,6 +18,10 @@ class TwilioStatusCallbackMessage extends Message {
     return this.getData().SmsStatus === 'received';
   }
 
+  isDelivered() {
+    return this.getData().MessageStatus === 'delivered';
+  }
+
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper
