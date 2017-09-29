@@ -29,7 +29,7 @@ class TwillioStatusCallbackMessage extends Message {
     // Save GET params when present.
     // TODO: move to generic function for all messages?
     if (ctx.query && Object.keys(ctx.query).length) {
-      meta['query'] = ctx.query;
+      meta.query = ctx.query;
     }
 
     const message = new TwillioStatusCallbackMessage({
