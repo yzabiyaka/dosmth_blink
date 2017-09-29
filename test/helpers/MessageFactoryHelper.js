@@ -79,9 +79,10 @@ class MessageFactoryHelper {
           email: chance.email(),
           updated_at: chance.timestamp(),
           created_at: chance.timestamp(),
-          mobile_status: chance.pickone([
+          sms_status: chance.pickone([
             'undeliverable',
             'active',
+            'less',
             'unknown',
             null,
             undefined,

@@ -104,7 +104,7 @@ test('Cio identify should fail on incorrect types', () => {
     email: chance.integer(),
     updated_at: chance.date().toISOString(),
     created_at: chance.date().toISOString(),
-    // no mobile_status
+    // no sms_status
     last_authenticated_at: chance.date().toISOString(),
     birthdate: chance.timestamp(),
     facebook_id: chance.fbid(),
