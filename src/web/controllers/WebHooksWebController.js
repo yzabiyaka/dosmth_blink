@@ -3,7 +3,7 @@
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const MdataMessage = require('../../messages/MdataMessage');
-const TwillioStatusCallbackMessage = require('../../messages/TwillioStatusCallbackMessage');
+const TwilioStatusCallbackMessage = require('../../messages/TwilioStatusCallbackMessage');
 const WebController = require('./WebController');
 
 class WebHooksWebController extends WebController {
@@ -52,7 +52,7 @@ class WebHooksWebController extends WebController {
 
   async mocoMessageData(ctx) {
     try {
-      // Todo: looks like I should have used TwillioStatusCallbackMessage here.
+      // Todo: looks like I should have used TwilioStatusCallbackMessage here.
       const freeFormMessage = FreeFormMessage.fromCtx(ctx);
       freeFormMessage.validate();
       const { mocoMessageDataQ } = this.blink.queues;
@@ -65,7 +65,7 @@ class WebHooksWebController extends WebController {
 
   async twilioSmsBroadcast(ctx) {
     try {
-      const message = TwillioStatusCallbackMessage.fromCtx(ctx);
+      const message = TwilioStatusCallbackMessage.fromCtx(ctx);
       message.validate();
       this.blink.exchange.publish(
         'sms-broadcast.status-callback.twilio.webhook',
@@ -73,7 +73,7 @@ class WebHooksWebController extends WebController {
       );
 
 
-      // TODO: check if this response is ok with twillio
+      // TODO: check if this response is ok with twilio
       // @see https://www.twilio.com/docs/api/twiml/sms/your_response#status-callbacks
       //
       // Quote:

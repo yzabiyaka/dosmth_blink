@@ -1,12 +1,12 @@
 'use strict';
 
-const TwillioStatusCallbackMessage = require('../messages/TwillioStatusCallbackMessage');
+const TwilioStatusCallbackMessage = require('../messages/TwilioStatusCallbackMessage');
 const Queue = require('./Queue');
 
 class TwilioSmsBroadcastGambitRelayQ extends Queue {
   constructor(...args) {
     super(...args);
-    this.messageClass = TwillioStatusCallbackMessage;
+    this.messageClass = TwilioStatusCallbackMessage;
     this.routes.push('sms-broadcast.status-callback.twilio.webhook');
   }
 }
