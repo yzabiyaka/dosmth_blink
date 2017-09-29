@@ -235,7 +235,7 @@ test('POST /api/v1/webhooks/twilio-sms-broadcast should publish message to twili
   const broadcastId = chance.word();
 
   const res = await t.context.supertest.post('/api/v1/webhooks/twilio-sms-broadcast')
-    .query({ broadcast_id: broadcastId })
+    .query({ broadcastId })
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
@@ -262,7 +262,7 @@ test('POST /api/v1/webhooks/twilio-sms-broadcast should publish message to twili
   // Check broadcast id.
   messageData.should.have.property('meta');
   messageData.meta.should.have.property('query');
-  messageData.meta.query.should.have.property('broadcast_id', broadcastId);
+  messageData.meta.query.should.have.property('broadcastId', broadcastId);
 });
 
 // ------- End -----------------------------------------------------------------
