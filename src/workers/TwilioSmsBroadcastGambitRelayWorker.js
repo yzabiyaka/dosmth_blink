@@ -39,7 +39,7 @@ class TwilioSmsBroadcastGambitRelayWorker extends Worker {
 
     // Check that the message has broadcastId query string.
     // If it hasn't, something is wrong. We expect broadcastId to be
-    // provided with all reciepts.
+    // provided with all receipts.
     const query = message.getMeta().query;
     if (!query || !query.broadcastId) {
       const meta = {
