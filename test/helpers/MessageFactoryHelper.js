@@ -85,7 +85,6 @@ class MessageFactoryHelper {
             'less',
             'unknown',
             null,
-            undefined,
           ]),
           last_authenticated_at: chance.timestamp(),
           birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
