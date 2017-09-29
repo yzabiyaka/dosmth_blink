@@ -2,8 +2,9 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const test = require('ava');
 const chai = require('chai');
+const Chance = require('chance');
+const test = require('ava');
 
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
 const HooksHelper = require('../../helpers/HooksHelper');
@@ -13,6 +14,8 @@ const HooksHelper = require('../../helpers/HooksHelper');
 chai.should();
 test.beforeEach(HooksHelper.startBlinkWebApp);
 test.afterEach(HooksHelper.stopBlinkWebApp);
+
+const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -30,12 +33,18 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
   res.header['content-type'].should.match(/json/);
 
   // Check response.
+  // TODO: check in loop or use .equal()?
   res.body.should.have.property('customerio-email-activity')
     .and.have.string('/api/v1/webhooks/customerio-email-activity');
+
   res.body.should.have.property('gambit-chatbot-mdata')
     .and.have.string('/api/v1/webhooks/gambit-chatbot-mdata');
+
   res.body.should.have.property('moco-message-data')
     .and.have.string('/api/v1/webhooks/moco-message-data');
+
+  res.body.should.have.property('twilio-sms-broadcast')
+    .and.have.string('/api/v1/webhooks/twilio-sms-broadcast');
 });
 
 /**
@@ -210,6 +219,50 @@ test('POST /api/v1/webhooks/moco-message-data should publish message to moco-mes
   const messageData = JSON.parse(payload);
   messageData.should.have.property('data');
   messageData.data.should.be.eql(data);
+});
+
+/**
+ * POST /api/v1/webhooks/twilio-sms-broadcast
+ */
+test('POST /api/v1/webhooks/twilio-sms-broadcast should publish message to twilio-sms-broadcast-gambit-relay queue', async (t) => {
+  const data = {
+    random: 'key',
+    nested: {
+      random2: 'key2',
+    },
+  };
+
+  const broadcastId = chance.word();
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/twilio-sms-broadcast')
+    .query({ broadcastId })
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(202);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+
+  // Check response.
+  res.body.should.have.property('ok', true);
+
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  const messages = await rabbit.getMessagesFrom('twilio-sms-broadcast-gambit-relay', 1, false);
+  messages.should.be.an('array').and.to.have.lengthOf(1);
+
+  messages[0].should.have.property('payload');
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+  messageData.data.should.be.eql(data);
+
+  // Check broadcast id.
+  messageData.should.have.property('meta');
+  messageData.meta.should.have.property('query');
+  messageData.meta.query.should.have.property('broadcastId', broadcastId);
 });
 
 // ------- End -----------------------------------------------------------------
