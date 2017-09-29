@@ -21,13 +21,21 @@ class TwillioStatusCallbackMessage extends Message {
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper
-    const freeFormMessage = new TwillioStatusCallbackMessage({
+
+    const meta = {
+      request_id: ctx.id,
+    };
+
+    // Save GET params when present.
+    if (ctx.query && Object.keys(ctx.query).length) {
+      meta['query'] = ctx.query;
+    }
+
+    const message = new TwillioStatusCallbackMessage({
       data: ctx.request.body,
-      meta: {
-        request_id: ctx.id,
-      },
+      meta,
     });
-    return freeFormMessage;
+    return message;
   }
 
   static fromRabbitMessage(rabbitMessage) {

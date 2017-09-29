@@ -65,7 +65,6 @@ class WebHooksWebController extends WebController {
 
   async twilioSmsBroadcast(ctx) {
     try {
-      // Todo: validate and save braodcast metadata
       const message = TwillioStatusCallbackMessage.fromCtx(ctx);
       message.validate();
       this.blink.exchange.publish(

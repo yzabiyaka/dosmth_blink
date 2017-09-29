@@ -2,8 +2,9 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const test = require('ava');
 const chai = require('chai');
+const Chance = require('chance');
+const test = require('ava');
 
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
 const HooksHelper = require('../../helpers/HooksHelper');
@@ -13,6 +14,8 @@ const HooksHelper = require('../../helpers/HooksHelper');
 chai.should();
 test.beforeEach(HooksHelper.startBlinkWebApp);
 test.afterEach(HooksHelper.stopBlinkWebApp);
+
+const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -229,7 +232,10 @@ test('POST /api/v1/webhooks/twilio-sms-broadcast should publish message to twili
     },
   };
 
+  const broadcastId = chance.word();
+
   const res = await t.context.supertest.post('/api/v1/webhooks/twilio-sms-broadcast')
+    .query({ broadcast_id: broadcastId })
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
@@ -252,6 +258,11 @@ test('POST /api/v1/webhooks/twilio-sms-broadcast should publish message to twili
   const messageData = JSON.parse(payload);
   messageData.should.have.property('data');
   messageData.data.should.be.eql(data);
+
+  // Check broadcast id.
+  messageData.should.have.property('meta');
+  messageData.meta.should.have.property('query');
+  messageData.meta.query.should.have.property('broadcast_id', broadcastId);
 });
 
 // ------- End -----------------------------------------------------------------
