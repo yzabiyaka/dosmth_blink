@@ -54,7 +54,7 @@ class TwilioSmsBroadcastGambitRelayWorker extends Worker {
 
     const headers = this.getRequestHeaders(message);
     const response = await fetch(
-      `${this.baseURL}/import-message`,
+      `${this.baseURL}/import-message?broadcastId=${meta.query.broadcastId}`,
       {
         method: 'POST',
         headers,
