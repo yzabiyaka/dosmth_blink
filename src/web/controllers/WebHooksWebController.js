@@ -3,6 +3,7 @@
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const MdataMessage = require('../../messages/MdataMessage');
+const TwilioStatusCallbackMessage = require('../../messages/TwilioStatusCallbackMessage');
 const WebController = require('./WebController');
 
 class WebHooksWebController extends WebController {
@@ -13,6 +14,7 @@ class WebHooksWebController extends WebController {
     this.customerioEmailActivity = this.customerioEmailActivity.bind(this);
     this.gambitChatbotMdata = this.gambitChatbotMdata.bind(this);
     this.mocoMessageData = this.mocoMessageData.bind(this);
+    this.twilioSmsBroadcast = this.twilioSmsBroadcast.bind(this);
   }
 
   async index(ctx) {
@@ -20,6 +22,7 @@ class WebHooksWebController extends WebController {
       'customerio-email-activity': this.fullUrl('api.v1.webhooks.customerio-email-activity'),
       'gambit-chatbot-mdata': this.fullUrl('api.v1.webhooks.gambit-chatbot-mdata'),
       'moco-message-data': this.fullUrl('api.v1.webhooks.moco-message-data'),
+      'twilio-sms-broadcast': this.fullUrl('api.v1.webhooks.twilio-sms-broadcast'),
     };
   }
 
@@ -49,11 +52,36 @@ class WebHooksWebController extends WebController {
 
   async mocoMessageData(ctx) {
     try {
+      // Todo: looks like I should have used TwilioStatusCallbackMessage here.
       const freeFormMessage = FreeFormMessage.fromCtx(ctx);
       freeFormMessage.validate();
       const { mocoMessageDataQ } = this.blink.queues;
       mocoMessageDataQ.publish(freeFormMessage);
       this.sendOK(ctx, freeFormMessage);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
+  async twilioSmsBroadcast(ctx) {
+    try {
+      const message = TwilioStatusCallbackMessage.fromCtx(ctx);
+      message.validate();
+      this.blink.exchange.publish(
+        'sms-broadcast.status-callback.twilio.webhook',
+        message,
+      );
+
+
+      // TODO: check if this response is ok with twilio
+      // @see https://www.twilio.com/docs/api/twiml/sms/your_response#status-callbacks
+      //
+      // Quote:
+      // It's recommended that you respond to status callbacks with either a
+      // 204 No Content or a 200 OK with Content-Type: text/xml
+      // and an empty <Response/> in the body.
+      // Failure to respond properly will result in warnings in Debugger.
+      this.sendOK(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }

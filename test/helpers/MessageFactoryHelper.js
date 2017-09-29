@@ -11,7 +11,7 @@ const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage'
 const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
-const TwillioStatusCallbackMessage = require('../../src/messages/TwillioStatusCallbackMessage');
+const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
@@ -154,7 +154,7 @@ class MessageFactoryHelper {
   static getValidMessageData() {
     // TODO: randomize
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
-    return new TwillioStatusCallbackMessage({
+    return new TwilioStatusCallbackMessage({
       data: {
         ToCountry: 'US',
         MediaContentType0: 'image/png',
