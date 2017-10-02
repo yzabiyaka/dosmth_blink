@@ -73,6 +73,7 @@ class WebHooksWebController extends WebController {
         'sms-inbound.twilio.webhook',
         message,
       );
+      // See https://www.twilio.com/docs/api/twiml/sms/your_response.
       this.sendOKNoContent(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
@@ -87,17 +88,8 @@ class WebHooksWebController extends WebController {
         'sms-broadcast.status-callback.twilio.webhook',
         message,
       );
-
-
-      // TODO: check if this response is ok with twilio
-      // @see https://www.twilio.com/docs/api/twiml/sms/your_response#status-callbacks
-      //
-      // Quote:
-      // It's recommended that you respond to status callbacks with either a
-      // 204 No Content or a 200 OK with Content-Type: text/xml
-      // and an empty <Response/> in the body.
-      // Failure to respond properly will result in warnings in Debugger.
-      this.sendOK(ctx, message);
+      // See https://www.twilio.com/docs/api/twiml/sms/your_response.
+      this.sendOKNoContent(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }
