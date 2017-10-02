@@ -83,7 +83,6 @@ test('Cio identify should remove certain optional fields when empty', () => {
     'language',
     'country',
     'unsubscribed',
-    'subscribed_at',
   ]
     .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
 });
@@ -118,7 +117,6 @@ test('Cio identify should fail on incorrect types', () => {
     language: chance.integer(),
     country: chance.integer(),
     unsubscribed: chance.word(),
-    subscribed_at: chance.date().toISOString(),
     role: chance.integer(),
     interests: chance.word(),
   };
@@ -197,7 +195,6 @@ test('Cio identify created from Northstar is correct', () => {
       userData.country,
     );
     expect(cioUpdateAttributes.unsubscribed).to.be.equal(false);
-    cioUpdateAttributes.should.have.property('subscribed_at');
     expect(cioUpdateAttributes.role).to.be.equal(
       userData.role,
     );

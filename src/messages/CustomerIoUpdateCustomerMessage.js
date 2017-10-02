@@ -68,9 +68,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
         facebook_id: optionalStringDefaultsToUndefined,
-        // TODO: Only explicitly set for new users.
         unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
-        subscribed_at: optionalTimestampDefaultsToUndefined,
 
         // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
@@ -83,7 +81,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
     });
   }
 
-  static fromUser(userMessage, isNew = false) {
+  static fromUser(userMessage) {
     const user = userMessage.getData();
     // Copy user fields.
     const customerData = Object.assign({}, user);
@@ -106,9 +104,11 @@ class CustomerIoUpdateCustomerMessage extends Message {
       ).unix();
     }
 
-    if (isNew) {
+    // If a user is newly created (created_at & updated_at are the same)
+    // then set them as "subscribed" to emails in Customer.io!
+    const isNew = customerData.created_at === customerData.updated_at;
+    if (customerData.email && isNew) {
       customerData.unsubscribed = false;
-      customerData.subscribed_at = moment().unix();
     }
 
     const customerIoUpdateCustomerMessage = new CustomerIoUpdateCustomerMessage({
