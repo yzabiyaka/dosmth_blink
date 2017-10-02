@@ -15,6 +15,7 @@ class WebHooksWebController extends WebController {
     this.gambitChatbotMdata = this.gambitChatbotMdata.bind(this);
     this.mocoMessageData = this.mocoMessageData.bind(this);
     this.twilioSmsBroadcast = this.twilioSmsBroadcast.bind(this);
+    this.twilioSmsInbound = this.twilioSmsInbound.bind(this);
   }
 
   async index(ctx) {
@@ -23,6 +24,7 @@ class WebHooksWebController extends WebController {
       'gambit-chatbot-mdata': this.fullUrl('api.v1.webhooks.gambit-chatbot-mdata'),
       'moco-message-data': this.fullUrl('api.v1.webhooks.moco-message-data'),
       'twilio-sms-broadcast': this.fullUrl('api.v1.webhooks.twilio-sms-broadcast'),
+      'twilio-sms-inbound': this.fullUrl('api.v1.webhooks.twilio-sms-inbound'),
     };
   }
 
@@ -63,6 +65,21 @@ class WebHooksWebController extends WebController {
     }
   }
 
+  async twilioSmsInbound(ctx) {
+    try {
+      const message = FreeFormMessage.fromCtx(ctx);
+      message.validate();
+      this.blink.exchange.publish(
+        'sms-inbound.twilio.webhook',
+        message,
+      );
+      // See https://www.twilio.com/docs/api/twiml/sms/your_response.
+      this.sendOKNoContent(ctx, message);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
   async twilioSmsBroadcast(ctx) {
     try {
       const message = TwilioStatusCallbackMessage.fromCtx(ctx);
@@ -71,17 +88,8 @@ class WebHooksWebController extends WebController {
         'sms-broadcast.status-callback.twilio.webhook',
         message,
       );
-
-
-      // TODO: check if this response is ok with twilio
-      // @see https://www.twilio.com/docs/api/twiml/sms/your_response#status-callbacks
-      //
-      // Quote:
-      // It's recommended that you respond to status callbacks with either a
-      // 204 No Content or a 200 OK with Content-Type: text/xml
-      // and an empty <Response/> in the body.
-      // Failure to respond properly will result in warnings in Debugger.
-      this.sendOK(ctx, message);
+      // See https://www.twilio.com/docs/api/twiml/sms/your_response.
+      this.sendOKNoContent(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }

@@ -13,6 +13,7 @@ const GambitChatbotMdataQ = require('../queues/GambitChatbotMdataQ');
 const MocoMessageDataQ = require('../queues/MocoMessageDataQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 const TwilioSmsBroadcastGambitRelayQ = require('../queues/TwilioSmsBroadcastGambitRelayQ');
+const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRelayQ');
 
 class BlinkApp {
   constructor(config) {
@@ -54,6 +55,7 @@ class BlinkApp {
         MocoMessageDataQ,
         QuasarCustomerIoEmailActivityQ,
         TwilioSmsBroadcastGambitRelayQ,
+        TwilioSmsInboundGambitRelayQ,
       ]);
     } catch (error) {
       this.connecting = false;
