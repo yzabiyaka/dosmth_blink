@@ -68,9 +68,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
         facebook_id: optionalStringDefaultsToUndefined,
-        // TODO: Only explicitly set for new users.
         unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
-        subscribed_at: optionalTimestampDefaultsToUndefined,
 
         // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
@@ -117,7 +115,6 @@ class CustomerIoUpdateCustomerMessage extends Message {
     const isNew = customerData.created_at === customerData.updated_at;
     if (customerData.email && isNew) {
       customerData.unsubscribed = false;
-      customerData.subscribed_at = moment().unix();
     }
 
     const customerIoUpdateCustomerMessage = new CustomerIoUpdateCustomerMessage({

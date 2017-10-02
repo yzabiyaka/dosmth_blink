@@ -99,7 +99,6 @@ class MessageFactoryHelper {
           language: chance.locale({ region: false }),
           country: chance.country(),
           unsubscribed: chance.bool(),
-          subscribed_at: chance.timestamp(),
           role: chance.pickone(['user', 'admin', 'staff']),
           interests: chance.n(chance.word, chance.natural({ min: 0, max: 20 })),
         },
