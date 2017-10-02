@@ -29,8 +29,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         // Remove field when provided as empty string or null.
         email: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
-        // TODO: make sure has E.164 format
-        // phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
+        phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
         // Required:
         updated_at: Joi.date()
@@ -44,8 +43,9 @@ class CustomerIoUpdateCustomerMessage extends Message {
           .timestamp('unix')
           .raw(),
 
-        mobile_status: Joi.valid([
+        sms_status: Joi.valid([
           'active',
+          'less',
           'undeliverable',
           'unknown',
           null,
@@ -79,9 +79,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         interests: Joi.array().items(Joi.string()).empty(null).default(undefined),
 
         // TODO: add more cio specific fields, like unsubscribed_at
-      }),
-      // TODO: Bring back when phone is formatted in Northstar
-      // .or('email', 'phone'),
+      }).or('email', 'phone'),
     });
   }
 
@@ -93,13 +91,9 @@ class CustomerIoUpdateCustomerMessage extends Message {
     delete customerData.id;
 
     // Rename mobile to phone
-    // TODO: format phone
-
     if (customerData.mobile) {
-      // const mobile = customerData.mobile;
+      customerData.phone = customerData.mobile;
       delete customerData.mobile;
-      // TODO: Bring back when phone is formatted in Northstar
-      // customerData.phone = mobile;
     }
 
     customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();

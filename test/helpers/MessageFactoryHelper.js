@@ -46,8 +46,9 @@ class MessageFactoryHelper {
         slack_id: chance.natural().toString(),
         mobilecommons_id: chance.natural().toString(),
         parse_installation_ids: chance.n(chance.guid, 2),
-        mobile_status: chance.pickone([
+        sms_status: chance.pickone([
           'undeliverable',
+          'less',
           'active',
           'unknown',
           null,
@@ -78,12 +79,12 @@ class MessageFactoryHelper {
           email: chance.email(),
           updated_at: chance.timestamp(),
           created_at: chance.timestamp(),
-          mobile_status: chance.pickone([
+          sms_status: chance.pickone([
             'undeliverable',
             'active',
+            'less',
             'unknown',
             null,
-            undefined,
           ]),
           last_authenticated_at: chance.timestamp(),
           birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),

@@ -69,7 +69,7 @@ test('Cio identify should fail if required fields are missing, undefined, null, 
 
 test('Cio identify should remove certain optional fields when empty', () => {
   [
-    'mobile_status',
+    'sms_status',
     'last_authenticated_at',
     'birthdate',
     'facebook_id',
@@ -104,7 +104,7 @@ test('Cio identify should fail on incorrect types', () => {
     email: chance.integer(),
     updated_at: chance.date().toISOString(),
     created_at: chance.date().toISOString(),
-    // no mobile_status
+    // no sms_status
     last_authenticated_at: chance.date().toISOString(),
     birthdate: chance.timestamp(),
     facebook_id: chance.fbid(),
@@ -128,7 +128,7 @@ test('Cio identify should fail on incorrect types', () => {
 });
 
 
-test('Cio identify created from Northsar is correct', () => {
+test('Cio identify created from Northstar is correct', () => {
   let count = 100;
   while (count > 0) {
     const userMessage = MessageFactoryHelper.getValidUser();
@@ -148,6 +148,7 @@ test('Cio identify created from Northsar is correct', () => {
     cioUpdateData.should.have.property('id', userData.id);
     cioUpdateData.should.have.property('data').and.to.be.an('object');
     cioUpdateData.data.should.have.property('email', userData.email);
+    cioUpdateData.data.should.have.property('phone', userData.mobile);
 
     const cioUpdateAttributes = cioUpdateData.data;
     cioUpdateAttributes.should.have.property(
@@ -160,9 +161,9 @@ test('Cio identify created from Northsar is correct', () => {
     );
 
     // Optional:
-    if (cioUpdateAttributes.mobile_status) {
-      expect(cioUpdateAttributes.mobile_status).to.be.equal(
-        userData.mobile_status,
+    if (cioUpdateAttributes.sms_status) {
+      expect(cioUpdateAttributes.sms_status).to.be.equal(
+        userData.sms_status,
       );
     }
     expect(cioUpdateAttributes.last_authenticated_at).to.be.equal(
