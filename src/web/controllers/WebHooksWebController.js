@@ -73,7 +73,7 @@ class WebHooksWebController extends WebController {
         'sms-inbound.twilio.webhook',
         message,
       );
-      this.sendOK(ctx, message);
+      this.sendOKNoContent(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }

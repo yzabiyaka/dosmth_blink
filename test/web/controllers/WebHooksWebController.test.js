@@ -286,14 +286,11 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
-  res.status.should.be.equal(202);
-
-  // Check response to be json
-  res.header.should.have.property('content-type');
-  res.header['content-type'].should.match(/json/);
-
-  // Check response.
-  res.body.should.have.property('ok', true);
+  // Ensure TwiML compatible response.
+  res.status.should.be.equal(204);
+  res.res.statusMessage.toLowerCase().should.equal('no content');
+  res.header.should.not.have.property('content-type');
+  res.text.should.equal('');
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
