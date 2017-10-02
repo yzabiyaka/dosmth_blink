@@ -25,8 +25,9 @@ class UserMessage extends Message {
       // Required:
       updated_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
       created_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
-      mobile_status: Joi.valid([
+      sms_status: Joi.valid([
         'active',
+        'less',
         'undeliverable',
         'unknown',
         null,
