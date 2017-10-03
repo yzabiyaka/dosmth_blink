@@ -106,6 +106,15 @@ class TwilioSmsInboundGambitRelayWorker extends Worker {
 
     return headers;
   }
+
+  checkRetrySuppress(response) {
+    // TODO: create common helper
+    const headerResult = response.headers.get(this.blink.config.app.retrySuppressHeader);
+    if (!headerResult) {
+      return false;
+    }
+    return headerResult.toLowerCase() === 'true';
+  }
 }
 
 module.exports = TwilioSmsInboundGambitRelayWorker;
