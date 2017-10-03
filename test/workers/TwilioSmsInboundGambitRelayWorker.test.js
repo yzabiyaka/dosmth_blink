@@ -7,7 +7,6 @@ const fetch = require('node-fetch');
 const test = require('ava');
 
 const BlinkWorkerApp = require('../../src/app/BlinkWorkerApp');
-const TwilioSmsInboundGambitRelayWorker = require('../../src/workers/TwilioSmsInboundGambitRelayWorker');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
