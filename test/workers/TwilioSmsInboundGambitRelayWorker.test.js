@@ -75,16 +75,4 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
   gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
 });
 
-test('Gambit should process delivered messages', () => {
-  const messageData = MessageFactoryHelper.getValidMessageData();
-  messageData.payload.data.MessageStatus = 'delivered';
-  TwilioSmsInboundGambitRelayWorker.shouldSkip(messageData).should.be.false;
-});
-
-test('Gambit should not process not inbound messages', () => {
-  const messageData = MessageFactoryHelper.getValidMessageData();
-  messageData.payload.data.MessageStatus = 'other';
-  TwilioSmsInboundGambitRelayWorker.shouldSkip(messageData).should.be.true;
-});
-
 // ------- End -----------------------------------------------------------------
