@@ -31,7 +31,7 @@ class GambitCampaignSignupRelayWorker extends Worker {
       campaignId: data.campaign_id,
       // Web signups are consdered external for Gambit.
       template: 'externalSignupMenuMessage',
-    }
+    };
 
     const headers = this.getRequestHeaders(message);
 
