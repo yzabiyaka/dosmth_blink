@@ -29,8 +29,8 @@ class GambitCampaignSignupRelayWorker extends Worker {
     const body = {
       northstarId: data.northstar_id,
       campaignId: data.campaign_id,
-      // Web signups are consdered external for Gambit.
-      template: 'externalSignupMenuMessage',
+      // Rogue signups are consdered external for Gambit.
+      template: 'externalSignupMenu',
     };
 
     const headers = this.getRequestHeaders(message);
