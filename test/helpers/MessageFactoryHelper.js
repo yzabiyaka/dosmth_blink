@@ -266,7 +266,6 @@ class MessageFactoryHelper {
 
     return data;
   }
-
 }
 
 module.exports = MessageFactoryHelper;
