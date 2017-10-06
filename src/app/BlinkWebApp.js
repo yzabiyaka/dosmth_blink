@@ -70,6 +70,11 @@ class BlinkWebApp extends BlinkApp {
       '/api/v1/events/user-signup-post',
       eventsWebController.userSignupPost,
     );
+    router.post(
+      'api.v1.events.quasar-relay',
+      '/api/v1/events/quasar-relay',
+      eventsWebController.quasarRelay,
+    );
 
     // Webhooks
     router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);
