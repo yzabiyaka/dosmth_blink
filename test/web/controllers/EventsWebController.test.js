@@ -240,7 +240,7 @@ test('POST /api/v1/events/user-signup-post should publish message to user-signup
 
 
 /**
- * POST /api/v1/events/user-signup-post
+ * POST /api/v1/events/quasar-relay
  */
 test('POST /api/v1/events/quasar-relay should save message as is to quasar queue', async (t) => {
   const data = MessageFactoryHelper.getRandomDataSample();
