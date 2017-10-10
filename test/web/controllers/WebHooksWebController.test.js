@@ -53,7 +53,7 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
 /**
  * POST /api/v1/webhooks/customerio
  */
-test('POST /api/v1/webhooks/customerio-email-activity should publish message to customer-io queue', async (t) => {
+test.serial('POST /api/v1/webhooks/customerio-email-activity should publish message to customer-io queue', async (t) => {
   const data = {
     data: {
       campaign_id: '0',
