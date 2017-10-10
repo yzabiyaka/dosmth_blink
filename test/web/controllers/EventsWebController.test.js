@@ -261,7 +261,8 @@ test('POST /api/v1/events/quasar-relay should save message as is to quasar queue
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
 
-  // TODO: quasar-customer-io-email-activity to be renamed to quasar
+  // TODO: quasar-customer-io-email-activity to be renamed.
+  // See https://github.com/DoSomething/blink/issues/99
   // See https://www.pivotaltracker.com/story/show/150330459
   const messages = await rabbit.getMessagesFrom('quasar-customer-io-email-activity', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
