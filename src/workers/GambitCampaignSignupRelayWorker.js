@@ -26,12 +26,13 @@ class GambitCampaignSignupRelayWorker extends Worker {
     const data = message.getData();
 
     // See https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/send-message.md
-    const body = {
+    const fields = {
       northstarId: data.northstar_id,
       campaignId: data.campaign_id,
       // Rogue signups are consdered external for Gambit.
       template: 'externalSignupMenu',
     };
+    const body = JSON.stringify(fields);
 
     const headers = this.getRequestHeaders(message);
 
