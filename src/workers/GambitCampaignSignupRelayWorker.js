@@ -25,6 +25,18 @@ class GambitCampaignSignupRelayWorker extends Worker {
   async consume(message) {
     const data = message.getData();
 
+    // Send only delivered messages to Gambit Conversations import.
+    if (GambitCampaignSignupRelayWorker.shouldSkip(message)) {
+      const meta = {
+        env: this.blink.config.app.env,
+        code: 'success_gambit_campaign_signup_relay_expected_skip',
+        worker: this.constructor.name,
+        request_id: message ? message.getRequestId() : 'not_parsed',
+      };
+      logger.log('debug', JSON.stringify(data), meta);
+      return true;
+    }
+
     // See https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/send-message.md
     const fields = {
       northstarId: data.northstar_id,
@@ -125,6 +137,14 @@ class GambitCampaignSignupRelayWorker extends Worker {
       return false;
     }
     return headerResult.toLowerCase() === 'true';
+  }
+
+  static shouldSkip(message) {
+    const source = message.getData().source;
+    if (!source) {
+      return false;
+    }
+    return source.match(/^ *sms/) !== null;
   }
 }
 

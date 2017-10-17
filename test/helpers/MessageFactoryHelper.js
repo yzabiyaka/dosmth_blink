@@ -193,6 +193,7 @@ class MessageFactoryHelper {
         campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
         quantity: null,
         why_participated: null,
+        // Don't add sms signup here, they are tested separately.
         source: chance.pickone(['campaigns', 'phoenix-web']),
         created_at: createdAt,
         updated_at: updatedAt,

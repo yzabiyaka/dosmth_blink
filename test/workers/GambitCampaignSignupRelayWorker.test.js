@@ -2,17 +2,20 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const chai = require('chai');
-const fetch = require('node-fetch');
 const test = require('ava');
+const chai = require('chai');
+const Chance = require('chance');
+const fetch = require('node-fetch');
 
 const BlinkWorkerApp = require('../../src/app/BlinkWorkerApp');
+const GambitCampaignSignupRelayWorker = require('../../src/workers/GambitCampaignSignupRelayWorker');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
 const { Response } = fetch;
+const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -72,6 +75,30 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
     },
   );
   gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
+});
+
+test('Gambit should recieve signups not created by Gambit', () => {
+  // Helper specifically will not return sms-related signup source.
+  const message = MessageFactoryHelper.getValidCampaignSignup();
+  GambitCampaignSignupRelayWorker.shouldSkip(message).should.be.false;
+});
+
+test('Gambit should not recieve signups created by Gambit', () => {
+  const message = MessageFactoryHelper.getValidCampaignSignup();
+  const smsRelatedSources = [
+    'sms',
+    `sms${chance.word()}`,
+    `sms-${chance.word()}`,
+    `sms${chance.natural()}`,
+    'sms ',
+    ' sms ',
+    ` sms${chance.word()}`,
+  ];
+
+  smsRelatedSources.forEach((source) => {
+    message.payload.data.source = source;
+    GambitCampaignSignupRelayWorker.shouldSkip(message).should.be.true;
+  });
 });
 
 // ------- End -----------------------------------------------------------------
