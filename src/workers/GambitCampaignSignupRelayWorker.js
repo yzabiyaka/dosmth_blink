@@ -140,7 +140,11 @@ class GambitCampaignSignupRelayWorker extends Worker {
   }
 
   static shouldSkip(message) {
-    return true;
+    const source = message.getData().source;
+    if (!source) {
+      return false;
+    }
+    return source.match(/^ *sms/) !== null;
   }
 }
 
