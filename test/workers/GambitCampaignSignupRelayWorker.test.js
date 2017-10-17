@@ -79,12 +79,12 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
 
 test('Gambit should recieve signups not created by Gambit', () => {
   // Helper specifically will not return sms-related signup source.
-  const messageData = MessageFactoryHelper.getValidCampaignSignup();
-  GambitCampaignSignupRelayWorker.shouldSkip(messageData).should.be.false;
+  const message = MessageFactoryHelper.getValidCampaignSignup();
+  GambitCampaignSignupRelayWorker.shouldSkip(message).should.be.false;
 });
 
 test('Gambit should not recieve signups created by Gambit', () => {
-  const messageData = MessageFactoryHelper.getValidCampaignSignup();
+  const message = MessageFactoryHelper.getValidCampaignSignup();
   const smsRelatedSources = [
     'sms',
     `sms${chance.word()}`,
@@ -96,8 +96,8 @@ test('Gambit should not recieve signups created by Gambit', () => {
   ];
 
   smsRelatedSources.forEach((source) => {
-    messageData.payload.data.source = source;
-    GambitCampaignSignupRelayWorker.shouldSkip(messageData).should.be.true;
+    message.payload.data.source = source;
+    GambitCampaignSignupRelayWorker.shouldSkip(message).should.be.true;
   });
 });
 
