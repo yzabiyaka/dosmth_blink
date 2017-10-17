@@ -95,12 +95,10 @@ test('Gambit should not recieve signups created by Gambit', () => {
     ` sms${chance.word()}`,
   ];
 
-  for (const source of smsRelatedSources) {
+  smsRelatedSources.forEach((source) => {
     messageData.payload.data.source = source;
     GambitCampaignSignupRelayWorker.shouldSkip(messageData).should.be.true;
-  }
-
+  });
 });
-
 
 // ------- End -----------------------------------------------------------------

@@ -33,7 +33,7 @@ class GambitCampaignSignupRelayWorker extends Worker {
         worker: this.constructor.name,
         request_id: message ? message.getRequestId() : 'not_parsed',
       };
-      logger.log('debug', body, meta);
+      logger.log('debug', JSON.stringify(data), meta);
       return true;
     }
 
