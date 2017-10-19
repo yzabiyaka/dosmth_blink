@@ -7,7 +7,7 @@ const test = require('ava');
 require('chai').should();
 
 const QuasarCustomerIoEmailActivityQ = require('../../src/queues/QuasarCustomerIoEmailActivityQ');
-const Queue = require('../../src/queues/Queue');
+const Queue = require('../../src/lib/Queue');
 
 /**
  * Test QuasarCustomerIoEmailActivityQ class

@@ -8,7 +8,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const Exchange = require('../../src/lib/Exchange');
-const Queue = require('../../src/queues/Queue');
+const Queue = require('../../src/lib/Queue');
 
 
 // Chai setup.

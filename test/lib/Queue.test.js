@@ -10,7 +10,7 @@ const chaiAsPromised = require('chai-as-promised');
 const Exchange = require('../../src/lib/Exchange');
 const RabbitManagement = require('../../src/lib/RabbitManagement');
 const Message = require('../../src/messages/Message');
-const Queue = require('../../src/queues/Queue');
+const Queue = require('../../src/lib/Queue');
 
 // Chai setup.
 chai.should();

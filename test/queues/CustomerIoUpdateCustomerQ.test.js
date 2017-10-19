@@ -7,7 +7,7 @@ const test = require('ava');
 require('chai').should();
 
 const CustomerIoUpdateCustomerQ = require('../../src/queues/CustomerIoUpdateCustomerQ');
-const Queue = require('../../src/queues/Queue');
+const Queue = require('../../src/lib/Queue');
 
 /**
  * Test CustomerIoUpdateCustomerQ class

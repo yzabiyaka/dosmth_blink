@@ -7,7 +7,7 @@ const test = require('ava');
 require('chai').should();
 
 const FetchQ = require('../../src/queues/FetchQ');
-const Queue = require('../../src/queues/Queue');
+const Queue = require('../../src/lib/Queue');
 
 /**
  * Test FetchQ class
