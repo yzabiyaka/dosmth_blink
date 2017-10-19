@@ -126,38 +126,3 @@ test.skip('Queue.purge(): Ensure incorrect queue purging fails', async () => {
     'Queue.purge(): failed to purge queue "test-incorrect-purge"',
   );
 });
-
-
-/**
- * Queue.purge(): Check retryDelay behavior
- */
-test('Queue.retryDelay(): Check retryDelay behavior', () => {
-  // First, delay between retries should be a matter of seconds
-  Queue.retryDelay(0).should.be.equal(1000);
-  Queue.retryDelay(1).should.be.equal(1250);
-  Queue.retryDelay(2).should.be.equal(2000);
-
-  // Delay should be between 20 and 30 sec on 10th retry.
-  Queue.retryDelay(10).should.be.above(20000).and.below(30000);
-
-  // Delay should be between 1 and 2 minutes on 20th retry.
-  Queue.retryDelay(20).should.be.above(1 * 60 * 1000).and.below(2 * 60 * 1000);
-
-  // Delay should be between 3 and 4 minutes on 30th retry.
-  Queue.retryDelay(30).should.be.above(3 * 60 * 1000).and.below(4 * 60 * 1000);
-
-  // Delay should be between 10 and 20 minutes on 50th retry.
-  Queue.retryDelay(50).should.be.above(10 * 60 * 1000).and.below(20 * 60 * 1000);
-
-  // Delay should be between 30 minutes and 1 hour on 100th retry.
-  Queue.retryDelay(100).should.be.above(30 * 60 * 1000).and.below(60 * 60 * 1000);
-
-  // Total wait time whould be less than a day.
-  let retry = 0;
-  let accumulator = 0;
-  while (retry <= 100) {
-    accumulator += Queue.retryDelay(retry);
-    retry += 1;
-  }
-  accumulator.should.be.below(60 * 60 * 1000 * 24);
-});
