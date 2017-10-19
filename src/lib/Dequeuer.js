@@ -15,31 +15,23 @@ class Dequeuer {
     this.dequeue = this.dequeue.bind(this);
   }
 
-  retry(reason, message) {
-    let retry = 0;
-    if (message.getMeta().retry) {
-      retry = message.getMeta().retry;
-    }
-    retry += 1;
-    const retryMessage = message;
-    retryMessage.payload.meta.retry = retry;
-    retryMessage.payload.meta.retryReason = reason;
-    // Republish modified message.
-    this.queue.nack(message);
-    this.queue.publish(retryMessage);
-  }
-
   async dequeue(rabbitMessage) {
-    await this.processMessage(rabbitMessage);
+    const message = this.extractValidMessageOrDiscard(rabbitMessage);
+    if (message) {
+      await this.executeCallback(message);
+    }
   }
 
-  async processMessage(rabbitMessage) {
-    // Make sure nothing is thrown from here, it will kill the channel.
+  extractValidMessageOrDiscard(rabbitMessage) {
     const message = this.unpack(rabbitMessage);
     if (!message || !this.validate(message)) {
       return false;
     }
+    return message;
+  }
 
+  async executeCallback(message) {
+    // Make sure nothing is thrown from here, it will kill the channel.
     let result;
     try {
       result = await this.callback(message);
@@ -173,6 +165,20 @@ class Dequeuer {
     };
 
     logger.log(level, logMessage, meta);
+  }
+
+  retry(reason, message) {
+    let retry = 0;
+    if (message.getMeta().retry) {
+      retry = message.getMeta().retry;
+    }
+    retry += 1;
+    const retryMessage = message;
+    retryMessage.payload.meta.retry = retry;
+    retryMessage.payload.meta.retryReason = reason;
+    // Republish modified message.
+    this.queue.nack(message);
+    this.queue.publish(retryMessage);
   }
 
   static retryDelay(currentRetryNumber) {
