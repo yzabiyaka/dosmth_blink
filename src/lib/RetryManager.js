@@ -21,16 +21,16 @@ class RetryManager {
   }
 
   retry(message, error) {
-    // Checked if retry limit reached.
+    // Check if retry limit reached.
     const retryAttempt = message.getMeta().retryAttempt || 0;
     if (retryAttempt > this.retryLimit) {
       // Retry limit reached
       this.queue.nack(message);
       this.log(
-        'warning',
-        `Got error ${error}, retry limit reached, rejecting`,
+        'debug',
+        `Retry limit reached, rejecting. Retry reason '${error}'`,
         message,
-        'error_got_retry_limit_reached',
+        'debug_retry_manager_limit_reached',
       );
       return false;
     }
@@ -40,10 +40,10 @@ class RetryManager {
 
     // Log retry information.
     this.log(
-      'warning',
-      `Got error ${error}, retry ${retryAttempt}, retrying after ${delayMilliseconds}ms`,
+      'debug',
+      `Retry scheduled, attempt ${retryAttempt}, reason '${error}'. Will run in ${delayMilliseconds}ms`,
       message,
-      'error_got_retry_request',
+      'debug_retry_manager_redeliver_scheduled',
     );
 
     // Delay the redelivery.

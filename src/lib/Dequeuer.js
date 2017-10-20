@@ -65,9 +65,9 @@ class Dequeuer {
       return;
     }
 
-    // Unexpected error, no retry requested.
+    // Really unexpected error, no retry requested.
     this.log(
-      'warning',
+      'error',
       error.toString(),
       message,
       'error_process_message_no_retry',
@@ -97,14 +97,14 @@ class Dequeuer {
           'warning',
           `payload='${error.badPayload}' Can't parse payload: ${error}`,
           null,
-          'error_dequeue_cant_parse_message',
+          'warning_dequeue_cant_parse_message',
         );
       } else {
         this.log(
           'warning',
           `Unexpected message parsing error: ${error}`,
           null,
-          'error_dequeue_cant_parse_message_unexpected',
+          'warning_dequeue_cant_parse_message_unexpected',
         );
       }
       return false;
@@ -122,14 +122,14 @@ class Dequeuer {
           'warning',
           error.toString(),
           message,
-          'error_dequeue_message_validation',
+          'warning_dequeue_message_validation',
         );
       } else {
         this.log(
           'warning',
           `Unexpected message validation error: ${error}`,
           null,
-          'error_dequeue_message_validation_unexpected',
+          'warning_dequeue_message_validation_unexpected',
         );
       }
       return false;
