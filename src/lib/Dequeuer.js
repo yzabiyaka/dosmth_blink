@@ -45,14 +45,14 @@ class Dequeuer {
         'debug',
         'Message acknowledged, processed true',
         message,
-        'acknowledged_true_result',
+        'success_process_message_acknowledged_result_true',
       );
     } else {
       this.log(
         'debug',
         'Message acknowledged, processed false',
         message,
-        'success_message_ack_false_result',
+        'success_process_message_acknowledged_result_false',
       );
     }
     return true;
@@ -70,7 +70,7 @@ class Dequeuer {
       'warning',
       error.toString(),
       message,
-      'message_processing_error',
+      'error_process_message_no_retry',
     );
     // TODO: send to dead letters?
     this.queue.nack(message);
@@ -79,6 +79,7 @@ class Dequeuer {
   extractOrDiscard(rabbitMessage) {
     const message = this.unpack(rabbitMessage);
     if (!message || !this.validate(message)) {
+      this.queue.nack(rabbitMessage);
       return false;
     }
     return message;
@@ -96,17 +97,16 @@ class Dequeuer {
           'warning',
           `payload='${error.badPayload}' Can't parse payload: ${error}`,
           null,
-          'error_cant_parse_message',
+          'error_dequeue_cant_parse_message',
         );
       } else {
         this.log(
           'warning',
           `Unknown message parsing error: ${error}`,
           null,
-          'error_cant_parse_message_unknown',
+          'error_dequeue_cant_parse_message_unknown',
         );
       }
-      this.queue.nack(rabbitMessage);
       return false;
     }
     return message;
@@ -122,17 +122,16 @@ class Dequeuer {
           'warning',
           error.toString(),
           message,
-          'error_queue_message_validation',
+          'error_dequeue_message_validation',
         );
       } else {
         this.log(
           'warning',
           `Unexpected message validation error: ${error}`,
           null,
-          'error_queue_unexpected_message_validation',
+          'error_dequeue_unexpected_message_validation',
         );
       }
-      this.queue.nack(message);
       return false;
     }
 
@@ -140,9 +139,8 @@ class Dequeuer {
       'debug',
       `Message valid ${message.toString()}`,
       message,
-      'success_message_valid',
+      'success_dequeue_message_valid',
     );
-
     return true;
   }
 
