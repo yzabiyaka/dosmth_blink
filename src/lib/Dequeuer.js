@@ -72,13 +72,13 @@ class Dequeuer {
       message,
       'error_process_message_no_retry',
     );
-    // TODO: send to dead letters?
     this.queue.nack(message);
   }
 
   extractOrDiscard(rabbitMessage) {
     const message = this.unpack(rabbitMessage);
     if (!message || !this.validate(message)) {
+      // Discard (nack) message when not extracted or not validated.
       this.queue.nack(rabbitMessage);
       return false;
     }
