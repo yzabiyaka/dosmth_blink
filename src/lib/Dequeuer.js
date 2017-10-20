@@ -40,24 +40,13 @@ class Dequeuer {
     try {
       result = await this.callback(message);
     } catch (error) {
-      // Got retry request.
-      if (error instanceof BlinkRetryError) {
-        this.retry(message, error);
-        return false;
-      }
-
-      // Unexpected error, no retry requested.
-      this.log(
-        'warning',
-        error.toString(),
-        message,
-        'message_processing_error',
-      );
-      // TODO: send to dead letters?
-      this.queue.nack(message);
-      return false;
+      return this.processCallbackError(message, error);
     }
 
+    return this.processCallbackResult(message, result);
+  }
+
+  processCallbackResult(message, result) {
     // Acknowledge message and log result.
     this.queue.ack(message);
     if (result) {
@@ -76,6 +65,24 @@ class Dequeuer {
       );
     }
     return true;
+  }
+
+  processCallbackError(message, error) {
+    // Got retry request.
+    if (error instanceof BlinkRetryError) {
+      this.retry(message, error);
+      return;
+    }
+
+    // Unexpected error, no retry requested.
+    this.log(
+      'warning',
+      error.toString(),
+      message,
+      'message_processing_error',
+    );
+    // TODO: send to dead letters?
+    this.queue.nack(message);
   }
 
   extractOrDiscard(rabbitMessage) {
