@@ -102,9 +102,9 @@ class Dequeuer {
       } else {
         this.log(
           'warning',
-          `Unknown message parsing error: ${error}`,
+          `Unexpected message parsing error: ${error}`,
           null,
-          'error_dequeue_cant_parse_message_unknown',
+          'error_dequeue_cant_parse_message_unexpected',
         );
       }
       return false;
@@ -129,7 +129,7 @@ class Dequeuer {
           'warning',
           `Unexpected message validation error: ${error}`,
           null,
-          'error_dequeue_unexpected_message_validation',
+          'error_dequeue_message_validation_unexpected',
         );
       }
       return false;
