@@ -3,6 +3,7 @@
 const changeCase = require('change-case');
 
 const Dequeuer = require('./Dequeuer');
+const RetryManager = require('./RetryManager');
 
 class Queue {
   constructor(exchange) {
@@ -57,7 +58,9 @@ class Queue {
   }
 
   subscribe(callback) {
-    const dequeuer = new Dequeuer(this, callback);
+    // TodoL make retry manager configurable.
+    const retryManager = new RetryManager(this);
+    const dequeuer = new Dequeuer(this, callback, retryManager);
     this.channel.consume(this.name, dequeuer.dequeue);
   }
 }

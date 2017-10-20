@@ -5,26 +5,17 @@ const logger = require('winston');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
-const DelayLogic = require('./DelayLogic');
 
 class Dequeuer {
-  constructor(queue, callback, retryDelayLogic) {
+  constructor(queue, callback, retryManager) {
     this.queue = queue;
     this.callback = callback;
 
     // Expose function by binding it to object context.
     this.dequeue = this.dequeue.bind(this);
 
-    // Retry delay logic.
-    if (!retryDelayLogic || typeof retryDelayLogic !== 'function') {
-      // Default exponential backoff logic
-      this.retryDelay = DelayLogic.exponentialBackoff;
-    } else {
-      this.retryDelay = retryDelayLogic;
-    }
-
-    // Retry limit is a hardcoded const now.
-    this.retryLimit = 100;
+    // Inject retry manager.
+    this.retryManager = retryManager;
   }
 
   async dequeue(rabbitMessage) {
@@ -70,7 +61,7 @@ class Dequeuer {
   processCallbackError(message, error) {
     // Got retry request.
     if (error instanceof BlinkRetryError) {
-      this.retry(message, error);
+      this.retryManager.retry(message, error);
       return;
     }
 
@@ -153,55 +144,6 @@ class Dequeuer {
     );
 
     return true;
-  }
-
-  retry(message, error) {
-    // Checked if retry limit reached.
-    const retryNumber = message.getMeta().retry || 0;
-    if (retryNumber > this.retryLimit) {
-      // Retry limit reached
-      this.queue.nack(message);
-      this.log(
-        'warning',
-        `Got error ${error}, retry limit reached, rejecting`,
-        message,
-        'error_got_retry_limit_reached',
-      );
-      return false;
-    }
-
-    // Calculate wait time until the redelivery.
-    const delayMilliseconds = this.retryDelay(retryNumber);
-
-    // Log retry information.
-    this.log(
-      'warning',
-      `Got error ${error}, retry ${retryNumber}, retrying after ${delayMilliseconds}ms`,
-      message,
-      'error_got_retry_request',
-    );
-
-    // Delay the redelivery.
-    this.scheduleRedeliveryIn(delayMilliseconds, message, error.toString());
-    return true;
-  }
-
-  scheduleRedeliveryIn(delayMilliseconds, message, reason) {
-    setTimeout(() => this.redeliver(message, reason), delayMilliseconds);
-  }
-
-  redeliver(message, reason = 'unknown') {
-    let retry = 0;
-    if (message.getMeta().retry) {
-      retry = message.getMeta().retry;
-    }
-    retry += 1;
-    const retryMessage = message;
-    retryMessage.payload.meta.retry = retry;
-    retryMessage.payload.meta.retryReason = reason;
-    // Republish modified message.
-    this.queue.nack(message);
-    this.queue.publish(retryMessage);
   }
 
   log(level, logMessage, message = {}, code = 'unexpected_code') {
