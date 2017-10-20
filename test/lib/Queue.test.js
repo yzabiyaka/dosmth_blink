@@ -16,7 +16,7 @@ const HooksHelper = require('../helpers/HooksHelper');
 chai.should();
 chai.use(chaiAsPromised);
 
-// Turn off extra logs for this tests, as it genertes thouthands of messages.
+// Setup blink app for each test.
 test.beforeEach(HooksHelper.startBlinkApp);
 test.afterEach.always(HooksHelper.stopBlinkApp);
 
@@ -29,7 +29,10 @@ test('Queue: Test class interface', (t) => {
   const queue = new Queue(t.context.blink.exchange);
   queue.should.respondTo('setup');
   queue.should.respondTo('publish');
+  queue.should.respondTo('nack');
+  queue.should.respondTo('ack');
   queue.should.respondTo('purge');
+  queue.should.respondTo('subscribe');
 
   queue.should.have.property('routes');
   queue.routes.should.be.an('array').and.have.length.at.least(1);

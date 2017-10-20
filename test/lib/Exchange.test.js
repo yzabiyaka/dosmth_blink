@@ -1,69 +1,81 @@
 'use strict';
 
-/**
- * Imports.
- */
+// ------- Imports -------------------------------------------------------------
+
 const test = require('ava');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const Exchange = require('../../src/lib/Exchange');
 const Queue = require('../../src/lib/Queue');
+const RabbitManagement = require('../../src/lib/RabbitManagement');
 
+// ------- Init ----------------------------------------------------------------
 
-// Chai setup.
 chai.should();
 chai.use(chaiAsPromised);
+
+// ------- Tests ---------------------------------------------------------------
 
 /**
  * Exchange class interface
  */
-test.skip('Exchange interface', () => {
-  const locals = require('../../config');
-  const testX = new Exchange(locals.amqp);
-  testX.should.have.respondTo('setup');
-  testX.should.have.respondTo('assertQueue');
+test('Exchange interface', () => {
+  const config = require('../../config');
+  const exchange = new Exchange(config);
+
+  exchange.should.respondTo('setup');
+  exchange.should.respondTo('setupQueue');
+  exchange.should.respondTo('publish');
+  exchange.should.respondTo('limitConsumerPrefetchCount');
 });
 
 /**
  * Exchange.setup(): Test RabbitMQ connection
  */
-test.skip('Exchange.setup(): Test RabbitMQ connection', async () => {
-  const locals = require('../../config');
-  const testX = new Exchange(locals.amqp);
+test('Exchange.setup(): Test RabbitMQ connection', async () => {
+  const config = require('../../config');
+
+  const testX = new Exchange(config);
   const connected = await testX.setup();
   connected.should.be.true;
 });
 
 /**
- * Exchange.setup(): Test exchange with empty name to fail
+ * Exchange.setup(): Make sure exchange is created with expected params
  */
-test.skip('Exchange.setup(): Test exchange with empty name to fail', async () => {
-  const locals = require('../../config');
+test('Exchange.setup(): Make sure exchange is created with expected params', async () => {
+  const config = require('../../config');
 
-  // Copy RabbitMQ settings, but override exchange with empty string.
-  const invalidExchangeSettings = Object.assign({}, locals.amqp, { exchange: '' });
+  // Cpopy config object to override exchange with incorrect setting.
+  const topologyTestXName = 'topologyTestX';
+  const topologyTestXConfig = Object.assign({}, config, {});
+  topologyTestXConfig.amqp.exchange = topologyTestXName;
 
-  // Initialize Exchange with incorrect settings.
-  const testX = new Exchange(invalidExchangeSettings);
-  const incorrectSetupResult = testX.setup();
+  const topologyTestX = new Exchange(topologyTestXConfig);
+  await topologyTestX.setup();
 
-  // No exchange name should result in rejection from Exchange.setup() .
-  await incorrectSetupResult.should.be.rejectedWith(
-    Error,
-    'Exchange.setup(): Exchange assertion failed for ""',
-  );
+  // Test queue settings with RabbitMQ Management Plugin API.
+  const rabbit = new RabbitManagement(config.amqpManagement);
+  const topologyTestXInfo = await rabbit.getExchangeInfo(topologyTestXName);
+
+  topologyTestXInfo.should.have.property('name', topologyTestXName);
+  topologyTestXInfo.should.have.property('type', 'topic');
+  topologyTestXInfo.should.have.property('vhost', config.amqp.vhost);
+  topologyTestXInfo.should.have.property('durable', true);
+  topologyTestXInfo.should.have.property('auto_delete', false);
+  topologyTestXInfo.should.have.property('internal', false);
 });
 
 
 /**
  * Exchange.assertQueue(): Test queue with empty name to fail
  */
-test.skip('Exchange.assertQueue(): Test queue with empty name to fail', async () => {
+test('Exchange.assertQueue(): Test queue with empty name to fail', async () => {
   class WrongNameQ extends Queue {}
 
-  const locals = require('../../config');
-  const testX = new Exchange(locals.amqp);
+  const config = require('../../config');
+  const testX = new Exchange(config);
   await testX.setup();
 
   // Fake queue not initialized in Rabbit.
@@ -79,3 +91,5 @@ test.skip('Exchange.assertQueue(): Test queue with empty name to fail', async ()
     'Exchange.setup(): Queue assertion failed for ""',
   );
 });
+
+// ------- End -----------------------------------------------------------------
