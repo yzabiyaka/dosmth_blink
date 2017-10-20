@@ -40,7 +40,7 @@ test('Dequeuer: Test class interface', (t) => {
 /**
  * Dequeuer: executeCallback()
  */
-test('Dequeuer: executeCallback()', async (t) => {
+test('Dequeuer: executeCallback() should ack successfully processed message', async (t) => {
   // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
   const ackSpy = sinon.spy();
@@ -62,6 +62,35 @@ test('Dequeuer: executeCallback()', async (t) => {
 
   // Make sure the message has been acknowledged.
   ackSpy.should.have.been.calledWith(message);
+});
+
+/**
+ * Dequeuer: executeCallback()
+ */
+test('Dequeuer: executeCallback() should nack when unexpected error is thrown from callback', async (t) => {
+  // Override queue method to ensure ack() will be called;
+  const queue = t.context.queue;
+  const nackSpy = sinon.spy();
+  queue.nack = nackSpy;
+
+  // Create dequeue callback and spu on it.
+  const callback = async () => {
+    throw new Error('Testing unexpected exception from worker callback');
+  };
+  const callbackSpy = sinon.spy(callback);
+
+  // Prepare random message to make dequeur think it fot it from Rabbit.
+  const message = MessageFactoryHelper.getRandomMessage();
+
+  // Dequeue test message.
+  const dequeuer = new Dequeuer(queue, callbackSpy);
+  const result = await dequeuer.executeCallback(message);
+
+  // Ensure callback has been called.
+  callbackSpy.should.have.been.calledOnce;
+
+  // Make sure the message has been acknowledged.
+  nackSpy.should.have.been.calledWith(message);
 });
 
 // ------- End -----------------------------------------------------------------
