@@ -1,26 +1,33 @@
 'use strict';
 
-/**
- * Imports.
- */
+// ------- Imports -------------------------------------------------------------
+
 const test = require('ava');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const Exchange = require('../../src/lib/Exchange');
+const Queue = require('../../src/lib/Queue');
 const RabbitManagement = require('../../src/lib/RabbitManagement');
 const Message = require('../../src/messages/Message');
-const Queue = require('../../src/lib/Queue');
+const HooksHelper = require('../helpers/HooksHelper');
 
-// Chai setup.
+// ------- Init ----------------------------------------------------------------
+
 chai.should();
 chai.use(chaiAsPromised);
+
+// Turn off extra logs for this tests, as it genertes thouthands of messages.
+test.beforeEach(HooksHelper.startBlinkApp);
+test.afterEach.always(HooksHelper.stopBlinkApp);
+
+// ------- Tests ---------------------------------------------------------------
 
 /**
  * Queue: Test class interface
  */
-test.skip('Queue: Test class interface', () => {
-  const queue = new Queue();
+test('Queue: Test class interface', (t) => {
+  const queue = new Queue(t.context.blink.exchange);
   queue.should.respondTo('setup');
   queue.should.respondTo('publish');
   queue.should.respondTo('purge');
@@ -29,12 +36,11 @@ test.skip('Queue: Test class interface', () => {
   queue.routes.should.be.an('array').and.have.length.at.least(1);
 });
 
-
 /**
  * Test that concrete Queue implementation would result in expected queues
  * in RabbitMQ.
  */
-test.skip('Queue.setup(): Test RabbitMQ topology assertion', async () => {
+test('Queue.setup(): Test RabbitMQ topology assertion', async (t) => {
   class TestBindingQ extends Queue {
     constructor(exchange) {
       super(exchange);
@@ -42,11 +48,7 @@ test.skip('Queue.setup(): Test RabbitMQ topology assertion', async () => {
     }
   }
 
-  const locals = require('../../config');
-  const testX = new Exchange(locals.amqp);
-  await testX.setup();
-
-  const testBindingQ = new TestBindingQ(testX);
+  const testBindingQ = new TestBindingQ(t.context.blink.exchange);
   testBindingQ.should.have.property('name');
   testBindingQ.name.should.be.equal('test-binding');
   // Direct + *.taco
@@ -57,7 +59,7 @@ test.skip('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   result.should.be.true;
 
   // Test queue settings with RabbitMQ Management Plugin API.
-  const rabbit = new RabbitManagement(locals.amqpManagement);
+  const rabbit = new RabbitManagement(t.context.blink.config.amqpManagement);
   const testBindingQInfo = await rabbit.getQueueInfo(testBindingQ.name);
   testBindingQInfo.should.have.property('name', 'test-binding');
   testBindingQInfo.should.have.property('durable', true);
@@ -83,14 +85,10 @@ test.skip('Queue.setup(): Test RabbitMQ topology assertion', async () => {
 /**
  * Queue.publish(), Queue.purge(): Test direct publishing and purging
  */
-test.skip('Queue.publish(), Queue.purge(): Test direct publishing and purging', async () => {
+test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async (t) => {
   class TestDirectPublishQ extends Queue {}
 
-  const locals = require('../../config');
-  const testX = new Exchange(locals.amqp);
-  await testX.setup();
-
-  const testDirectPublishQ = new TestDirectPublishQ(testX);
+  const testDirectPublishQ = new TestDirectPublishQ(t.context.blink.exchange);
   await testDirectPublishQ.setup();
 
   // Purge queue in case it already exists.
@@ -109,14 +107,10 @@ test.skip('Queue.publish(), Queue.purge(): Test direct publishing and purging', 
 /**
  * Queue.purge(): Ensure incorrect queue purging fails
  */
-test.skip('Queue.purge(): Ensure incorrect queue purging fails', async () => {
+test('Queue.purge(): Ensure incorrect queue purging fails', async (t) => {
   class TestIncorrectPurgeQ extends Queue {}
 
-  const locals = require('../../config');
-  const testX = new Exchange(locals.amqp);
-  await testX.setup();
-
-  const testIncorrectPurgeQ = new TestIncorrectPurgeQ(testX);
+  const testIncorrectPurgeQ = new TestIncorrectPurgeQ(t.context.blink.exchange);
   // Don't setup queue to make sure Queue.purge() fails.
 
   // Purge queue in case it already exists.
@@ -125,4 +119,11 @@ test.skip('Queue.purge(): Ensure incorrect queue purging fails', async () => {
     Error,
     'Queue.purge(): failed to purge queue "test-incorrect-purge"',
   );
+
+  // Ensure the channel reconnects after error.
+  t.context.blink.connected.should.be.false;
+  await new Promise(resolve => setTimeout(resolve, 500));
+  t.context.blink.connected.should.be.true;
 });
+
+// ------- End -----------------------------------------------------------------
