@@ -7,9 +7,9 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 const Dequeuer = require('../../src/lib/Dequeuer');
 const HooksHelper = require('../helpers/HooksHelper');
+const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -56,6 +56,7 @@ test('Dequeuer: executeCallback() should ack successfully processed message', as
   // Dequeue test message.
   const dequeuer = new Dequeuer(queue, callbackSpy);
   const result = await dequeuer.executeCallback(message);
+  result.should.be.true;
 
   // Ensure callback has been called.
   callbackSpy.should.have.been.calledOnce;
@@ -85,6 +86,7 @@ test('Dequeuer: executeCallback() should nack when unexpected error is thrown fr
   // Dequeue test message.
   const dequeuer = new Dequeuer(queue, callbackSpy);
   const result = await dequeuer.executeCallback(message);
+  result.should.be.false;
 
   // Ensure callback has been called.
   callbackSpy.should.have.been.calledOnce;

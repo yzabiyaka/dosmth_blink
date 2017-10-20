@@ -73,6 +73,7 @@ class Dequeuer {
       'error_process_message_no_retry',
     );
     this.queue.nack(message);
+    return false;
   }
 
   extractOrDiscard(rabbitMessage) {
