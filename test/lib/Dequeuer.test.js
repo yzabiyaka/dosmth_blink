@@ -68,6 +68,34 @@ test('Dequeuer: executeCallback() should ack successfully processed message', as
 /**
  * Dequeuer: executeCallback()
  */
+test('Dequeuer: executeCallback() ensure that expectedly not processed message is still acked', async (t) => {
+  // Override queue method to ensure ack() will be called;
+  const queue = t.context.queue;
+  const ackSpy = sinon.spy();
+  queue.ack = ackSpy;
+
+  // Create dequeue callback and spu on it.
+  const callback = async () => false;
+  const callbackSpy = sinon.spy(callback);
+
+  // Prepare random message to make dequeur think it fot it from Rabbit.
+  const message = MessageFactoryHelper.getRandomMessage();
+
+  // Dequeue test message.
+  const dequeuer = new Dequeuer(queue, callbackSpy);
+  const result = await dequeuer.executeCallback(message);
+  result.should.be.true;
+
+  // Ensure callback has been called.
+  callbackSpy.should.have.been.calledOnce;
+
+  // Make sure the message has been acknowledged.
+  ackSpy.should.have.been.calledWith(message);
+});
+
+/**
+ * Dequeuer: executeCallback()
+ */
 test('Dequeuer: executeCallback() should nack when unexpected error is thrown from callback', async (t) => {
   // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
