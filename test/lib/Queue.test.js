@@ -82,6 +82,9 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async (t) => {
   testBindingQBindings[1].should.have.property('routing_key', 'test-binding');
   testBindingQBindings[1].should.have.property('source', 'test-x');
   testBindingQBindings[1].should.have.property('destination', 'test-binding');
+
+  // Cleanup.
+  await testBindingQ.delete();
 });
 
 /**
@@ -101,9 +104,9 @@ test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async
   const publishResult = testDirectPublishQ.publish(testMessage);
   publishResult.should.be.true;
 
-  // Check message count with Queue purge.
-  const purgeResult = await testDirectPublishQ.purge();
-  purgeResult.should.equal(1);
+  // Check message count with Queue deletion.
+  const deleteResult = await testDirectPublishQ.delete();
+  deleteResult.should.equal(1);
 });
 
 /**
