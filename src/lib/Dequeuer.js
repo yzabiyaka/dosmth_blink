@@ -22,21 +22,16 @@ class Dequeuer {
     } else {
       this.retryDelay = retryDelayLogic;
     }
+
+    // Retry limit is a hardcoded const now.
+    this.retryLimit = 100;
   }
 
   async dequeue(rabbitMessage) {
-    const message = this.extractValidMessageOrDiscard(rabbitMessage);
+    const message = this.extractOrDiscard(rabbitMessage);
     if (message) {
       await this.executeCallback(message);
     }
-  }
-
-  extractValidMessageOrDiscard(rabbitMessage) {
-    const message = this.unpack(rabbitMessage);
-    if (!message || !this.validate(message)) {
-      return false;
-    }
-    return message;
   }
 
   async executeCallback(message) {
@@ -45,33 +40,13 @@ class Dequeuer {
     try {
       result = await this.callback(message);
     } catch (error) {
+      // Got retry request.
       if (error instanceof BlinkRetryError) {
-        // Todo: move to setting
-        const retryLimit = 100;
-        const retry = message.getMeta().retry || 0;
-        const retryDelay = this.retryDelay(retry);
-        if (retry < retryLimit) {
-          this.log(
-            'warning',
-            `Got error ${error}, retry ${retry}, retrying after ${retryDelay}ms`,
-            message,
-            'error_got_retry_request',
-          );
-          setTimeout(() => {
-            this.redeliver(message, error.toString());
-          }, retryDelay);
-        } else {
-          this.log(
-            'warning',
-            `Got error ${error}, retry limit reached, rejecting`,
-            message,
-            'error_got_retry_limit_reached',
-          );
-          this.queue.nack(message);
-        }
+        this.retry(message, error);
         return false;
       }
 
+      // Unexpected error, no retry requested.
       this.log(
         'warning',
         error.toString(),
@@ -83,7 +58,7 @@ class Dequeuer {
       return false;
     }
 
-    // TODO: Ack here depending on rejection exception? on result?
+    // Acknowledge message and log result.
     this.queue.ack(message);
     if (result) {
       this.log(
@@ -101,6 +76,14 @@ class Dequeuer {
       );
     }
     return true;
+  }
+
+  extractOrDiscard(rabbitMessage) {
+    const message = this.unpack(rabbitMessage);
+    if (!message || !this.validate(message)) {
+      return false;
+    }
+    return message;
   }
 
   unpack(rabbitMessage) {
@@ -163,6 +146,41 @@ class Dequeuer {
     );
 
     return true;
+  }
+
+  retry(message, error) {
+    // Checked if retry limit reached.
+    const retryNumber = message.getMeta().retry || 0;
+    if (retryNumber > this.retryLimit) {
+      // Retry limit reached
+      this.queue.nack(message);
+      this.log(
+        'warning',
+        `Got error ${error}, retry limit reached, rejecting`,
+        message,
+        'error_got_retry_limit_reached',
+      );
+      return false;
+    }
+
+    // Calculate wait time until the redelivery.
+    const delayMilliseconds = this.retryDelay(retryNumber);
+
+    // Log retry information.
+    this.log(
+      'warning',
+      `Got error ${error}, retry ${retryNumber}, retrying after ${delayMilliseconds}ms`,
+      message,
+      'error_got_retry_request',
+    );
+
+    // Delay the redelivery.
+    this.scheduleRedeliveryIn(delayMilliseconds, message, error.toString());
+    return true;
+  }
+
+  scheduleRedeliveryIn(delayMilliseconds, message, reason) {
+    setTimeout(() => this.redeliver(message, reason), delayMilliseconds);
   }
 
   redeliver(message, reason = 'unknown') {
