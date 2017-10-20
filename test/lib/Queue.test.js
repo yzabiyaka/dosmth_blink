@@ -91,21 +91,46 @@ test('Queue.setup(): Test RabbitMQ topology assertion', async (t) => {
  * Queue.publish(), Queue.purge(): Test direct publishing and purging
  */
 test('Queue.publish(), Queue.purge(): Test direct publishing and purging', async (t) => {
-  class TestDirectPublishQ extends Queue {}
+  class TestPurgeQ extends Queue {}
 
-  const testDirectPublishQ = new TestDirectPublishQ(t.context.blink.exchange);
-  await testDirectPublishQ.setup();
+  const testPurgeQueue = new TestPurgeQ(t.context.blink.exchange);
+  await testPurgeQueue.setup();
 
-  // Purge queue in case it already exists.
-  await testDirectPublishQ.purge();
+  // Purge queue in case it already existed.
+  await testPurgeQueue.purge();
 
   // Publish test message to the queue.
   const testMessage = new Message({ passed: true });
-  const publishResult = testDirectPublishQ.publish(testMessage);
+  const publishResult = testPurgeQueue.publish(testMessage);
   publishResult.should.be.true;
 
   // Check message count with Queue deletion.
-  const deleteResult = await testDirectPublishQ.delete();
+  const purgeResult = await testPurgeQueue.purge();
+  purgeResult.should.equal(1);
+
+  // Cleanup
+  await testPurgeQueue.delete();
+});
+
+/**
+ * Queue.publish(), Queue.delete(): Test direct publishing and purging
+ */
+test('Queue.publish(), Queue.delete(): Test publishing and deleting', async (t) => {
+  class TestDeleteQ extends Queue {}
+
+  const testDeleteQ = new TestDeleteQ(t.context.blink.exchange);
+  await testDeleteQ.setup();
+
+  // Purge queue in case it already existed.
+  await testDeleteQ.purge();
+
+  // Publish message.
+  const testMessage = new Message({ passed: true });
+  const publishResult = testDeleteQ.publish(testMessage);
+  publishResult.should.be.true;
+
+  // Purge queue in case it already exists.
+  const deleteResult = await testDeleteQ.delete();
   deleteResult.should.equal(1);
 });
 
