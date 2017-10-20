@@ -5,14 +5,23 @@ const logger = require('winston');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
+const DelayLogic = require('./DelayLogic');
 
 class Dequeuer {
-  constructor(queue, callback) {
+  constructor(queue, callback, retryDelayLogic) {
     this.queue = queue;
     this.callback = callback;
 
     // Expose function by binding it to object context.
     this.dequeue = this.dequeue.bind(this);
+
+    // Retry delay logic.
+    if (!retryDelayLogic || typeof retryDelayLogic !== 'function') {
+      // Default exponential backoff logic
+      this.retryDelay = DelayLogic.exponentialBackoff;
+    } else {
+      this.retryDelay = retryDelayLogic;
+    }
   }
 
   async dequeue(rabbitMessage) {
@@ -40,7 +49,7 @@ class Dequeuer {
         // Todo: move to setting
         const retryLimit = 100;
         const retry = message.getMeta().retry || 0;
-        const retryDelay = Dequeuer.retryDelay(retry);
+        const retryDelay = this.retryDelay(retry);
         if (retry < retryLimit) {
           this.log(
             'warning',
@@ -49,7 +58,7 @@ class Dequeuer {
             'error_got_retry_request',
           );
           setTimeout(() => {
-            this.retry(error.toString(), message);
+            this.redeliver(message, error.toString());
           }, retryDelay);
         } else {
           this.log(
@@ -156,18 +165,7 @@ class Dequeuer {
     return true;
   }
 
-  log(level, logMessage, message = {}, code = 'unexpected_code') {
-    const meta = {
-      // Todo: log env
-      code,
-      queue: this.queue.name,
-      request_id: message ? message.getRequestId() : 'not_parsed',
-    };
-
-    logger.log(level, logMessage, meta);
-  }
-
-  retry(reason, message) {
+  redeliver(message, reason = 'unknown') {
     let retry = 0;
     if (message.getMeta().retry) {
       retry = message.getMeta().retry;
@@ -181,11 +179,15 @@ class Dequeuer {
     this.queue.publish(retryMessage);
   }
 
-  static retryDelay(currentRetryNumber) {
-    // Make longer delays as number of retries increases.
-    // https://docs.google.com/spreadsheets/d/1AECd5YrOXJnYlH7BW9wtPBL2Tqp5Wjd3c0VnYGqA780/edit?usp=sharing
-    // eslint-disable-next-line no-mixed-operators
-    return ((currentRetryNumber ** 2) / 4 + 1) * 1000;
+  log(level, logMessage, message = {}, code = 'unexpected_code') {
+    const meta = {
+      // Todo: log env
+      code,
+      queue: this.queue.name,
+      request_id: message ? message.getRequestId() : 'not_parsed',
+    };
+
+    logger.log(level, logMessage, meta);
   }
 }
 
