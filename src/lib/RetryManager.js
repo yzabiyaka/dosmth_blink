@@ -22,8 +22,8 @@ class RetryManager {
 
   retry(message, error) {
     // Checked if retry limit reached.
-    const retryNumber = message.getMeta().retry || 0;
-    if (retryNumber > this.retryLimit) {
+    const retryAttempt = message.getMeta().retryAttempt || 0;
+    if (retryAttempt > this.retryLimit) {
       // Retry limit reached
       this.queue.nack(message);
       this.log(
@@ -36,12 +36,12 @@ class RetryManager {
     }
 
     // Calculate wait time until the redelivery.
-    const delayMilliseconds = this.retryDelay(retryNumber);
+    const delayMilliseconds = this.retryDelay(retryAttempt);
 
     // Log retry information.
     this.log(
       'warning',
-      `Got error ${error}, retry ${retryNumber}, retrying after ${delayMilliseconds}ms`,
+      `Got error ${error}, retry ${retryAttempt}, retrying after ${delayMilliseconds}ms`,
       message,
       'error_got_retry_request',
     );
@@ -56,13 +56,13 @@ class RetryManager {
   }
 
   redeliver(message, reason = 'unknown') {
-    let retry = 0;
-    if (message.getMeta().retry) {
-      retry = message.getMeta().retry;
+    let retryAttempt = 0;
+    if (message.getMeta().retryAttempt) {
+      retryAttempt = message.getMeta().retryAttempt;
     }
-    retry += 1;
+    retryAttempt += 1;
     const retryMessage = message;
-    retryMessage.payload.meta.retry = retry;
+    retryMessage.payload.meta.retry = retryAttempt;
     retryMessage.payload.meta.retryReason = reason;
     // Republish modified message.
     this.queue.nack(message);
