@@ -37,3 +37,5 @@ test('Dequeuer: Test class interface', (t) => {
   dequeuer.should.respondTo('validate');
   dequeuer.should.respondTo('log');
 });
+
+// ------- End -----------------------------------------------------------------
