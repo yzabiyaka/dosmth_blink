@@ -100,8 +100,8 @@ class TwilioSmsInboundGambitRelayWorker extends Worker {
       'Content-type': 'application/json',
     };
 
-    if (message.getMeta().retry && message.getMeta().retry > 0) {
-      headers['x-blink-retry-count'] = message.getMeta().retry;
+    if (message.getMeta().retryAttempt && message.getMeta().retryAttempt > 0) {
+      headers['x-blink-retry-count'] = message.getMeta().retryAttempt;
     }
 
     return headers;

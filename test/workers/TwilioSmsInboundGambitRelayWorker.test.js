@@ -27,13 +27,13 @@ test('Gambit Broadcast relay should recieve correct retry count if message has b
 
   // retry = 0
   const retriedZero = MessageFactoryHelper.getValidMessageData();
-  retriedZero.payload.meta.retry = 0;
+  retriedZero.payload.meta.retryAttempt = 0;
   gambitWorker.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
   const retriedOnce = MessageFactoryHelper.getValidMessageData();
-  retriedOnce.payload.meta.retry = 1;
+  retriedOnce.payload.meta.retryAttempt = 1;
   gambitWorker.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);
 });
