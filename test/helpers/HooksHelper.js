@@ -2,7 +2,6 @@
 
 // libraries
 const supertest = require('supertest');
-const logger = require('winston');
 
 // App modules
 const BlinkWebApp = require('../../src/app/BlinkWebApp');
