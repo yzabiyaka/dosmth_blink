@@ -4,18 +4,17 @@
 
 const test = require('ava');
 const chai = require('chai');
-// const chaiAsPromised = require('chai-as-promised');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 
+const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 const Dequeuer = require('../../src/lib/Dequeuer');
-// const Queue = require('../../src/lib/Queue');
-// const RabbitManagement = require('../../src/lib/RabbitManagement');
-// const Message = require('../../src/messages/Message');
 const HooksHelper = require('../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-// chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
 // Setup blink app for each test.
 test.beforeEach(HooksHelper.createRandomQueue);
@@ -27,7 +26,7 @@ test.afterEach.always(HooksHelper.destroyRandomQueue);
  * Dequeuer: Test class interface
  */
 test('Dequeuer: Test class interface', (t) => {
-  const dequeuer = new Dequeuer(t.context.Queue);
+  const dequeuer = new Dequeuer(t.context.queue);
   dequeuer.should.respondTo('dequeue');
   dequeuer.should.respondTo('executeCallback');
   dequeuer.should.respondTo('processCallbackResult');
@@ -36,6 +35,33 @@ test('Dequeuer: Test class interface', (t) => {
   dequeuer.should.respondTo('unpack');
   dequeuer.should.respondTo('validate');
   dequeuer.should.respondTo('log');
+});
+
+/**
+ * Dequeuer: executeCallback()
+ */
+test('Dequeuer: executeCallback()', async (t) => {
+  // Override queue method to ensure ack() will be called;
+  const queue = t.context.queue;
+  const ackSpy = sinon.spy();
+  queue.ack = ackSpy;
+
+  // Create dequeue callback and spu on it.
+  const callback = async () => true;
+  const callbackSpy = sinon.spy(callback);
+
+  // Prepare random message to make dequeur think it fot it from Rabbit.
+  const message = MessageFactoryHelper.getRandomMessage();
+
+  // Dequeue test message.
+  const dequeuer = new Dequeuer(queue, callbackSpy);
+  const result = await dequeuer.executeCallback(message);
+
+  // Ensure callback has been called.
+  callbackSpy.should.have.been.calledOnce;
+
+  // Make sure the message has been acknowledged.
+  ackSpy.should.have.been.calledWith(message);
 });
 
 // ------- End -----------------------------------------------------------------
