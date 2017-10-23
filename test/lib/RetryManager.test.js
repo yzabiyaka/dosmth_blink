@@ -4,20 +4,19 @@
 
 const test = require('ava');
 const chai = require('chai');
-// const sinon = require('sinon');
-// const sinonChai = require('sinon-chai');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 
-// const BlinkRetryError = require('../../src/errors/BlinkRetryError');
+const BlinkRetryError = require('../../src/errors/BlinkRetryError');
 const RetryManager = require('../../src/lib/RetryManager');
 const DelayLogic = require('../../src/lib/DelayLogic');
-// const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const HooksHelper = require('../helpers/HooksHelper');
-// const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
+const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-// chai.use(sinonChai);
+chai.use(sinonChai);
 
 // Setup blink app for each test.
 test.beforeEach(HooksHelper.createRandomQueueInMemory);
@@ -45,3 +44,36 @@ test('RetryManager: Test class interface', (t) => {
   retryManagerCustom.should.respondTo('retryDelay');
   retryManagerCustom.retryDelay.should.be.equal(customDelayLogic);
 });
+
+/**
+ * RetryManager.retry()
+ */
+test('RetryManager.retry(): ensure nack when retry limit is reached', (t) => {
+  const queue = t.context.queue;
+  // Stub queue method to ensure nack() will be called.
+  const ackStub = sinon.stub(queue, 'ack').returns(null);
+  const nackStub = sinon.stub(queue, 'nack').returns(null);
+
+  // Create retryManager.
+  const retryManager = new RetryManager(t.context.queue);
+
+  // Prepare retry message for the manager.
+  const message = MessageFactoryHelper.getRandomMessage();
+  const retryError = new BlinkRetryError('Testing BlinkRetryError', message);
+  // Set current retry attempt to the limit set in the manager + 1.
+  message.payload.meta.retryAttempt = retryManager.retryLimit + 1;
+
+  // Pass the message to retry().
+  const result = retryManager.retry(message, retryError);
+  result.should.be.false;
+
+  // Make sure the message has been nacked.
+  ackStub.should.not.have.been.called;
+  nackStub.should.have.been.calledWith(message);
+
+  // Cleanup.
+  ackStub.restore();
+  nackStub.restore();
+});
+
+// ------- End -----------------------------------------------------------------
