@@ -273,4 +273,26 @@ test('Dequeuer.extractOrDiscard(): ensure nack on unknown error in Message.valid
   unpackStub.restore();
 });
 
+/**
+ * Dequeuer.dequeue()
+ */
+test('Dequeuer.dequeue(): ensure executeCallback() is called on valid message', async (t) => {
+  const queue = t.context.queue;
+
+  // Create random Rabbit message and send it to .
+  const message = MessageFactoryHelper.getRandomMessage();
+  const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage(message.toString());
+  const dequeuer = new Dequeuer(queue);
+
+  // Stub dequeuer.executeCallback()
+  const executeCallbackStub = sinon.stub(dequeuer, 'executeCallback').resolves(true);
+  await dequeuer.dequeue(rabbitMessage);
+
+  // ExecuteCallback has been called.
+  executeCallbackStub.should.have.been.calledOnce;
+
+  // Cleanup.
+  executeCallbackStub.restore();
+});
+
 // ------- End -----------------------------------------------------------------
