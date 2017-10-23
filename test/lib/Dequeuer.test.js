@@ -22,13 +22,11 @@ test.beforeEach(HooksHelper.createRandomQueue);
 test.afterEach.always(HooksHelper.destroyRandomQueue);
 
 // ------- Tests ---------------------------------------------------------------
-// Important! Test should be executed serially, because they are overriding
-// same static methods on Message class.
 
 /**
  * Dequeuer: Test class interface
  */
-test.serial('Dequeuer: Test class interface', (t) => {
+test('Dequeuer: Test class interface', (t) => {
   const dequeuer = new Dequeuer(t.context.queue);
   dequeuer.should.respondTo('dequeue');
   dequeuer.should.respondTo('executeCallback');
@@ -43,7 +41,7 @@ test.serial('Dequeuer: Test class interface', (t) => {
 /**
  * Dequeuer: executeCallback()
  */
-test.serial('Dequeuer: executeCallback() should ack successfully processed message', async (t) => {
+test('Dequeuer: executeCallback() should ack successfully processed message', async (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure ack() will be called.
   const ackStub = sinon.stub(queue, 'ack').returns(null);
@@ -73,7 +71,7 @@ test.serial('Dequeuer: executeCallback() should ack successfully processed messa
 /**
  * Dequeuer: executeCallback()
  */
-test.serial('Dequeuer: executeCallback() ensure that expectedly not processed message is still acked', async (t) => {
+test('Dequeuer: executeCallback() ensure that expectedly not processed message is still acked', async (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure ack() will be called.
   const ackStub = sinon.stub(queue, 'ack').returns(null);
@@ -103,7 +101,7 @@ test.serial('Dequeuer: executeCallback() ensure that expectedly not processed me
 /**
  * Dequeuer: executeCallback()
  */
-test.serial('Dequeuer: executeCallback() should nack when unexpected error is thrown from callback', async (t) => {
+test('Dequeuer: executeCallback() should nack when unexpected error is thrown from callback', async (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
@@ -135,7 +133,7 @@ test.serial('Dequeuer: executeCallback() should nack when unexpected error is th
 /**
  * Dequeuer: extractOrDiscard() incorrect json.
  */
-test.serial('Dequeuer: extractOrDiscard() should nack message with incorrect JSON payload', (t) => {
+test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON payload', (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
@@ -163,7 +161,7 @@ test.serial('Dequeuer: extractOrDiscard() should nack message with incorrect JSO
 /**
  * Dequeuer: extractOrDiscard() unknown error.
  */
-test.serial('Dequeuer: extractOrDiscard() should nack message on unknown unpack error', (t) => {
+test('Dequeuer: extractOrDiscard() should nack message on unknown unpack error', (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
@@ -198,7 +196,7 @@ test.serial('Dequeuer: extractOrDiscard() should nack message on unknown unpack 
 /**
  * Dequeuer: extractOrDiscard() nack invalid message.
  */
-test.serial('Dequeuer: extractOrDiscard() should nack invalid message', (t) => {
+test('Dequeuer: extractOrDiscard() should nack invalid message', (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
