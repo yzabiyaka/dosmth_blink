@@ -232,4 +232,45 @@ test('Dequeuer: extractOrDiscard() should nack invalid message', (t) => {
   unpackStub.restore();
 });
 
+/**
+ * Dequeuer: extractOrDiscard() nack on unknown message validation error.
+ */
+test('Dequeuer: Ensure Dequeuer.extractOrDiscard() nacks on unknown error in Message.validate()', (t) => {
+  const queue = t.context.queue;
+  // Override queue method to ensure nack() will be called.
+  const nackStub = sinon.stub(queue, 'nack').returns(null);
+
+  // Create invalid message (data expected to be an object)
+  // and ensure it has been rejected with MessageValidationBlinkError.
+  const invalidMessage = new FreeFormMessage({
+    data: [],
+    meta: {},
+  });
+  const validateStub = sinon.stub(invalidMessage, 'validate');
+  validateStub.throws(() => {
+    // Fake unexpected error thrown from Message.fromRabbitMessage().
+    const error = new Error('Testing unexpected exception from Message.validate()');
+    return error;
+  });
+
+  // Feed invalid message to Dequeuer.
+  const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage(invalidMessage.toString());
+  const dequeuer = new Dequeuer(queue);
+
+  // Stub Dequeuer.unpack() to make it return message we actually spy on.
+  const unpackStub = sinon.stub(dequeuer, 'unpack');
+  unpackStub.callsFake(() => invalidMessage);
+
+  const result = dequeuer.extractOrDiscard(rabbitMessage);
+  result.should.be.false;
+
+  // Ensure the message been nacked.
+  nackStub.should.have.been.calledOnce;
+
+  // Cleanup.
+  nackStub.restore();
+  validateStub.restore();
+  unpackStub.restore();
+});
+
 // ------- End -----------------------------------------------------------------
