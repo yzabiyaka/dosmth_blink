@@ -61,8 +61,7 @@ class Dequeuer {
   processCallbackError(message, error) {
     // Got retry request.
     if (error instanceof BlinkRetryError) {
-      this.retryManager.retry(message, error);
-      return;
+      return this.retryManager.retry(message, error);
     }
 
     // Really unexpected error, no retry requested.
@@ -73,6 +72,7 @@ class Dequeuer {
       'error_process_message_no_retry',
     );
     this.queue.nack(message);
+    return false;
   }
 
   extractOrDiscard(rabbitMessage) {

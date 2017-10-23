@@ -6,15 +6,19 @@ const Dequeuer = require('./Dequeuer');
 const RetryManager = require('./RetryManager');
 
 class Queue {
-  constructor(exchange) {
+  constructor(exchange, name = false) {
     this.exchange = exchange;
     this.channel = exchange.channel;
 
-    // Transforms Queue class name:
-    // - Removes conventional Q at the end
-    // - Parametrizes string
-    // For example, RemoteHttpRequestQ will become remote-http-request.
-    this.name = changeCase.paramCase(this.constructor.name.replace(/Q$/, ''));
+    if (!name) {
+      // If name is not explicitly set, generate Queue name from class name:
+      // - Removes conventional Q at the end
+      // - Parametrizes string
+      // For example, RemoteHttpRequestQ will become remote-http-request.
+      this.name = changeCase.paramCase(this.constructor.name.replace(/Q$/, ''));
+    } else {
+      this.name = name;
+    }
 
     // Define route keys.
     this.routes = [];
@@ -53,6 +57,25 @@ class Queue {
     } catch (error) {
       // Wrap HTTP exceptions in meaningful response.
       throw new Error(`Queue.purge(): failed to purge queue "${this.name}": ${error.message}`);
+    }
+    return result.messageCount;
+  }
+
+  /**
+   * Deletes the queue.
+   *
+   * @return {Number} The number of messages deleted or dead-lettered along with the queue
+   */
+  async delete(ifUnused = false, ifEmpty = false) {
+    let result;
+    try {
+      result = await this.channel.deleteQueue(this.name, {
+        ifUnused,
+        ifEmpty,
+      });
+    } catch (error) {
+      // TODO: handle channel closing on unsuccessful delete?
+      throw new Error(`Queue.delete(): failed to delete queue "${this.name}": ${error.message}`);
     }
     return result.messageCount;
   }
