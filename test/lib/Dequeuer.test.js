@@ -44,10 +44,9 @@ test.serial('Dequeuer: Test class interface', (t) => {
  * Dequeuer: executeCallback()
  */
 test.serial('Dequeuer: executeCallback() should ack successfully processed message', async (t) => {
-  // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
-  const ackSpy = sinon.spy();
-  queue.ack = ackSpy;
+  // Override queue method to ensure ack() will be called.
+  const ackStub = sinon.stub(queue, 'ack').returns(null);
 
   // Create dequeue callback and spu on it.
   const callback = async () => true;
@@ -65,17 +64,19 @@ test.serial('Dequeuer: executeCallback() should ack successfully processed messa
   callbackSpy.should.have.been.calledOnce;
 
   // Make sure the message has been acknowledged.
-  ackSpy.should.have.been.calledWith(message);
+  ackStub.should.have.been.calledWith(message);
+
+  // Cleanup.
+  ackStub.restore();
 });
 
 /**
  * Dequeuer: executeCallback()
  */
 test.serial('Dequeuer: executeCallback() ensure that expectedly not processed message is still acked', async (t) => {
-  // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
-  const ackSpy = sinon.spy();
-  queue.ack = ackSpy;
+  // Override queue method to ensure ack() will be called.
+  const ackStub = sinon.stub(queue, 'ack').returns(null);
 
   // Create dequeue callback and spu on it.
   const callback = async () => false;
@@ -93,17 +94,19 @@ test.serial('Dequeuer: executeCallback() ensure that expectedly not processed me
   callbackSpy.should.have.been.calledOnce;
 
   // Make sure the message has been acknowledged.
-  ackSpy.should.have.been.calledWith(message);
+  ackStub.should.have.been.calledWith(message);
+
+  // Cleanup.
+  ackStub.restore();
 });
 
 /**
  * Dequeuer: executeCallback()
  */
 test.serial('Dequeuer: executeCallback() should nack when unexpected error is thrown from callback', async (t) => {
-  // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
-  const nackSpy = sinon.spy();
-  queue.nack = nackSpy;
+  // Override queue method to ensure nack() will be called.
+  const nackStub = sinon.stub(queue, 'nack').returns(null);
 
   // Create dequeue callback and spu on it.
   const callback = async () => {
@@ -123,17 +126,19 @@ test.serial('Dequeuer: executeCallback() should nack when unexpected error is th
   callbackSpy.should.have.been.calledOnce;
 
   // Ensure the message has been nacked.
-  nackSpy.should.have.been.calledWith(message);
+  nackStub.should.have.been.calledWith(message);
+
+  // Cleanup.
+  nackStub.restore();
 });
 
 /**
  * Dequeuer: extractOrDiscard() incorrect json.
  */
 test.serial('Dequeuer: extractOrDiscard() should nack message with incorrect JSON payload', (t) => {
-  // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
-  const nackSpy = sinon.spy();
-  queue.nack = nackSpy;
+  // Override queue method to ensure nack() will be called.
+  const nackStub = sinon.stub(queue, 'nack').returns(null);
 
   // Ensure Message.fromRabbitMessage throws MessageParsingBlinkError
   const blinkParsingErrorSpy = sinon.spy(queue.messageClass, 'parseIncomingPayload');
@@ -145,10 +150,13 @@ test.serial('Dequeuer: extractOrDiscard() should nack message with incorrect JSO
   result.should.be.false;
 
   // Ensure the message been nacked.
-  nackSpy.should.have.been.calledOnce;
+  nackStub.should.have.been.calledOnce;
 
   // Ensure MessageParsingBlinkError has been thrown.
   blinkParsingErrorSpy.should.have.thrown('MessageParsingBlinkError');
+
+  // Cleanup.
+  nackStub.restore();
   blinkParsingErrorSpy.restore();
 });
 
@@ -156,10 +164,9 @@ test.serial('Dequeuer: extractOrDiscard() should nack message with incorrect JSO
  * Dequeuer: extractOrDiscard() unknown error.
  */
 test.serial('Dequeuer: extractOrDiscard() should nack message on unknown unpack error', (t) => {
-  // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
-  const nackSpy = sinon.spy();
-  queue.nack = nackSpy;
+  // Override queue method to ensure nack() will be called.
+  const nackStub = sinon.stub(queue, 'nack').returns(null);
 
   // Simulate unknown error in Message.fromRabbitMessage().
   // This method is static so we can stub it on Message constructor itself.
@@ -181,20 +188,20 @@ test.serial('Dequeuer: extractOrDiscard() should nack message on unknown unpack 
   result.should.be.false;
 
   // Ensure the message been nacked.
-  nackSpy.should.have.been.calledOnce;
+  nackStub.should.have.been.calledOnce;
 
-  // Restore original method.
+  // Cleanup.
+  nackStub.restore();
   fromRabbitMessageStub.restore();
 });
 
 /**
- * Dequeuer: extractOrDiscard() unknown error.
+ * Dequeuer: extractOrDiscard() nack invalid message.
  */
 test.serial('Dequeuer: extractOrDiscard() should nack invalid message', (t) => {
-  // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
-  const nackSpy = sinon.spy();
-  queue.nack = nackSpy;
+  // Override queue method to ensure nack() will be called.
+  const nackStub = sinon.stub(queue, 'nack').returns(null);
 
   // Create invalid message (data expected to be an object)
   // and ensure it has been rejected with MessageValidationBlinkError.
@@ -216,12 +223,13 @@ test.serial('Dequeuer: extractOrDiscard() should nack invalid message', (t) => {
   result.should.be.false;
 
   // Ensure the message been nacked.
-  nackSpy.should.have.been.calledOnce;
+  nackStub.should.have.been.calledOnce;
 
   // Ensure MessageValidationBlinkError has been thrown.
   validateSpy.should.have.thrown('MessageValidationBlinkError');
 
-  // Restore spies and stubs.
+  // Cleanup.
+  nackStub.restore();
   validateSpy.restore();
   unpackStub.restore();
 });
