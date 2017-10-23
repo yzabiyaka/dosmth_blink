@@ -10,7 +10,7 @@ const chai = require('chai');
 // const BlinkRetryError = require('../../src/errors/BlinkRetryError');
 const RetryManager = require('../../src/lib/RetryManager');
 // const FreeFormMessage = require('../../src/messages/FreeFormMessage');
-// const HooksHelper = require('../helpers/HooksHelper');
+const HooksHelper = require('../helpers/HooksHelper');
 // const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
@@ -19,8 +19,8 @@ chai.should();
 // chai.use(sinonChai);
 
 // Setup blink app for each test.
-// test.beforeEach(HooksHelper.createRandomQueue);
-// test.afterEach.always(HooksHelper.destroyRandomQueue);
+test.beforeEach(HooksHelper.createRandomQueueInMemory);
+test.afterEach.always(HooksHelper.destroyRandomQueueInMemory);
 
 // ------- Tests ---------------------------------------------------------------
 

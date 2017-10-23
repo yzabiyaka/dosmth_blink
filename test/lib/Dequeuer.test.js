@@ -20,8 +20,8 @@ chai.should();
 chai.use(sinonChai);
 
 // Setup blink app for each test.
-test.beforeEach(HooksHelper.createRandomQueue);
-test.afterEach.always(HooksHelper.destroyRandomQueue);
+test.beforeEach(HooksHelper.createRandomQueueInMemory);
+test.afterEach.always(HooksHelper.destroyRandomQueueInMemory);
 
 // ------- Tests ---------------------------------------------------------------
 
