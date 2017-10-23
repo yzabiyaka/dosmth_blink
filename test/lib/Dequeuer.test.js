@@ -24,7 +24,7 @@ test.afterEach.always(HooksHelper.destroyRandomQueue);
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * Dequeuer: Test class interface
+ * Dequeuer: constructor()
  */
 test('Dequeuer: Test class interface', (t) => {
   const dequeuer = new Dequeuer(t.context.queue);
@@ -41,7 +41,7 @@ test('Dequeuer: Test class interface', (t) => {
 /**
  * Dequeuer: executeCallback()
  */
-test('Dequeuer: executeCallback() should ack successfully processed message', async (t) => {
+test('Dequeuer.executeCallback(): should ack processed message', async (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure ack() will be called.
   const ackStub = sinon.stub(queue, 'ack').returns(null);
@@ -71,7 +71,7 @@ test('Dequeuer: executeCallback() should ack successfully processed message', as
 /**
  * Dequeuer: executeCallback()
  */
-test('Dequeuer: executeCallback() ensure that expectedly not processed message is still acked', async (t) => {
+test('Dequeuer/executeCallback(): ensure ack expected unprocessed message', async (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure ack() will be called.
   const ackStub = sinon.stub(queue, 'ack').returns(null);
@@ -101,7 +101,7 @@ test('Dequeuer: executeCallback() ensure that expectedly not processed message i
 /**
  * Dequeuer: executeCallback()
  */
-test('Dequeuer: executeCallback() should nack when unexpected error is thrown from callback', async (t) => {
+test('Dequeuer.executeCallback(): ensure nack on unexpected error thrown from callback', async (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
@@ -131,9 +131,9 @@ test('Dequeuer: executeCallback() should nack when unexpected error is thrown fr
 });
 
 /**
- * Dequeuer: extractOrDiscard() incorrect json.
+ * Dequeuer.extractOrDiscard()
  */
-test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON payload', (t) => {
+test('Dequeuer.extractOrDiscard(): ensure nack on incorrect JSON payload', (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
@@ -159,9 +159,9 @@ test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON paylo
 });
 
 /**
- * Dequeuer: extractOrDiscard() unknown error.
+ * Dequeuer.extractOrDiscard()
  */
-test('Dequeuer: extractOrDiscard() should nack message on unknown unpack error', (t) => {
+test('Dequeuer.extractOrDiscard(): ensure nack on unknown unpack error', (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
@@ -194,9 +194,9 @@ test('Dequeuer: extractOrDiscard() should nack message on unknown unpack error',
 });
 
 /**
- * Dequeuer: extractOrDiscard() nack invalid message.
+ * Dequeuer.extractOrDiscard()
  */
-test('Dequeuer: extractOrDiscard() should nack invalid message', (t) => {
+test('Dequeuer.extractOrDiscard(): ensure nack on invalid message', (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
@@ -233,9 +233,9 @@ test('Dequeuer: extractOrDiscard() should nack invalid message', (t) => {
 });
 
 /**
- * Dequeuer: extractOrDiscard() nack on unknown message validation error.
+ * Dequeuer.extractOrDiscard()
  */
-test('Dequeuer: Ensure Dequeuer.extractOrDiscard() nacks on unknown error in Message.validate()', (t) => {
+test('Dequeuer.extractOrDiscard(): ensure nack on unknown error in Message.validate()', (t) => {
   const queue = t.context.queue;
   // Override queue method to ensure nack() will be called.
   const nackStub = sinon.stub(queue, 'nack').returns(null);
