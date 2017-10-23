@@ -148,4 +148,30 @@ test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON paylo
   blinkParsingErrorSpy.should.have.thrown('MessageParsingBlinkError');
 });
 
+/**
+ * Dequeuer: extractOrDiscard() unknown error.
+ */
+test('Dequeuer: extractOrDiscard() should nack message on unknown unpack error', (t) => {
+  // Override queue method to ensure ack() will be called;
+  const queue = t.context.queue;
+  const nackSpy = sinon.spy();
+  queue.nack = nackSpy;
+
+  // Simulate unknown error in Message.fromRabbitMessage().
+  queue.messageClass.fromRabbitMessage = () => {
+    throw new Error('Testing unexpected exception from Message.fromRabbitMessage()');
+  };
+
+  // Create deliberaly incorrect JSON and feed it to extractOrDiscard.
+  const message = MessageFactoryHelper.getRandomMessage();
+  const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage(message.toString());
+
+  const dequeuer = new Dequeuer(queue);
+  const result = dequeuer.extractOrDiscard(rabbitMessage);
+  result.should.be.false;
+
+  // Ensure the message been nacked.
+  nackSpy.should.have.been.calledOnce;
+});
+
 // ------- End -----------------------------------------------------------------
