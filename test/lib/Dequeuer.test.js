@@ -8,6 +8,7 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
 const Dequeuer = require('../../src/lib/Dequeuer');
+const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const HooksHelper = require('../helpers/HooksHelper');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
@@ -21,11 +22,13 @@ test.beforeEach(HooksHelper.createRandomQueue);
 test.afterEach.always(HooksHelper.destroyRandomQueue);
 
 // ------- Tests ---------------------------------------------------------------
+// Important! Test should be executed serially, because they are overriding
+// same static methods on Message class.
 
 /**
  * Dequeuer: Test class interface
  */
-test('Dequeuer: Test class interface', (t) => {
+test.serial('Dequeuer: Test class interface', (t) => {
   const dequeuer = new Dequeuer(t.context.queue);
   dequeuer.should.respondTo('dequeue');
   dequeuer.should.respondTo('executeCallback');
@@ -40,7 +43,7 @@ test('Dequeuer: Test class interface', (t) => {
 /**
  * Dequeuer: executeCallback()
  */
-test('Dequeuer: executeCallback() should ack successfully processed message', async (t) => {
+test.serial('Dequeuer: executeCallback() should ack successfully processed message', async (t) => {
   // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
   const ackSpy = sinon.spy();
@@ -68,7 +71,7 @@ test('Dequeuer: executeCallback() should ack successfully processed message', as
 /**
  * Dequeuer: executeCallback()
  */
-test('Dequeuer: executeCallback() ensure that expectedly not processed message is still acked', async (t) => {
+test.serial('Dequeuer: executeCallback() ensure that expectedly not processed message is still acked', async (t) => {
   // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
   const ackSpy = sinon.spy();
@@ -96,7 +99,7 @@ test('Dequeuer: executeCallback() ensure that expectedly not processed message i
 /**
  * Dequeuer: executeCallback()
  */
-test('Dequeuer: executeCallback() should nack when unexpected error is thrown from callback', async (t) => {
+test.serial('Dequeuer: executeCallback() should nack when unexpected error is thrown from callback', async (t) => {
   // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
   const nackSpy = sinon.spy();
@@ -126,7 +129,7 @@ test('Dequeuer: executeCallback() should nack when unexpected error is thrown fr
 /**
  * Dequeuer: extractOrDiscard() incorrect json.
  */
-test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON payload', (t) => {
+test.serial('Dequeuer: extractOrDiscard() should nack message with incorrect JSON payload', (t) => {
   // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
   const nackSpy = sinon.spy();
@@ -146,23 +149,30 @@ test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON paylo
 
   // Ensure MessageParsingBlinkError has been thrown.
   blinkParsingErrorSpy.should.have.thrown('MessageParsingBlinkError');
+  blinkParsingErrorSpy.restore();
 });
 
 /**
  * Dequeuer: extractOrDiscard() unknown error.
  */
-test('Dequeuer: extractOrDiscard() should nack message on unknown unpack error', (t) => {
+test.serial('Dequeuer: extractOrDiscard() should nack message on unknown unpack error', (t) => {
   // Override queue method to ensure ack() will be called;
   const queue = t.context.queue;
   const nackSpy = sinon.spy();
   queue.nack = nackSpy;
 
   // Simulate unknown error in Message.fromRabbitMessage().
-  queue.messageClass.fromRabbitMessage = () => {
-    throw new Error('Testing unexpected exception from Message.fromRabbitMessage()');
-  };
+  // This method is static so we can stub it on Message constructor itself.
+  const fromRabbitMessageStub = sinon.stub(queue.messageClass, 'fromRabbitMessage');
+  fromRabbitMessageStub.throws(() => {
+    // Fake unexpected error thrown from Message.fromRabbitMessage().
+    const error = new Error('Testing unexpected exception from Message.fromRabbitMessage()');
+    return error;
+  });
 
-  // Create deliberaly incorrect JSON and feed it to extractOrDiscard.
+  // Create random valid message.
+  // It will be successfully unpacked from JSON,  but discarded anyways
+  //  because we've overridden Message.fromRabbitMessage().
   const message = MessageFactoryHelper.getRandomMessage();
   const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage(message.toString());
 
@@ -172,6 +182,48 @@ test('Dequeuer: extractOrDiscard() should nack message on unknown unpack error',
 
   // Ensure the message been nacked.
   nackSpy.should.have.been.calledOnce;
+
+  // Restore original method.
+  fromRabbitMessageStub.restore();
+});
+
+/**
+ * Dequeuer: extractOrDiscard() unknown error.
+ */
+test.serial('Dequeuer: extractOrDiscard() should nack invalid message', (t) => {
+  // Override queue method to ensure ack() will be called;
+  const queue = t.context.queue;
+  const nackSpy = sinon.spy();
+  queue.nack = nackSpy;
+
+  // Create invalid message (data expected to be an object)
+  // and ensure it has been rejected with MessageValidationBlinkError.
+  const invalidMessage = new FreeFormMessage({
+    data: [],
+    meta: {},
+  });
+  const validateSpy = sinon.spy(invalidMessage, 'validate');
+
+  // Feed invalid message to Dequeuer.
+  const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage(invalidMessage.toString());
+  const dequeuer = new Dequeuer(queue);
+
+  // Stub Dequeuer.unpack() to make it return message we actually spy on.
+  const unpackStub = sinon.stub(dequeuer, 'unpack');
+  unpackStub.callsFake(() => invalidMessage);
+
+  const result = dequeuer.extractOrDiscard(rabbitMessage);
+  result.should.be.false;
+
+  // Ensure the message been nacked.
+  nackSpy.should.have.been.calledOnce;
+
+  // Ensure MessageValidationBlinkError has been thrown.
+  validateSpy.should.have.thrown('MessageValidationBlinkError');
+
+  // Restore spies and stubs.
+  validateSpy.restore();
+  unpackStub.restore();
 });
 
 // ------- End -----------------------------------------------------------------
