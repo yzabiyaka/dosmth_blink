@@ -7,7 +7,9 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
+const BlinkRetryError = require('../../src/errors/BlinkRetryError');
 const Dequeuer = require('../../src/lib/Dequeuer');
+const RetryManager = require('../../src/lib/RetryManager');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const HooksHelper = require('../helpers/HooksHelper');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
@@ -128,6 +130,51 @@ test('Dequeuer.executeCallback(): ensure nack on unexpected error thrown from ca
 
   // Cleanup.
   nackStub.restore();
+});
+
+/**
+ * Dequeuer: executeCallback() retry
+ */
+test('Dequeuer.executeCallback(): ensure RetryManager is called when a retry is requested', async (t) => {
+  const queue = t.context.queue;
+  // Ensure message is not acked or nacked when retry error is called.
+  const ackStub = sinon.stub(queue, 'ack').returns(null);
+  const nackStub = sinon.stub(queue, 'nack').returns(null);
+
+  // Create random message and BlinkRetryError based on it.
+  const message = MessageFactoryHelper.getRandomMessage();
+  const retryError = new BlinkRetryError('Testing BlinkRetryError', message);
+
+  // Simulate callback throwing the retry error during message processing.
+  const callback = async () => {
+    throw retryError;
+  };
+  const callbackSpy = sinon.spy(callback);
+
+  // Create retry manager and spy on it.
+  const retryManager = new RetryManager();
+  const retryStub = sinon.stub(retryManager, 'retry').returns(true);
+
+  // Execute callback using dequeuer.
+  const dequeuer = new Dequeuer(queue, callbackSpy, retryManager);
+  const result = await dequeuer.executeCallback(message);
+  // Retry has been succesfully scheduled.
+  result.should.be.true;
+
+  // Ensure callback has been called.
+  callbackSpy.should.have.been.calledOnce;
+
+  // Ensure the message has been sent to RetryManager.
+  retryStub.should.have.been.calledWith(message, retryError);
+
+  // Ensure ack or nack hasn't been executed.
+  nackStub.should.not.have.been.called;
+  ackStub.should.not.have.been.called;
+
+  // Cleanup.
+  retryStub.restore();
+  nackStub.restore();
+  ackStub.restore();
 });
 
 /**
