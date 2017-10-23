@@ -9,6 +9,7 @@ const BlinkApp = require('../../src/app/BlinkApp');
 const BlinkWebApp = require('../../src/app/BlinkWebApp');
 const Exchange = require('../../src/lib/Exchange');
 const Queue = require('../../src/lib/Queue');
+const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -50,6 +51,7 @@ class HooksHelper {
 
     const queue = new Queue(exchange, `test-autogen-${chance.word()}-${chance.word()}`);
     await queue.setup();
+    queue.messageClass = FreeFormMessage;
 
     t.context.exchange = exchange;
     t.context.queue = queue;

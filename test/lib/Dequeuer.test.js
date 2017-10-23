@@ -124,7 +124,7 @@ test('Dequeuer: executeCallback() should nack when unexpected error is thrown fr
 });
 
 /**
- * Dequeuer: extractOrDiscard()
+ * Dequeuer: extractOrDiscard() incorrect json.
  */
 test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON payload', (t) => {
   // Override queue method to ensure ack() will be called;
@@ -132,6 +132,10 @@ test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON paylo
   const nackSpy = sinon.spy();
   queue.nack = nackSpy;
 
+  // Ensure Message.fromRabbitMessage throws MessageParsingBlinkError
+  const blinkParsingErrorSpy = sinon.spy(queue.messageClass, 'parseIncomingPayload');
+
+  // Create deliberaly incorrect JSON and feed it to extractOrDiscard.
   const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage('{incorrect-json}');
   const dequeuer = new Dequeuer(queue);
   const result = dequeuer.extractOrDiscard(rabbitMessage);
@@ -139,6 +143,9 @@ test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON paylo
 
   // Ensure the message been nacked.
   nackSpy.should.have.been.calledOnce;
+
+  // Ensure MessageParsingBlinkError has been thrown.
+  blinkParsingErrorSpy.should.have.thrown('MessageParsingBlinkError');
 });
 
 // ------- End -----------------------------------------------------------------
