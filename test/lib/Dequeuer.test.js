@@ -119,8 +119,26 @@ test('Dequeuer: executeCallback() should nack when unexpected error is thrown fr
   // Ensure callback has been called.
   callbackSpy.should.have.been.calledOnce;
 
-  // Make sure the message has been acknowledged.
+  // Ensure the message has been nacked.
   nackSpy.should.have.been.calledWith(message);
+});
+
+/**
+ * Dequeuer: extractOrDiscard()
+ */
+test('Dequeuer: extractOrDiscard() should nack message with incorrect JSON payload', (t) => {
+  // Override queue method to ensure ack() will be called;
+  const queue = t.context.queue;
+  const nackSpy = sinon.spy();
+  queue.nack = nackSpy;
+
+  const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage('{incorrect-json}');
+  const dequeuer = new Dequeuer(queue);
+  const result = dequeuer.extractOrDiscard(rabbitMessage);
+  result.should.be.false;
+
+  // Ensure the message been nacked.
+  nackSpy.should.have.been.calledOnce;
 });
 
 // ------- End -----------------------------------------------------------------

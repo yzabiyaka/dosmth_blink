@@ -274,6 +274,17 @@ class MessageFactoryHelper {
     };
     return new FreeFormMessage({ data, meta });
   }
+
+  static getFakeRabbitMessage(content) {
+    // @see http://www.squaremobius.net/amqp.node/channel_api.html#callbacks
+    const rabbitMessage = {
+      fields: {},
+      properties: {},
+    };
+    // Todo: add option to set message tag.
+    rabbitMessage.content = Buffer.from(content);
+    return rabbitMessage;
+  }
 }
 
 module.exports = MessageFactoryHelper;
