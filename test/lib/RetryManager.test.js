@@ -104,9 +104,6 @@ test('RetryManager.retry(): should call republishWithDelay with correct params',
     DelayLogic.exponentialBackoff(retryAttempt),
   );
 
-  // Ensure message has correct retryAttempt setting.
-  message.getMeta().retryAttempt.should.equal(retryAttempt);
-
   // Cleanup.
   republishWithDelayStub.restore();
 });

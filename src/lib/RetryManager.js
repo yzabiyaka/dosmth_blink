@@ -22,8 +22,7 @@ class RetryManager {
 
   async retry(message, error) {
     // Check if retry limit reached.
-    const retryAttempt = message.getRetryAttempt();
-    if (retryAttempt > this.retryLimit) {
+    if (message.getRetryAttempt() > this.retryLimit) {
       // Retry limit reached
       this.queue.nack(message);
       this.log(
@@ -36,12 +35,12 @@ class RetryManager {
     }
 
     // Calculate wait time until the redelivery.
-    const delayMs = this.retryAttemptToDelayTime(retryAttempt);
+    const delayMs = this.retryAttemptToDelayTime(message.getRetryAttempt());
 
     // Log retry information.
     this.log(
       'debug',
-      `Retry scheduled, attempt ${retryAttempt}, reason '${error}'. Will run in ${delayMs}ms`,
+      `Retry scheduled, attempt ${message.getRetryAttempt()}, reason '${error}'. Will run in ${delayMs}ms`,
       message,
       'debug_retry_manager_redeliver_scheduled',
     );
@@ -50,12 +49,11 @@ class RetryManager {
   }
 
   async republishWithDelay(message, delayMs, reason = 'unknown') {
-    // Update retry attempt count.
-    message.incrementRetryAttempt(reason);
-
-    // Update retry attempt.
     // TODO: check why it works. We're not copying message here, right?
     const retryMessage = message;
+
+    // Update retry attempt count and save the reason.
+    retryMessage.incrementRetryAttempt(reason);
 
     // Delay republish using timeout.
     // Note: this conflicts with prefetch_count functionality, see issue #70.
