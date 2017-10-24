@@ -88,8 +88,9 @@ test('RetryManager.retry(): should call republishWithDelay with correct params',
   const message = MessageFactoryHelper.getRandomMessage();
   const retryError = new BlinkRetryError('Testing BlinkRetryError', message);
   // Set current retry attempt to the limit set in the manager - 1.
+  // For example, if the limit is 100, we'll test retryAttempt = 99.
   const retryAttempt = retryManager.retryLimit - 1;
-  message.payload.meta.retryAttempt = retryManager.retryLimit - 1;
+  message.payload.meta.retryAttempt = retryAttempt;
 
   // Stub republishWithDelay.
   const republishWithDelayStub = sinon.stub(retryManager, 'republishWithDelay');
@@ -99,9 +100,14 @@ test('RetryManager.retry(): should call republishWithDelay with correct params',
   const result = await retryManager.retry(message, retryError);
   result.should.be.true;
 
+  // Ensure retry attempt has been increased by 1.
+  // In example above, it will be 100.
+  message.getRetryAttempt().should.equal(retryAttempt + 1);
+
+  // Ensure republishWithDelay() recived correct message and delay call.
   republishWithDelayStub.should.have.been.calledWith(
     message,
-    DelayLogic.exponentialBackoff(retryAttempt),
+    DelayLogic.exponentialBackoff(retryAttempt + 1),
   );
 
   // Cleanup.

@@ -21,18 +21,17 @@ class RetryManager {
   }
 
   async retry(message, error) {
-    // Check if retry limit reached.
-    if (message.getRetryAttempt() > this.retryLimit) {
-      // Retry limit reached
+    // Get text description from Error object.
+    const reason = error.message;
+
+    // Ensure message is allowed for a retry, otherwise discard it.
+    if (!this.retryAllowed(message, reason)) {
       this.queue.nack(message);
-      this.log(
-        'debug',
-        `Retry limit reached, rejecting. Retry reason '${error}'`,
-        message,
-        'debug_retry_manager_limit_reached',
-      );
       return false;
     }
+
+    // Update retry attempt count and save the reason.
+    message.incrementRetryAttempt(reason);
 
     // Calculate wait time until the redelivery.
     const delayMs = this.retryAttemptToDelayTime(message.getRetryAttempt());
@@ -40,21 +39,15 @@ class RetryManager {
     // Log retry information.
     this.log(
       'debug',
-      `Retry scheduled, attempt ${message.getRetryAttempt()}, reason '${error}'. Will run in ${delayMs}ms`,
+      `Retry scheduled, attempt ${message.getRetryAttempt()}, reason '${reason}', retry in ${delayMs}ms`,
       message,
       'debug_retry_manager_redeliver_scheduled',
     );
 
-    return this.republishWithDelay(message, delayMs, error.toString());
+    return this.republishWithDelay(message, delayMs);
   }
 
-  async republishWithDelay(message, delayMs, reason = 'unknown') {
-    // TODO: check why it works. We're not copying message here, right?
-    const retryMessage = message;
-
-    // Update retry attempt count and save the reason.
-    retryMessage.incrementRetryAttempt(reason);
-
+  async republishWithDelay(message, delayMs) {
     // Delay republish using timeout.
     // Note: this conflicts with prefetch_count functionality, see issue #70.
     await new Promise(resolve => setTimeout(resolve, delayMs));
@@ -62,7 +55,22 @@ class RetryManager {
     // Discard original message.
     this.queue.nack(message);
     // Republish modified message.
-    this.queue.publish(retryMessage);
+    this.queue.publish(message);
+    return true;
+  }
+
+  retryAllowed(message, reason) {
+    if (message.getRetryAttempt() >= this.retryLimit) {
+      // Retry limit reached.
+      // Log the reason why message is denied for retry.
+      this.log(
+        'debug',
+        `Retry limit reached, rejecting. Retry reason '${reason}'`,
+        message,
+        'debug_retry_manager_limit_reached',
+      );
+      return false;
+    }
     return true;
   }
 
