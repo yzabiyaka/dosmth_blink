@@ -114,4 +114,35 @@ test('RetryManager.retry(): should call republishWithDelay with correct params',
   republishWithDelayStub.restore();
 });
 
+/**
+ * RetryManager.republishWithDelay()
+ */
+test('RetryManager.republishWithDelay(): should republish original message', async (t) => {
+  const queue = t.context.queue;
+  // Stub queue method to ensure nack() will be called.
+  const nackStub = sinon.stub(queue, 'nack').returns(null);
+  const publishStub = sinon.stub(queue, 'publish').returns(null);
+
+  // Create retryManager.
+  const retryManager = new RetryManager(queue);
+
+  // Prepare retry message for the manager.
+  const message = MessageFactoryHelper.getRandomMessage();
+  const retryError = new BlinkRetryError('Testing BlinkRetryError', message);
+  message.incrementRetryAttempt(retryError.message);
+
+
+  // Pass the message to retry().
+  const result = await retryManager.republishWithDelay(message, 0);
+  result.should.be.true;
+
+  // Make sure message hasn been nackd and then republished again.
+  nackStub.should.have.been.calledWith(message);
+  publishStub.should.have.been.calledWith(message);
+
+  // Cleanup.
+  nackStub.restore();
+  publishStub.restore();
+});
+
 // ------- End -----------------------------------------------------------------
