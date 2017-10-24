@@ -11,9 +11,9 @@ class RetryManager {
     // Retry delay logic.
     if (!retryDelayLogic || typeof retryDelayLogic !== 'function') {
       // Default exponential backoff logic
-      this.retryNumberToDelayMs = DelayLogic.exponentialBackoff;
+      this.retryAttemptToDelayTime = DelayLogic.exponentialBackoff;
     } else {
-      this.retryNumberToDelayMs = retryDelayLogic;
+      this.retryAttemptToDelayTime = retryDelayLogic;
     }
 
     // Retry limit is a hardcoded const now.
@@ -36,7 +36,7 @@ class RetryManager {
     }
 
     // Calculate wait time until the redelivery.
-    const delayMs = this.retryNumberToDelayMs(retryAttempt);
+    const delayMs = this.retryAttemptToDelayTime(retryAttempt);
 
     // Log retry information.
     this.log(

@@ -30,18 +30,18 @@ test.afterEach.always(HooksHelper.destroyRandomQueueInMemory);
 test('RetryManager: Test class interface', (t) => {
   const retryManager = new RetryManager(t.context.queue);
   retryManager.should.respondTo('retry');
-  retryManager.should.respondTo('retryNumberToDelayMs');
+  retryManager.should.respondTo('retryAttemptToDelayTime');
   retryManager.should.respondTo('republishWithDelay');
   retryManager.should.respondTo('log');
   retryManager.should.have.property('retryLimit');
   // Ensure default retry delay logic is DelayLogic.exponentialBackoff
-  retryManager.retryNumberToDelayMs.should.be.equal(DelayLogic.exponentialBackoff);
+  retryManager.retryAttemptToDelayTime.should.be.equal(DelayLogic.exponentialBackoff);
 
   // Ensure it's possible to override DelayLogic
   const customDelayLogic = currentRetryNumber => currentRetryNumber;
   const retryManagerCustom = new RetryManager(t.context.queue, customDelayLogic);
-  retryManagerCustom.should.respondTo('retryNumberToDelayMs');
-  retryManagerCustom.retryNumberToDelayMs.should.be.equal(customDelayLogic);
+  retryManagerCustom.should.respondTo('retryAttemptToDelayTime');
+  retryManagerCustom.retryAttemptToDelayTime.should.be.equal(customDelayLogic);
 });
 
 /**
