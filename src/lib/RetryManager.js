@@ -5,15 +5,15 @@ const logger = require('winston');
 const DelayLogic = require('./DelayLogic');
 
 class RetryManager {
-  constructor(queue, retryDelayLogic = false) {
+  constructor(queue, republishDelayLogic = false) {
     this.queue = queue;
 
     // Retry delay logic.
-    if (!retryDelayLogic || typeof retryDelayLogic !== 'function') {
+    if (!republishDelayLogic || typeof republishDelayLogic !== 'function') {
       // Default exponential backoff logic
       this.retryAttemptToDelayTime = DelayLogic.exponentialBackoff;
     } else {
-      this.retryAttemptToDelayTime = retryDelayLogic;
+      this.retryAttemptToDelayTime = republishDelayLogic;
     }
 
     // Retry limit is a hardcoded const now.
