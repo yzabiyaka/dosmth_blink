@@ -22,7 +22,7 @@ class RetryManager {
 
   async retry(message, error) {
     // Check if retry limit reached.
-    const retryAttempt = message.getMeta().retryAttempt || 0;
+    const retryAttempt = message.getRetryAttempt();
     if (retryAttempt > this.retryLimit) {
       // Retry limit reached
       this.queue.nack(message);
@@ -50,18 +50,12 @@ class RetryManager {
   }
 
   async republishWithDelay(message, delayMs, reason = 'unknown') {
-    // Calculate new retry attempt.
-    let retryAttempt = 0;
-    if (message.getMeta().retryAttempt) {
-      retryAttempt = message.getMeta().retryAttempt;
-    }
-    retryAttempt += 1;
+    // Update retry attempt count.
+    message.incrementRetryAttempt(reason);
 
     // Update retry attempt.
     // TODO: check why it works. We're not copying message here, right?
     const retryMessage = message;
-    retryMessage.payload.meta.retryAttempt = retryAttempt;
-    retryMessage.payload.meta.retryReason = reason;
 
     // Delay republish using timeout.
     // Note: this conflicts with prefetch_count functionality, see issue #70.
