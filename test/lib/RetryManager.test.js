@@ -93,7 +93,7 @@ test('RetryManager.retry(): should call republishWithDelay with correct params',
 
   // Stub republishWithDelay.
   const republishWithDelayStub = sinon.stub(retryManager, 'republishWithDelay');
-  republishWithDelayStub.resolves(null);
+  republishWithDelayStub.resolves(true);
 
   // Pass the message to retry().
   const result = await retryManager.retry(message, retryError);

@@ -46,9 +46,7 @@ class RetryManager {
       'debug_retry_manager_redeliver_scheduled',
     );
 
-    // Delay the redelivery.
-    await this.republishWithDelay(message, delayMs, error.toString());
-    return true;
+    return this.republishWithDelay(message, delayMs, error.toString());
   }
 
   async republishWithDelay(message, delayMs, reason = 'unknown') {
@@ -73,6 +71,7 @@ class RetryManager {
     this.queue.nack(message);
     // Republish modified message.
     this.queue.publish(retryMessage);
+    return true;
   }
 
   log(level, logMessage, message = {}, code = 'unexpected_code') {
