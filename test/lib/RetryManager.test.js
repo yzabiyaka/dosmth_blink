@@ -100,8 +100,8 @@ test('RetryManager.retry(): should call republishWithDelay with correct params',
   result.should.be.true;
 
   republishWithDelayStub.should.have.been.calledWith(
-    DelayLogic.exponentialBackoff(retryAttempt),
     message,
+    DelayLogic.exponentialBackoff(retryAttempt),
   );
 
   // Ensure message has correct retryAttempt setting.

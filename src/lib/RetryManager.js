@@ -47,15 +47,12 @@ class RetryManager {
     );
 
     // Delay the redelivery.
-    await this.republishWithDelay(delayMs, message, error.toString());
+    await this.republishWithDelay(message, delayMs, error.toString());
     return true;
   }
 
-  async republishWithDelay(delayMs, message, reason = 'unknown') {
-    // Wait delayMs.
-    await new Promise(resolve => setTimeout(resolve, delayMs));
-
-    // Calculate retry attempt.
+  async republishWithDelay(message, delayMs, reason = 'unknown') {
+    // Calculate new retry attempt.
     let retryAttempt = 0;
     if (message.getMeta().retryAttempt) {
       retryAttempt = message.getMeta().retryAttempt;
@@ -67,6 +64,10 @@ class RetryManager {
     const retryMessage = message;
     retryMessage.payload.meta.retryAttempt = retryAttempt;
     retryMessage.payload.meta.retryReason = reason;
+
+    // Delay republish using timeout.
+    // Note: this conflicts with prefetch_count functionality, see issue #70.
+    await new Promise(resolve => setTimeout(resolve, delayMs));
 
     // Discard original message.
     this.queue.nack(message);

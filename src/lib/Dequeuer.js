@@ -31,7 +31,7 @@ class Dequeuer {
     try {
       result = await this.callback(message);
     } catch (error) {
-      return await this.processCallbackError(message, error);
+      return this.processCallbackError(message, error);
     }
 
     return this.processCallbackResult(message, result);
@@ -61,7 +61,7 @@ class Dequeuer {
   async processCallbackError(message, error) {
     // Got retry request.
     if (error instanceof BlinkRetryError) {
-      return await this.retryManager.retry(message, error);
+      return this.retryManager.retry(message, error);
     }
 
     // Really unexpected error, no retry requested.
