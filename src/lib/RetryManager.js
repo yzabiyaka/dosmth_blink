@@ -11,16 +11,16 @@ class RetryManager {
     // Retry delay logic.
     if (!retryDelayLogic || typeof retryDelayLogic !== 'function') {
       // Default exponential backoff logic
-      this.retryDelay = DelayLogic.exponentialBackoff;
+      this.retryNumberToDelayMs = DelayLogic.exponentialBackoff;
     } else {
-      this.retryDelay = retryDelayLogic;
+      this.retryNumberToDelayMs = retryDelayLogic;
     }
 
     // Retry limit is a hardcoded const now.
     this.retryLimit = 100;
   }
 
-  retry(message, error) {
+  async retry(message, error) {
     // Check if retry limit reached.
     const retryAttempt = message.getMeta().retryAttempt || 0;
     if (retryAttempt > this.retryLimit) {
@@ -36,36 +36,41 @@ class RetryManager {
     }
 
     // Calculate wait time until the redelivery.
-    const delayMilliseconds = this.retryDelay(retryAttempt);
+    const delayMs = this.retryNumberToDelayMs(retryAttempt);
 
     // Log retry information.
     this.log(
       'debug',
-      `Retry scheduled, attempt ${retryAttempt}, reason '${error}'. Will run in ${delayMilliseconds}ms`,
+      `Retry scheduled, attempt ${retryAttempt}, reason '${error}'. Will run in ${delayMs}ms`,
       message,
       'debug_retry_manager_redeliver_scheduled',
     );
 
     // Delay the redelivery.
-    this.scheduleRedeliveryIn(delayMilliseconds, message, error.toString());
+    await this.republishWithDelay(delayMs, message, error.toString());
     return true;
   }
 
-  scheduleRedeliveryIn(delayMilliseconds, message, reason) {
-    setTimeout(() => this.redeliver(message, reason), delayMilliseconds);
-  }
+  async republishWithDelay(delayMs, message, reason = 'unknown') {
+    // Wait delayMs.
+    await new Promise(resolve => setTimeout(resolve, delayMs));
 
-  redeliver(message, reason = 'unknown') {
+    // Calculate retry attempt.
     let retryAttempt = 0;
     if (message.getMeta().retryAttempt) {
       retryAttempt = message.getMeta().retryAttempt;
     }
     retryAttempt += 1;
+
+    // Update retry attempt.
+    // TODO: check why it works. We're not copying message here, right?
     const retryMessage = message;
-    retryMessage.payload.meta.retry = retryAttempt;
+    retryMessage.payload.meta.retryAttempt = retryAttempt;
     retryMessage.payload.meta.retryReason = reason;
-    // Republish modified message.
+
+    // Discard original message.
     this.queue.nack(message);
+    // Republish modified message.
     this.queue.publish(retryMessage);
   }
 

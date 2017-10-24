@@ -30,25 +30,24 @@ test.afterEach.always(HooksHelper.destroyRandomQueueInMemory);
 test('RetryManager: Test class interface', (t) => {
   const retryManager = new RetryManager(t.context.queue);
   retryManager.should.respondTo('retry');
-  retryManager.should.respondTo('retryDelay');
-  retryManager.should.respondTo('scheduleRedeliveryIn');
-  retryManager.should.respondTo('redeliver');
+  retryManager.should.respondTo('retryNumberToDelayMs');
+  retryManager.should.respondTo('republishWithDelay');
   retryManager.should.respondTo('log');
   retryManager.should.have.property('retryLimit');
   // Ensure default retry delay logic is DelayLogic.exponentialBackoff
-  retryManager.retryDelay.should.be.equal(DelayLogic.exponentialBackoff);
+  retryManager.retryNumberToDelayMs.should.be.equal(DelayLogic.exponentialBackoff);
 
   // Ensure it's possible to override DelayLogic
   const customDelayLogic = currentRetryNumber => currentRetryNumber;
   const retryManagerCustom = new RetryManager(t.context.queue, customDelayLogic);
-  retryManagerCustom.should.respondTo('retryDelay');
-  retryManagerCustom.retryDelay.should.be.equal(customDelayLogic);
+  retryManagerCustom.should.respondTo('retryNumberToDelayMs');
+  retryManagerCustom.retryNumberToDelayMs.should.be.equal(customDelayLogic);
 });
 
 /**
  * RetryManager.retry()
  */
-test('RetryManager.retry(): ensure nack when retry limit is reached', (t) => {
+test('RetryManager.retry(): ensure nack when retry limit is reached', async (t) => {
   const queue = t.context.queue;
   // Stub queue method to ensure nack() will be called.
   const ackStub = sinon.stub(queue, 'ack').returns(null);
@@ -64,7 +63,7 @@ test('RetryManager.retry(): ensure nack when retry limit is reached', (t) => {
   message.payload.meta.retryAttempt = retryManager.retryLimit + 1;
 
   // Pass the message to retry().
-  const result = retryManager.retry(message, retryError);
+  const result = await retryManager.retry(message, retryError);
   result.should.be.false;
 
   // Make sure the message has been nacked.
@@ -79,7 +78,7 @@ test('RetryManager.retry(): ensure nack when retry limit is reached', (t) => {
 /**
  * RetryManager.retry()
  */
-test('RetryManager.retry(): should call scheduleRedeliveryIn with correct params', (t) => {
+test('RetryManager.retry(): should call republishWithDelay with correct params', async (t) => {
   const queue = t.context.queue;
 
   // Create retryManager.
@@ -92,15 +91,15 @@ test('RetryManager.retry(): should call scheduleRedeliveryIn with correct params
   const retryAttempt = retryManager.retryLimit - 1;
   message.payload.meta.retryAttempt = retryManager.retryLimit - 1;
 
-  // Stub scheduleRedeliveryIn.
-  const scheduleRedeliveryInStub = sinon.stub(retryManager, 'scheduleRedeliveryIn');
-  scheduleRedeliveryInStub.returns(null);
+  // Stub republishWithDelay.
+  const republishWithDelayStub = sinon.stub(retryManager, 'republishWithDelay');
+  republishWithDelayStub.resolves(null);
 
   // Pass the message to retry().
-  const result = retryManager.retry(message, retryError);
+  const result = await retryManager.retry(message, retryError);
   result.should.be.true;
 
-  scheduleRedeliveryInStub.should.have.been.calledWith(
+  republishWithDelayStub.should.have.been.calledWith(
     DelayLogic.exponentialBackoff(retryAttempt),
     message,
   );
@@ -109,7 +108,7 @@ test('RetryManager.retry(): should call scheduleRedeliveryIn with correct params
   message.getMeta().retryAttempt.should.equal(retryAttempt);
 
   // Cleanup.
-  scheduleRedeliveryInStub.restore();
+  republishWithDelayStub.restore();
 });
 
 // ------- End -----------------------------------------------------------------
