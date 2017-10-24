@@ -132,8 +132,23 @@ test('RetryManager.republishWithDelay(): should republish original message', asy
   message.incrementRetryAttempt(retryError.message);
 
 
-  // Pass the message to retry().
-  const result = await retryManager.republishWithDelay(message, 0);
+  // Fake clock so we don't have to wait on this implementation,
+  // but still are providing real wait time.
+  const waitTime = 60 * 1000; // 60s.
+  const clock = sinon.useFakeTimers();
+
+  // Request message republish in 60s.
+  const resultPromise = retryManager.republishWithDelay(message, waitTime);
+
+  // Advace the clock to wait time before actually waiting on promise.
+  clock.tick(waitTime);
+
+  // Should be resolved immidiatelly.
+  const result = await resultPromise;
+  // Important: reset the clock.
+  clock.restore();
+
+  // Unless error is thrown, result will be true.
   result.should.be.true;
 
   // Make sure message hasn been nackd and then republished again.
