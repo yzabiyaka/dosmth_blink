@@ -8,12 +8,12 @@ class DelayLogic {
    * Visualization:
    * @see  https://docs.google.com/spreadsheets/d/1AECd5YrOXJnYlH7BW9wtPBL2Tqp5Wjd3c0VnYGqA780/edit?usp=sharing
    *
-   * @param  {int} currentRetryNumber - Retry number
+   * @param  {int} currentRetryAttempt - Retry attempt counter
    * @return {int} Milliseconds to wait
    */
-  static exponentialBackoff(currentRetryNumber) {
+  static exponentialBackoff(currentRetryAttempt) {
     // eslint-disable-next-line no-mixed-operators
-    return ((currentRetryNumber ** 2) / 4 + 1) * 1000;
+    return ((currentRetryAttempt ** 2) / 4 + 1) * 1000;
   }
 }
 

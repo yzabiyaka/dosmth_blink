@@ -58,7 +58,7 @@ class Dequeuer {
     return true;
   }
 
-  processCallbackError(message, error) {
+  async processCallbackError(message, error) {
     // Got retry request.
     if (error instanceof BlinkRetryError) {
       return this.retryManager.retry(message, error);

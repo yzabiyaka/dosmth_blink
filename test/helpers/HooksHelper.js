@@ -43,25 +43,31 @@ class HooksHelper {
   }
 
   static async createRandomQueue(t) {
+    await HooksHelper.createRandomQueueInMemory(t);
+    await t.context.queue.setup();
+  }
+
+  static async destroyRandomQueue(t) {
+    await t.context.queue.delete();
+    t.context.exchange.channel.close();
+    t.context.exchange.connection.close();
+    HooksHelper.destroyRandomQueueInMemory(t);
+  }
+
+  static async createRandomQueueInMemory(t) {
     const config = require('../../config');
     const exchange = new Exchange(config);
-
-    t.context.config = config;
+    // Todo: make independent.
     await exchange.setup();
 
     const queue = new Queue(exchange, `test-autogen-${chance.word()}-${chance.word()}`);
-    await queue.setup();
     queue.messageClass = FreeFormMessage;
 
     t.context.exchange = exchange;
     t.context.queue = queue;
   }
 
-  static async destroyRandomQueue(t) {
-    await t.context.queue.delete();
-
-    t.context.exchange.channel.close();
-    t.context.exchange.connection.close();
+  static destroyRandomQueueInMemory(t) {
     t.context.queue = false;
     t.context.exchange = false;
   }

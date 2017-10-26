@@ -20,8 +20,8 @@ chai.should();
 chai.use(sinonChai);
 
 // Setup blink app for each test.
-test.beforeEach(HooksHelper.createRandomQueue);
-test.afterEach.always(HooksHelper.destroyRandomQueue);
+test.beforeEach(HooksHelper.createRandomQueueInMemory);
+test.afterEach.always(HooksHelper.destroyRandomQueueInMemory);
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -153,7 +153,7 @@ test('Dequeuer.executeCallback(): ensure RetryManager is called when a retry is 
 
   // Create retry manager and spy on it.
   const retryManager = new RetryManager();
-  const retryStub = sinon.stub(retryManager, 'retry').returns(true);
+  const retryStub = sinon.stub(retryManager, 'retry').resolves(true);
 
   // Execute callback using dequeuer.
   const dequeuer = new Dequeuer(queue, callbackSpy, retryManager);
