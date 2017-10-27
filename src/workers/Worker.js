@@ -2,6 +2,9 @@
 
 const logger = require('winston');
 
+const DelayLogic = require('../lib/DelayLogic');
+const RetryManager = require('../lib/RetryManager');
+
 class Worker {
   constructor(blink) {
     this.blink = blink;
@@ -28,7 +31,13 @@ class Worker {
         meta,
       );
 
-      this.queue.subscribe(this.consume, rateLimit);
+      // @todo: make retry manager configurable.
+      const retryManager = new RetryManager(this.queue, DelayLogic.constantTimeDelay(1000));
+      // Hardcoding rate limit to be 18,000 (approx 5 hours)
+      // @todo: remove
+      retryManager.retryLimit = this.blink.config.app.retryLimit;
+
+      this.queue.subscribe(this.consume, { rateLimit, retryManager });
     } else {
       logger.warning('Queue is not established, waiting');
     }
