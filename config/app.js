@@ -11,7 +11,7 @@ const config = {
   },
   version: packageJson.version,
   retrySuppressHeader: 'x-blink-retry-suppress',
-  prefetchCount: parseInt(process.env.BLINK_APP_DEFAULT_PREFETCH_COUNT, 10) || 50,
+  prefetchCount: parseInt(process.env.BLINK_APP_DEFAULT_PREFETCH_COUNT, 10) || 30,
 };
 
 module.exports = config;
