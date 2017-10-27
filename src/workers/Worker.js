@@ -17,7 +17,17 @@ class Worker {
       // @todo: make rate limit configurable per worker
       const rateLimit = this.blink.config.app.rateLimit;
 
-      // TODO: generate consumer tag
+      const meta = {
+        env: this.blink.config.app.env,
+        code: 'debug_rate_limit_set',
+        worker: this.constructor.name,
+      };
+
+      logger.debug(
+        `Rate limit set to ${rateLimit}`,
+        meta,
+      );
+
       this.queue.subscribe(this.consume, rateLimit);
     } else {
       logger.warning('Queue is not established, waiting');
