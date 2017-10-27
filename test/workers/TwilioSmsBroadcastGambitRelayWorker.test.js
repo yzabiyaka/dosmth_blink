@@ -95,7 +95,7 @@ test.serial('Gambit should not process not inbound messages', () => {
   TwilioSmsBroadcastGambitRelayWorker.shouldSkip(messageData).should.be.true;
 });
 
-test.serial('Gambit Broadcast relay should be consume 60 messages per second exactly', async (t) => {
+test.serial('Gambit Broadcast relay should be consume close to 60 messages per second', async (t) => {
   // Turn off extra logs for this tests, as it genertes thouthands of messages.
   await HooksHelper.startBlinkWebApp(t);
   const blink = t.context.blink;
@@ -122,7 +122,7 @@ test.serial('Gambit Broadcast relay should be consume 60 messages per second exa
   worker.setup();
   worker.perform();
 
-  // Ensure that after one second worker consumed exactly 60 messages.
+  // Ensure that after one second worker consumed close to 60 messages.
   // = expected rate, 60 messages per second!
   // Wait for all messages to sync into rabbit.
   await new Promise(resolve => setTimeout(resolve, 1000));
