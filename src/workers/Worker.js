@@ -14,8 +14,11 @@ class Worker {
       // worker's memory to avoid reaching memory limit.
       this.limitMessagesInMemory(this.blink.config.app.prefetchCount);
 
+      // @todo: make rate limit configurable per worker
+      const rateLimit = this.blink.config.app.rateLimit;
+
       // TODO: generate consumer tag
-      this.queue.subscribe(this.consume);
+      this.queue.subscribe(this.consume, rateLimit);
     } else {
       logger.warning('Queue is not established, waiting');
     }

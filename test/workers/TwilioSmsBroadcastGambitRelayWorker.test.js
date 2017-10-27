@@ -26,7 +26,7 @@ const { Response } = fetch;
 
 // ------- Tests ---------------------------------------------------------------
 
-test('Gambit Broadcast relay should recieve correct retry count if message has been retried', () => {
+test.serial('Gambit Broadcast relay should recieve correct retry count if message has been retried', () => {
   const config = require('../../config');
   const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
   const gambitWorker = gambitWorkerApp.worker;
@@ -48,7 +48,7 @@ test('Gambit Broadcast relay should recieve correct retry count if message has b
 });
 
 
-test('Test Gambit response with x-blink-retry-suppress header', () => {
+test.serial('Test Gambit response with x-blink-retry-suppress header', () => {
   const config = require('../../config');
   const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
   const gambitWorker = gambitWorkerApp.worker;
@@ -83,18 +83,61 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
   gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
 });
 
-test('Gambit should process delivered messages', () => {
+test.serial('Gambit should process delivered messages', () => {
   const messageData = MessageFactoryHelper.getValidMessageData();
   messageData.payload.data.MessageStatus = 'delivered';
   TwilioSmsBroadcastGambitRelayWorker.shouldSkip(messageData).should.be.false;
 });
 
-test('Gambit should not process not inbound messages', () => {
+test.serial('Gambit should not process not inbound messages', () => {
   const messageData = MessageFactoryHelper.getValidMessageData();
   messageData.payload.data.MessageStatus = 'other';
   TwilioSmsBroadcastGambitRelayWorker.shouldSkip(messageData).should.be.true;
 });
 
+test.serial('Gambit Broadcast relay should be consume 60 messages per second exactly', async (t) => {
+  // Turn off extra logs for this tests, as it genertes thouthands of messages.
+  await HooksHelper.startBlinkWebApp(t);
+  const blink = t.context.blink;
+
+  // Publish 300 messages to the queue
+  for (let i = 0; i < 120; i++) {
+    const data = MessageFactoryHelper.getRandomDataSample();
+    const meta = {
+      request_id: chance.guid({ version: 4 }),
+      broadcastId: chance.word(),
+    };
+    const message = new TwilioStatusCallbackMessage({ data, meta });
+    blink.exchange.publish('sms-broadcast.status-callback.twilio.webhook', message);
+  }
+
+  // Wait for all messages to sync into rabbit.
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  // Spy on worker's consume();
+  const worker = new TwilioSmsBroadcastGambitRelayWorker(blink);
+  const consumeStub = sinon.stub(worker, 'consume').resolves(true);
+
+  // Kick off message consuming;
+  worker.setup();
+  worker.perform();
+
+  // Ensure that after one second worker consumed exactly 60 messages.
+  // = expected rate, 60 messages per second!
+  // Wait for all messages to sync into rabbit.
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  // Check that call count is within expected margin of error.
+  consumeStub.callCount.should.be.closeTo(60, 10);
+
+  // Await consming to complete
+  // @todo: gracefull worker shutdown instead.
+  await new Promise(resolve => setTimeout(resolve, 3000));
+
+  // Cleanup
+  consumeStub.restore();
+  await HooksHelper.stopBlinkWebApp(t);
+});
 
 /**
  * POST /api/v1/webhooks/twilio-sms-broadcast
@@ -141,42 +184,6 @@ test.serial('POST /api/v1/webhooks/twilio-sms-broadcast should publish message t
   messageData.meta.should.have.property('query');
   messageData.meta.query.should.have.property('broadcastId', broadcastId);
 
-  await HooksHelper.stopBlinkWebApp(t);
-});
-
-test.serial('Gambit Broadcast relay should be consume 60 messages per second exactly', async (t) => {
-  await HooksHelper.startBlinkWebApp(t);
-  const blink = t.context.blink;
-
-  // Publish 300 messages to the queue
-  for (let i = 0; i < 300; i++) {
-    const data = MessageFactoryHelper.getRandomDataSample();
-    const meta = {
-      request_id: chance.guid({ version: 4 }),
-      broadcastId: chance.word(),
-    };
-    const message = new TwilioStatusCallbackMessage({ data, meta });
-    blink.exchange.publish('sms-broadcast.status-callback.twilio.webhook', message);
-  }
-
-  // Spy on worker's consume();
-  const worker = new TwilioSmsBroadcastGambitRelayWorker(blink);
-  const consumeStub = sinon.stub(worker, 'consume').resolves(true);
-
-  // Kick off message consuming;
-  worker.setup();
-  worker.perform();
-
-  // Ensure that after one second worker consumed exactly 60 messages.
-  // = expected rate, 60 messages per second!
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      consumeStub.should.have.callCount(60);
-      resolve();
-    }, 1000);
-  });
-
-  await worker.queue.purge();
   await HooksHelper.stopBlinkWebApp(t);
 });
 
