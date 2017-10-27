@@ -23,9 +23,6 @@ class TwilioSmsInboundGambitRelayWorker extends Worker {
   }
 
   async consume(message) {
-    throw new BlinkRetryError('testing', message);
-    return;
-
     const body = JSON.stringify(message.getData());
     const headers = this.getRequestHeaders(message);
     const response = await fetch(
