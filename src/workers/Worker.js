@@ -10,11 +10,30 @@ class Worker {
   perform() {
     if (this.queue) {
       logger.debug(`Listening for messages in "${this.queue.name}" queue`);
+      // Limit the number of messages simultaneously loaded into
+      // worker's memory to avoid reaching memory limit.
+      this.limitMessagesInMemory(this.blink.config.app.prefetchCount);
+
       // TODO: generate consumer tag
       this.queue.subscribe(this.consume);
     } else {
       logger.warning('Queue is not established, waiting');
     }
+  }
+
+  limitMessagesInMemory(prefetchCount) {
+    const meta = {
+      env: this.blink.config.app.env,
+      code: 'debug_prefetch_count_set',
+      worker: this.constructor.name,
+    };
+
+    logger.debug(
+      `Limiting messages in memory to ${prefetchCount}`,
+      meta,
+    );
+
+    this.blink.exchange.limitConsumerPrefetchCount(prefetchCount);
   }
 }
 
