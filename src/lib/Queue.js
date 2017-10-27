@@ -80,9 +80,16 @@ class Queue {
     return result.messageCount;
   }
 
-  subscribe(callback, rateLimit) {
-    // @todo: make retry manager configurable.
-    const retryManager = new RetryManager(this);
+  subscribe(callback, options) {
+    let { rateLimit, retryManager } = options;
+
+    if (!retryManager) {
+      retryManager = new RetryManager(this);
+    }
+    if (!rateLimit) {
+      rateLimit = 100;
+    }
+
     const dequeuer = new Dequeuer(this, callback, retryManager, rateLimit);
     this.dequeuer = dequeuer;
     this.channel.consume(this.name, dequeuer.dequeue);
