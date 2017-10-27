@@ -27,9 +27,7 @@ class Dequeuer {
     const message = this.extractOrDiscard(rabbitMessage);
     if (message) {
       // Throttle amount of messages processed per second.
-      this.promiseThrottle.add(() => {
-        return this.executeCallback(message);
-      });
+      this.promiseThrottle.add(() => this.executeCallback(message));
     }
   }
 
