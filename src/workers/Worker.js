@@ -34,7 +34,8 @@ class Worker {
       // @todo: make retry manager configurable.
       const retryManager = new RetryManager(this.queue, DelayLogic.constantTimeDelay(1000));
       // Hardcoding rate limit to be 18,000 (approx 5 hours)
-      retryManager.retryLimit = 18000;
+      // @todo: remove
+      retryManager.retryLimit = this.blink.config.app.retryLimit;
 
       this.queue.subscribe(this.consume, { rateLimit, retryManager });
     } else {
