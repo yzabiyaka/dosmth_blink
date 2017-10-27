@@ -18,7 +18,7 @@ class Dequeuer {
     // Inject retry manager.
     this.retryManager = retryManager;
 
-    // Hardcode dequeue rate limit on all messages.
+    // Hardcoded dequeue rate limit on all messages.
     // @todo: make configurable per worker.
     this.promiseThrottle = new PromiseThrottle({ requestsPerSecond: rateLimit });
   }
