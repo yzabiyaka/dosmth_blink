@@ -130,7 +130,7 @@ test.serial('Gambit Broadcast relay should be consume close to 60 messages per s
   // Check that call count is within expected margin of error.
   consumeStub.callCount.should.be.closeTo(60, 10);
 
-  // Await consming to complete
+  // Await consuming to complete
   // @todo: gracefull worker shutdown instead.
   await new Promise(resolve => setTimeout(resolve, 3000));
 
