@@ -100,7 +100,7 @@ test.serial('Gambit Broadcast relay should be consume 60 messages per second exa
   await HooksHelper.startBlinkWebApp(t);
   const blink = t.context.blink;
 
-  // Publish 300 messages to the queue
+  // Publish 2x rate limit messages to the queue
   for (let i = 0; i < 120; i++) {
     const data = MessageFactoryHelper.getRandomDataSample();
     const meta = {
