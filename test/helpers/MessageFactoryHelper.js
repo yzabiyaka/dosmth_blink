@@ -291,7 +291,7 @@ class MessageFactoryHelper {
       To: ` 1555${chance.string({ length: 7, pool: '1234567890' })}`,
       Body: chance.sentence(),
       MessagingServiceSid: `MG${chance.hash({ length: 32 })}`,
-      StatusCallback: `http:&#x2f;&#x2f;blink:Darwinists843249cryptanalyses&#x40;blink.dosomething.org&#x2f;api&#x2f;v1&#x2f;webhooks&#x2f;twilio-sms-broadcast&#x3f;broadcastId&#x3d;${broadcastId}`,
+      StatusCallback: `http://blink:password@blink.dosomething.org/api/v1/webhooks/twilio-sms-broadcast?broadcastId=${broadcastId}`,
     };
     return data;
   }
