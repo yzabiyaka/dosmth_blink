@@ -21,6 +21,10 @@ class CustomerioSmsBroadcastMessage extends Message {
       });
   }
 
+  getBody() {
+    return this.getData().Body;
+  }
+
   getPhoneNumber() {
     return this.getData().To.replace(/^ /, '+');
   }
