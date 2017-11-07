@@ -10,7 +10,7 @@ class CustomerioSmsBroadcastMessage extends Message {
     super(...args);
 
     const whenNullOrEmpty = Joi.valid(['', null]);
-    const statusRegex = /broadcastId%3D.+$/;
+    const statusRegex = /broadcastId&#x3d;.+$/;
     this.schema = Joi.object()
       .keys({
         // Note: first char of To is plus, which is resolved to a space by mistake.
@@ -26,7 +26,7 @@ class CustomerioSmsBroadcastMessage extends Message {
   }
 
   getBroadcastId() {
-    return this.getData().StatusCallback.match(/broadcastId%3D(.+)/)[1];
+    return this.getData().StatusCallback.match(/broadcastId&#x3d;(.+)/)[1];
   }
 
   static fromCtx(ctx) {
