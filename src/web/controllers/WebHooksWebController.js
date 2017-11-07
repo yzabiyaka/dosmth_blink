@@ -12,6 +12,7 @@ class WebHooksWebController extends WebController {
     // Bind web methods to object context so they can be passed to router.
     this.index = this.index.bind(this);
     this.customerioEmailActivity = this.customerioEmailActivity.bind(this);
+    this.customerioSmsBroadcast = this.customerioSmsBroadcast.bind(this);
     this.gambitChatbotMdata = this.gambitChatbotMdata.bind(this);
     this.mocoMessageData = this.mocoMessageData.bind(this);
     this.twilioSmsBroadcast = this.twilioSmsBroadcast.bind(this);
@@ -21,6 +22,7 @@ class WebHooksWebController extends WebController {
   async index(ctx) {
     ctx.body = {
       'customerio-email-activity': this.fullUrl('api.v1.webhooks.customerio-email-activity'),
+      'customerio-sms-broadcast': this.fullUrl('api.v1.webhooks.customerio-sms-broadcast'),
       'gambit-chatbot-mdata': this.fullUrl('api.v1.webhooks.gambit-chatbot-mdata'),
       'moco-message-data': this.fullUrl('api.v1.webhooks.moco-message-data'),
       'twilio-sms-broadcast': this.fullUrl('api.v1.webhooks.twilio-sms-broadcast'),
@@ -38,6 +40,10 @@ class WebHooksWebController extends WebController {
     } catch (error) {
       this.sendError(ctx, error);
     }
+  }
+
+  async customerioSmsBroadcast(ctx) {
+    this.sendError(ctx, 'Not implemented');
   }
 
   async gambitChatbotMdata(ctx) {
