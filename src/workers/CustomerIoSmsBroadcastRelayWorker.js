@@ -66,7 +66,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
         request_id: message ? message.getRequestId() : 'not_parsed',
       };
 
-      logger.log('warning', 'Message Sid not available in Twilio response', meta);
+      logger.log('warning', 'Message Sid is not available in Twilio response', meta);
       return false;
     }
 
