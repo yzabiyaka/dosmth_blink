@@ -1,5 +1,6 @@
 'use strict';
 
+const CustomerioSmsBroadcastMessage = require('../../messages/CustomerioSmsBroadcastMessage');
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const MdataMessage = require('../../messages/MdataMessage');
@@ -43,7 +44,15 @@ class WebHooksWebController extends WebController {
   }
 
   async customerioSmsBroadcast(ctx) {
-    this.sendError(ctx, 'Not implemented');
+    try {
+      const message = CustomerioSmsBroadcastMessage.fromCtx(ctx);
+      message.validate();
+      // const { customerioSmsBroadcastRelayQ } = this.blink.queues;
+      // customerioSmsBroadcastRelayQ.publish(message);
+      this.sendOK(ctx, message, 201);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
   }
 
   async gambitChatbotMdata(ctx) {
