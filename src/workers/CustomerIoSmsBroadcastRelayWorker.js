@@ -30,98 +30,97 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
 
   async consume(message) {
     let twilioResponse;
+    const twilioRequest = {
+      body: message.getBody(),
+      to: message.getPhoneNumber(),
+      messagingServiceSid: this.blink.config.twilio.serviceSid,
+    };
     try {
-      twilioResponse = await this.twilioClient.messages.create({
-        body: message.getBody(),
-        to: message.getPhoneNumber(),
-        messagingServiceSid: this.blink.config.twilio.serviceSid,
-      });
+      twilioResponse = await this.twilioClient.messages.create(twilioRequest);
     } catch (error) {
-      console.dir(error, { colors: true, showHidden: true });
+      const meta = {
+        env: this.blink.config.app.env,
+        code: 'error_customerio_sms_relay_twilio_bad_client_response',
+        worker: this.constructor.name,
+        request_id: message ? message.getRequestId() : 'not_parsed',
+      };
+
+      logger.log('warning', error.toString(), meta);
+      return false;
+    }
+    const messageSid = twilioResponse.sid;
+    if (!messageSid) {
+      const meta = {
+        env: this.blink.config.app.env,
+        code: 'error_customerio_sms_relay_twilio_sid_not_parsed',
+        worker: this.constructor.name,
+        request_id: message ? message.getRequestId() : 'not_parsed',
+      };
+
+      logger.log('warning', 'Message Sid not available in Twilio response', meta);
+      return false;
+    }
+
+    // Fake delivery reciept.
+    const data = {
+      To: message.getPhoneNumber(),
+      Body: message.getBody(),
+      MessageStatus: 'delivered',
+      MessageSid: messageSid,
+    };
+    const body = JSON.stringify(data);
+    const headers = this.getRequestHeaders(message);
+    const response = await fetch(
+      `${this.baseURL}/import-message?broadcastId=${message.getBroadcastId()}`,
+      {
+        method: 'POST',
+        headers,
+        body,
+      },
+    );
+
+    if (response.status === 200) {
+      this.log(
+        'debug',
+        message,
+        response,
+        'success_customerio_sms_relay_gambit_response_200',
+      );
+      return true;
+    }
+
+    if (this.checkRetrySuppress(response)) {
+      this.log(
+        'debug',
+        message,
+        response,
+        'success_customerio_sms_relay_gambit_retry_suppress',
+      );
+      return true;
+    }
+
+    if (response.status === 422) {
+      this.log(
+        'warning',
+        message,
+        response,
+        'error_customerio_sms_relay_gambit_response_422',
+      );
+      return false;
     }
 
 
-    // const body = JSON.stringify(message.getData());
+    this.log(
+      'warning',
+      message,
+      response,
+      'error_customerio_sms_relay_gambit_response_not_200_retry',
+    );
 
-    // // Send only delivered messages to Gambit Conversations import.
-    // if (CustomerIoSmsBroadcastRelayWorker.shouldSkip(message)) {
-    //   const meta = {
-    //     env: this.blink.config.app.env,
-    //     code: 'success_gambit_broadcast_relay_expected_skip',
-    //     worker: this.constructor.name,
-    //     request_id: message ? message.getRequestId() : 'not_parsed',
-    //   };
-    //   logger.log('debug', body, meta);
-    //   return true;
-    // }
-
-    // // Check that the message has broadcastId query string.
-    // // If it hasn't, something is wrong. We expect broadcastId to be
-    // // provided with all receipts.
-    // const query = message.getMeta().query;
-    // if (!query || !query.broadcastId) {
-    //   const meta = {
-    //     env: this.blink.config.app.env,
-    //     code: 'error_gambit_broadcast_relay_missing_broadcastId',
-    //     worker: this.constructor.name,
-    //     request_id: message ? message.getRequestId() : 'not_parsed',
-    //   };
-    //   logger.log('warning', body, meta);
-    //   return true;
-    // }
-
-    // const headers = this.getRequestHeaders(message);
-    // const response = await fetch(
-    //   `${this.baseURL}/import-message?broadcastId=${query.broadcastId}`,
-    //   {
-    //     method: 'POST',
-    //     headers,
-    //     body,
-    //   },
-    // );
-
-    // if (response.status === 200) {
-    //   this.log(
-    //     'debug',
-    //     message,
-    //     response,
-    //     'success_gambit_broadcast_relay_response_200',
-    //   );
-    //   return true;
-    // }
-
-    // if (this.checkRetrySuppress(response)) {
-    //   this.log(
-    //     'debug',
-    //     message,
-    //     response,
-    //     'success_gambit_broadcast_relay_retry_suppress',
-    //   );
-    //   return true;
-    // }
-
-    // if (response.status === 422) {
-    //   this.log(
-    //     'warning',
-    //     message,
-    //     response,
-    //     'error_gambit_broadcast_relay_response_422',
-    //   );
-    //   return false;
-    // }
-
-
-    // this.log(
-    //   'warning',
-    //   message,
-    //   response,
-    //   'error_gambit_broadcast_relay_response_not_200_retry',
-    // );
-
-    // throw new BlinkRetryError(
-    //   `${response.status} ${response.statusText}`,
-    //   message,
-    // );
+    throw new BlinkRetryError(
+      `${response.status} ${response.statusText}`,
+      message,
+    );
   }
 
   async log(level, message, response, code = 'unexpected_code') {
