@@ -35,20 +35,29 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
       to: message.getPhoneNumber(),
       messagingServiceSid: this.blink.config.twilio.serviceSid,
     };
-    try {
-      twilioResponse = await this.twilioClient.messages.create(twilioRequest);
-    } catch (error) {
-      const meta = {
-        env: this.blink.config.app.env,
-        code: 'error_customerio_sms_relay_twilio_bad_client_response',
-        worker: this.constructor.name,
-        request_id: message ? message.getRequestId() : 'not_parsed',
-      };
 
-      logger.log('warning', error.toString(), meta);
-      return false;
+    let messageSid;
+
+    // Don't resend twilio sms when message has been sent.
+    if (message.getMessageSid() || message.getRetryAttempt() > 0) {
+      messageSid = message.getMessageSid();
+    } else {
+      try {
+        twilioResponse = await this.twilioClient.messages.create(twilioRequest);
+        messageSid = twilioResponse.sid;
+      } catch (error) {
+        const meta = {
+          env: this.blink.config.app.env,
+          code: 'error_customerio_sms_relay_twilio_bad_client_response',
+          worker: this.constructor.name,
+          request_id: message ? message.getRequestId() : 'not_parsed',
+        };
+
+        logger.log('warning', error.toString(), meta);
+        return false;
+      }
     }
-    const messageSid = twilioResponse.sid;
+
     if (!messageSid) {
       const meta = {
         env: this.blink.config.app.env,
@@ -60,6 +69,9 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
       logger.log('warning', 'Message Sid not available in Twilio response', meta);
       return false;
     }
+
+    // Save message sid to the message to avoid retries.
+    message.setMessageSid(messageSid);
 
     // Fake delivery reciept.
     const data = {

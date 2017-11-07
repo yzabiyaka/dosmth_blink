@@ -33,6 +33,14 @@ class CustomerioSmsBroadcastMessage extends Message {
     return this.getData().StatusCallback.match(/broadcastId=(.+)/)[1];
   }
 
+  getMessageSid() {
+    return this.getMeta().messageSid;
+  }
+
+  setMessageSid(messageSid) {
+    this.getMeta().messageSid = messageSid;
+  }
+
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper
