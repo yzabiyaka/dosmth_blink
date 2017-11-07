@@ -38,7 +38,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
 
     let messageSid;
 
-    // Don't resend twilio sms when message has been sent.
+    // Don't resend twilio sms on retries.
     if (message.getMessageSid() || message.getRetryAttempt() > 0) {
       messageSid = message.getMessageSid();
     } else {
