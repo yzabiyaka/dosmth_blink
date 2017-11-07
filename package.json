@@ -44,6 +44,7 @@
     "node-fetch": "^1.7.3",
     "promise-throttle": "^0.3.1",
     "throng": "^4.0.0",
+    "twilio": "^3.9.2",
     "uuid": "^3.1.0",
     "winston": "^2.3.1",
     "yargs": "^9.0.1"
