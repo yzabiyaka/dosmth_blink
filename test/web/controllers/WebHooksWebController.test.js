@@ -269,28 +269,28 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-
  */
 test('POST /api/v1/webhooks/customerio-sms-broadcast should publish message to customerio-sms-broadcast-relay queue', async (t) => {
   const broadcastId = chance.word();
-  const query = MessageFactoryHelper.getValidCustomerBroadcastQuery(broadcastId);
+  const data = MessageFactoryHelper.getValidCustomerBroadcastData(broadcastId);
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-broadcast')
-    .query(query)
     .set('Content-Type', 'application/x-www-form-urlencoded')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
 
   // Ensure Customer.io compatible response.
   res.status.should.be.equal(201);
   // res.header.should.not.have.property('content-type');
   // res.text.should.equal('');
 
-  // // Check that the message is queued.
-  // const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  // const messages = await rabbit.getMessagesFrom('twilio-sms-inbound-gambit-relay', 1, false);
-  // messages.should.be.an('array').and.to.have.lengthOf(1);
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  const messages = await rabbit.getMessagesFrom('customerio-sms-broadcast-relay', 1, false);
+  messages.should.be.an('array').and.to.have.lengthOf(1);
 
-  // messages[0].should.have.property('payload');
-  // const payload = messages[0].payload;
-  // const messageData = JSON.parse(payload);
-  // messageData.should.have.property('data');
-  // messageData.data.should.be.eql(data);
+  messages[0].should.have.property('payload');
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+  messageData.data.should.be.eql(data);
 });
 
 // ------- End -----------------------------------------------------------------

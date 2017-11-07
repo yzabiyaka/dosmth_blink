@@ -47,8 +47,8 @@ class WebHooksWebController extends WebController {
     try {
       const message = CustomerioSmsBroadcastMessage.fromCtx(ctx);
       message.validate();
-      // const { customerioSmsBroadcastRelayQ } = this.blink.queues;
-      // customerioSmsBroadcastRelayQ.publish(message);
+      const { customerioSmsBroadcastRelayQ } = this.blink.queues;
+      customerioSmsBroadcastRelayQ.publish(message);
       this.sendOK(ctx, message, 201);
     } catch (error) {
       this.sendError(ctx, error);

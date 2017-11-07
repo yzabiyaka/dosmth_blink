@@ -25,7 +25,6 @@ class CustomerioSmsBroadcastMessage extends Message {
   }
 
   static fromCtx(ctx) {
-    console.dir(ctx.request.body, { colors: true, showHidden: true });
     // TODO: save more metadata
     // TODO: metadata parse helper
     const meta = {
