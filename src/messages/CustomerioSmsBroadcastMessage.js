@@ -13,11 +13,16 @@ class CustomerioSmsBroadcastMessage extends Message {
     const statusRegex = /broadcastId%3D.+$/;
     this.schema = Joi.object()
       .keys({
-        To: Joi.string().required().empty(whenNullOrEmpty).regex(/^\+1[0-9]+$/, 'valid phone number'),
+        // Note: first char of To is plus, which is resolved to a space by mistake.
+        To: Joi.string().required().empty(whenNullOrEmpty).regex(/^ 1[0-9]+$/, 'valid phone number'),
         Body: Joi.string().required().empty(whenNullOrEmpty),
         MessagingServiceSid: Joi.string().required().empty(whenNullOrEmpty),
         StatusCallback: Joi.string().required().empty(whenNullOrEmpty).regex(statusRegex, 'valid status callback'),
       });
+  }
+
+  getPhoneNumber() {
+    return this.getData().To.replace(/^ /, '+');
   }
 
   getBroadcastId() {
