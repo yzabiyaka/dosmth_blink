@@ -16,7 +16,7 @@ class CustomerioSmsBroadcastMessage extends Message {
         To: Joi.string().required().empty(whenNullOrEmpty).regex(/^\+1[0-9]+$/, 'valid phone number'),
         Body: Joi.string().required().empty(whenNullOrEmpty),
         MessagingServiceSid: Joi.string().required().empty(whenNullOrEmpty),
-        StatusCallback:Joi.string().required().empty(whenNullOrEmpty).regex(statusRegex, 'valid status callback'),
+        StatusCallback: Joi.string().required().empty(whenNullOrEmpty).regex(statusRegex, 'valid status callback'),
       });
   }
 
