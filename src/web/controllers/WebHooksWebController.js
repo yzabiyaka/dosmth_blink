@@ -15,7 +15,6 @@ class WebHooksWebController extends WebController {
     this.customerioEmailActivity = this.customerioEmailActivity.bind(this);
     this.customerioSmsBroadcast = this.customerioSmsBroadcast.bind(this);
     this.gambitChatbotMdata = this.gambitChatbotMdata.bind(this);
-    this.mocoMessageData = this.mocoMessageData.bind(this);
     this.twilioSmsBroadcast = this.twilioSmsBroadcast.bind(this);
     this.twilioSmsInbound = this.twilioSmsInbound.bind(this);
   }
@@ -25,7 +24,6 @@ class WebHooksWebController extends WebController {
       'customerio-email-activity': this.fullUrl('api.v1.webhooks.customerio-email-activity'),
       'customerio-sms-broadcast': this.fullUrl('api.v1.webhooks.customerio-sms-broadcast'),
       'gambit-chatbot-mdata': this.fullUrl('api.v1.webhooks.gambit-chatbot-mdata'),
-      'moco-message-data': this.fullUrl('api.v1.webhooks.moco-message-data'),
       'twilio-sms-broadcast': this.fullUrl('api.v1.webhooks.twilio-sms-broadcast'),
       'twilio-sms-inbound': this.fullUrl('api.v1.webhooks.twilio-sms-inbound'),
     };
@@ -62,19 +60,6 @@ class WebHooksWebController extends WebController {
       const { gambitChatbotMdataQ } = this.blink.queues;
       gambitChatbotMdataQ.publish(mdataMessage);
       this.sendOK(ctx, mdataMessage, 200);
-    } catch (error) {
-      this.sendError(ctx, error);
-    }
-  }
-
-  async mocoMessageData(ctx) {
-    try {
-      // Todo: looks like I should have used TwilioStatusCallbackMessage here.
-      const freeFormMessage = FreeFormMessage.fromCtx(ctx);
-      freeFormMessage.validate();
-      const { mocoMessageDataQ } = this.blink.queues;
-      mocoMessageDataQ.publish(freeFormMessage);
-      this.sendOK(ctx, freeFormMessage);
     } catch (error) {
       this.sendError(ctx, error);
     }
