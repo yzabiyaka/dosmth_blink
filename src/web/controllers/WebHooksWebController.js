@@ -3,7 +3,6 @@
 const CustomerioSmsBroadcastMessage = require('../../messages/CustomerioSmsBroadcastMessage');
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
-const MdataMessage = require('../../messages/MdataMessage');
 const TwilioStatusCallbackMessage = require('../../messages/TwilioStatusCallbackMessage');
 const WebController = require('./WebController');
 
