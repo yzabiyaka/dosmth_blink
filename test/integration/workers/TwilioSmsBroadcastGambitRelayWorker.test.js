@@ -5,12 +5,10 @@
 const test = require('ava');
 const chai = require('chai');
 const Chance = require('chance');
-const fetch = require('node-fetch');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
-const BlinkWorkerApp = require('../../../src/app/BlinkWorkerApp');
 const TwilioStatusCallbackMessage = require('../../../src/messages/TwilioStatusCallbackMessage');
 const TwilioSmsBroadcastGambitRelayWorker = require('../../../src/workers/TwilioSmsBroadcastGambitRelayWorker');
 const HooksHelper = require('../../helpers/HooksHelper');
@@ -22,78 +20,8 @@ chai.should();
 chai.use(sinonChai);
 
 const chance = new Chance();
-const { Response } = fetch;
 
 // ------- Tests ---------------------------------------------------------------
-
-test.serial('Gambit Broadcast relay should recieve correct retry count if message has been retried', () => {
-  const config = require('../../../config');
-  const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
-  const gambitWorker = gambitWorkerApp.worker;
-
-  // No retry property:
-  gambitWorker.getRequestHeaders(MessageFactoryHelper.getValidMessageData())
-    .should.not.have.property('x-blink-retry-count');
-
-  // retry = 0
-  const retriedZero = MessageFactoryHelper.getValidMessageData();
-  gambitWorker.getRequestHeaders(retriedZero)
-    .should.not.have.property('x-blink-retry-count');
-
-  // retry = 1
-  const retriedOnce = MessageFactoryHelper.getValidMessageData();
-  retriedOnce.incrementRetryAttempt();
-  gambitWorker.getRequestHeaders(retriedOnce)
-    .should.have.property('x-blink-retry-count').and.equal(1);
-});
-
-
-test.serial('Test Gambit response with x-blink-retry-suppress header', () => {
-  const config = require('../../../config');
-  const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
-  const gambitWorker = gambitWorkerApp.worker;
-
-  // Gambit order retry suppression
-  const retrySuppressResponse = new Response(
-    'Unknown Gambit error',
-    {
-      status: 422,
-      statusText: 'Unknown Gambit error',
-      headers: {
-        // Also make sure that blink recongnizes non standart header case
-        'X-BlInK-RetRY-SuPPRESS': 'TRUE',
-      },
-    },
-  );
-
-  gambitWorker.checkRetrySuppress(retrySuppressResponse).should.be.true;
-
-
-  // Normal Gambit 422 response
-  const normalFailedResponse = new Response(
-    'Unknown Gambit error',
-    {
-      status: 422,
-      statusText: 'Unknown Gambit error',
-      headers: {
-        'x-taco-count': 'infinity',
-      },
-    },
-  );
-  gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
-});
-
-test.serial('Gambit should process delivered messages', () => {
-  const messageData = MessageFactoryHelper.getValidMessageData();
-  messageData.payload.data.MessageStatus = 'delivered';
-  TwilioSmsBroadcastGambitRelayWorker.shouldSkip(messageData).should.be.false;
-});
-
-test.serial('Gambit should not process not inbound messages', () => {
-  const messageData = MessageFactoryHelper.getValidMessageData();
-  messageData.payload.data.MessageStatus = 'other';
-  TwilioSmsBroadcastGambitRelayWorker.shouldSkip(messageData).should.be.true;
-});
 
 test.serial('Gambit Broadcast relay should be consume close to 60 messages per second', async (t) => {
   // Turn off extra logs for this tests, as it genertes thouthands of messages.
