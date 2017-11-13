@@ -6,9 +6,9 @@ const test = require('ava');
 const chai = require('chai');
 const Router = require('koa-router');
 
-const BlinkError = require('../../../src/errors/BlinkError');
-const WebController = require('../../../src/web/controllers/WebController');
-const HooksHelper = require('../../helpers/HooksHelper');
+const BlinkError = require('../../../../src/errors/BlinkError');
+const WebController = require('../../../../src/web/controllers/WebController');
+const HooksHelper = require('../../../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 

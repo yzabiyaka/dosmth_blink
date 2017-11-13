@@ -9,12 +9,12 @@ const fetch = require('node-fetch');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const RabbitManagement = require('../../src/lib/RabbitManagement');
-const BlinkWorkerApp = require('../../src/app/BlinkWorkerApp');
-const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
-const TwilioSmsBroadcastGambitRelayWorker = require('../../src/workers/TwilioSmsBroadcastGambitRelayWorker');
-const HooksHelper = require('../helpers/HooksHelper');
-const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
+const RabbitManagement = require('../../../src/lib/RabbitManagement');
+const BlinkWorkerApp = require('../../../src/app/BlinkWorkerApp');
+const TwilioStatusCallbackMessage = require('../../../src/messages/TwilioStatusCallbackMessage');
+const TwilioSmsBroadcastGambitRelayWorker = require('../../../src/workers/TwilioSmsBroadcastGambitRelayWorker');
+const HooksHelper = require('../../helpers/HooksHelper');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -27,7 +27,7 @@ const { Response } = fetch;
 // ------- Tests ---------------------------------------------------------------
 
 test.serial('Gambit Broadcast relay should recieve correct retry count if message has been retried', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
   const gambitWorker = gambitWorkerApp.worker;
 
@@ -49,7 +49,7 @@ test.serial('Gambit Broadcast relay should recieve correct retry count if messag
 
 
 test.serial('Test Gambit response with x-blink-retry-suppress header', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
   const gambitWorker = gambitWorkerApp.worker;
 

@@ -7,9 +7,9 @@ const chai = require('chai');
 const Chance = require('chance');
 const fetch = require('node-fetch');
 
-const BlinkWorkerApp = require('../../src/app/BlinkWorkerApp');
-const GambitCampaignSignupRelayWorker = require('../../src/workers/GambitCampaignSignupRelayWorker');
-const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
+const BlinkWorkerApp = require('../../../src/app/BlinkWorkerApp');
+const GambitCampaignSignupRelayWorker = require('../../../src/workers/GambitCampaignSignupRelayWorker');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -20,7 +20,7 @@ const chance = new Chance();
 // ------- Tests ---------------------------------------------------------------
 
 test('Gambit should recieve correct retry count if message has been retried', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const gambitWorkerApp = new BlinkWorkerApp(config, 'gambit-campaign-signup-relay');
   const gambitWorker = gambitWorkerApp.worker;
 
@@ -42,7 +42,7 @@ test('Gambit should recieve correct retry count if message has been retried', ()
 
 
 test('Test Gambit response with x-blink-retry-suppress header', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const gambitWorkerApp = new BlinkWorkerApp(config, 'gambit-campaign-signup-relay');
   const gambitWorker = gambitWorkerApp.worker;
 

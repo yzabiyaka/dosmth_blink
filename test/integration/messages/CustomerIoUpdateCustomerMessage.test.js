@@ -7,10 +7,10 @@ const chai = require('chai');
 const Chance = require('chance');
 const moment = require('moment');
 
-const MessageValidationBlinkError = require('../../src/errors/MessageValidationBlinkError');
-const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
-const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
-const MessageValidationHelper = require('../helpers/MessageValidationHelper');
+const MessageValidationBlinkError = require('../../../src/errors/MessageValidationBlinkError');
+const CustomerIoUpdateCustomerMessage = require('../../../src/messages/CustomerIoUpdateCustomerMessage');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
+const MessageValidationHelper = require('../../helpers/MessageValidationHelper');
 
 
 // ------- Init ----------------------------------------------------------------

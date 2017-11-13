@@ -6,8 +6,8 @@ const chai = require('chai');
 const fetch = require('node-fetch');
 const test = require('ava');
 
-const BlinkWorkerApp = require('../../src/app/BlinkWorkerApp');
-const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
+const BlinkWorkerApp = require('../../../src/app/BlinkWorkerApp');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -17,7 +17,7 @@ const { Response } = fetch;
 // ------- Tests ---------------------------------------------------------------
 
 test('Gambit Broadcast relay should recieve correct retry count if message has been retried', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-inbound-gambit-relay');
   const gambitWorker = gambitWorkerApp.worker;
 
@@ -39,7 +39,7 @@ test('Gambit Broadcast relay should recieve correct retry count if message has b
 
 
 test('Test Gambit response with x-blink-retry-suppress header', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-inbound-gambit-relay');
   const gambitWorker = gambitWorkerApp.worker;
 

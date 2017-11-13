@@ -6,10 +6,10 @@ const test = require('ava');
 const chai = require('chai');
 const Chance = require('chance');
 
-const MessageValidationBlinkError = require('../../src/errors/MessageValidationBlinkError');
-const UserMessage = require('../../src/messages/UserMessage');
-const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
-const MessageValidationHelper = require('../helpers/MessageValidationHelper');
+const MessageValidationBlinkError = require('../../../src/errors/MessageValidationBlinkError');
+const UserMessage = require('../../../src/messages/UserMessage');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
+const MessageValidationHelper = require('../../helpers/MessageValidationHelper');
 
 // ------- Init ----------------------------------------------------------------
 

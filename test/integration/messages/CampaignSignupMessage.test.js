@@ -6,9 +6,9 @@ const test = require('ava');
 const chai = require('chai');
 const moment = require('moment');
 
-const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage');
-const CustomerIoEvent = require('../../src/models/CustomerIoEvent');
-const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
+const CampaignSignupMessage = require('../../../src/messages/CampaignSignupMessage');
+const CustomerIoEvent = require('../../../src/models/CustomerIoEvent');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 

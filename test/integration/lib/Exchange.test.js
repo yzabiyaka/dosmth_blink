@@ -6,8 +6,8 @@ const test = require('ava');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
-const Exchange = require('../../src/lib/Exchange');
-const RabbitManagement = require('../../src/lib/RabbitManagement');
+const Exchange = require('../../../src/lib/Exchange');
+const RabbitManagement = require('../../../src/lib/RabbitManagement');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -20,7 +20,7 @@ chai.use(chaiAsPromised);
  * Exchange class interface
  */
 test('Exchange interface', () => {
-  const config = require('../../config');
+  const config = require('../../../config');
   const exchange = new Exchange(config);
 
   exchange.should.respondTo('setup');
@@ -33,7 +33,7 @@ test('Exchange interface', () => {
  * Exchange.setup(): Test RabbitMQ connection
  */
 test('Exchange.setup(): Test RabbitMQ connection', async () => {
-  const config = require('../../config');
+  const config = require('../../../config');
 
   const testX = new Exchange(config);
   const connected = await testX.setup();
@@ -44,7 +44,7 @@ test('Exchange.setup(): Test RabbitMQ connection', async () => {
  * Exchange.setup(): Make sure exchange is created with expected params
  */
 test('Exchange.setup(): Make sure exchange is created with expected params', async () => {
-  const config = require('../../config');
+  const config = require('../../../config');
 
   // Cpopy config object to override exchange with incorrect setting.
   const topologyTestXName = 'topologyTestX';
@@ -77,7 +77,7 @@ test('Exchange.assertQueue(): Test queue with empty name to fail', () => {
 
   // class WrongNameQ extends Queue {}
 
-  // const config = require('../../config');
+  // const config = require('../../../config');
   // const testX = new Exchange(config);
   // await testX.setup();
 

@@ -5,7 +5,7 @@
 const test = require('ava');
 const chai = require('chai');
 
-const HooksHelper = require('../../helpers/HooksHelper');
+const HooksHelper = require('../../../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 

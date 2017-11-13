@@ -7,12 +7,12 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const BlinkRetryError = require('../../src/errors/BlinkRetryError');
-const Dequeuer = require('../../src/lib/Dequeuer');
-const RetryManager = require('../../src/lib/RetryManager');
-const FreeFormMessage = require('../../src/messages/FreeFormMessage');
-const HooksHelper = require('../helpers/HooksHelper');
-const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
+const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
+const Dequeuer = require('../../../src/lib/Dequeuer');
+const RetryManager = require('../../../src/lib/RetryManager');
+const FreeFormMessage = require('../../../src/messages/FreeFormMessage');
+const HooksHelper = require('../../helpers/HooksHelper');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 

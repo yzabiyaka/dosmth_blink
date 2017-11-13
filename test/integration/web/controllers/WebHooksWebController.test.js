@@ -6,9 +6,9 @@ const chai = require('chai');
 const Chance = require('chance');
 const test = require('ava');
 
-const RabbitManagement = require('../../../src/lib/RabbitManagement');
-const HooksHelper = require('../../helpers/HooksHelper');
-const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
+const RabbitManagement = require('../../../../src/lib/RabbitManagement');
+const HooksHelper = require('../../../helpers/HooksHelper');
+const MessageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 

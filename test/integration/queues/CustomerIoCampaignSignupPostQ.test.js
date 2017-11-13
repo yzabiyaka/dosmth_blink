@@ -5,9 +5,9 @@
 const test = require('ava');
 const chai = require('chai');
 
-const Queue = require('../../src/lib/Queue');
-const CustomerIoCampaignSignupPostQ = require('../../src/queues/CustomerIoCampaignSignupPostQ');
-const HooksHelper = require('../helpers/HooksHelper');
+const Queue = require('../../../src/lib/Queue');
+const CustomerIoCampaignSignupPostQ = require('../../../src/queues/CustomerIoCampaignSignupPostQ');
+const HooksHelper = require('../../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
