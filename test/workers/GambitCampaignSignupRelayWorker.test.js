@@ -25,16 +25,16 @@ test('Gambit should recieve correct retry count if message has been retried', ()
   const gambitWorker = gambitWorkerApp.worker;
 
   // No retry property:
-  gambitWorker.getRequestHeaders(MessageFactoryHelper.getValidMdata())
+  gambitWorker.getRequestHeaders(MessageFactoryHelper.getValidCampaignSignup())
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 0
-  const retriedZero = MessageFactoryHelper.getValidMdata();
+  const retriedZero = MessageFactoryHelper.getValidCampaignSignup();
   gambitWorker.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
-  const retriedOnce = MessageFactoryHelper.getValidMdata();
+  const retriedOnce = MessageFactoryHelper.getValidCampaignSignup();
   retriedOnce.incrementRetryAttempt();
   gambitWorker.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);
