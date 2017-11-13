@@ -14,7 +14,6 @@ class WebHooksWebController extends WebController {
     this.index = this.index.bind(this);
     this.customerioEmailActivity = this.customerioEmailActivity.bind(this);
     this.customerioSmsBroadcast = this.customerioSmsBroadcast.bind(this);
-    this.gambitChatbotMdata = this.gambitChatbotMdata.bind(this);
     this.twilioSmsBroadcast = this.twilioSmsBroadcast.bind(this);
     this.twilioSmsInbound = this.twilioSmsInbound.bind(this);
   }
@@ -23,7 +22,6 @@ class WebHooksWebController extends WebController {
     ctx.body = {
       'customerio-email-activity': this.fullUrl('api.v1.webhooks.customerio-email-activity'),
       'customerio-sms-broadcast': this.fullUrl('api.v1.webhooks.customerio-sms-broadcast'),
-      'gambit-chatbot-mdata': this.fullUrl('api.v1.webhooks.gambit-chatbot-mdata'),
       'twilio-sms-broadcast': this.fullUrl('api.v1.webhooks.twilio-sms-broadcast'),
       'twilio-sms-inbound': this.fullUrl('api.v1.webhooks.twilio-sms-inbound'),
     };
@@ -48,18 +46,6 @@ class WebHooksWebController extends WebController {
       const { customerioSmsBroadcastRelayQ } = this.blink.queues;
       customerioSmsBroadcastRelayQ.publish(message);
       this.sendOK(ctx, message, 201);
-    } catch (error) {
-      this.sendError(ctx, error);
-    }
-  }
-
-  async gambitChatbotMdata(ctx) {
-    try {
-      const mdataMessage = MdataMessage.fromCtx(ctx);
-      mdataMessage.validate();
-      const { gambitChatbotMdataQ } = this.blink.queues;
-      gambitChatbotMdataQ.publish(mdataMessage);
-      this.sendOK(ctx, mdataMessage, 200);
     } catch (error) {
       this.sendError(ctx, error);
     }
