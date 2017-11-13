@@ -53,7 +53,6 @@ class BlinkApp {
         CustomerIoUpdateCustomerQ,
         FetchQ,
         GambitCampaignSignupRelayQ,
-        GambitChatbotMdataQ,
         QuasarCustomerIoEmailActivityQ,
         TwilioSmsBroadcastGambitRelayQ,
         TwilioSmsInboundGambitRelayQ,
