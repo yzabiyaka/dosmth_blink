@@ -3,7 +3,10 @@
 const changeCase = require('change-case');
 const logger = require('winston');
 
-const Exchange = require('../lib/Exchange');
+// const Exchange = require('../lib/Exchange');
+const ReconnectManager = require('../lib/ReconnectManager');
+const Channel = require('../lib/Channel');
+const Connection = require('../lib/Connection');
 
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
 const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
@@ -18,14 +21,10 @@ const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRe
 class BlinkApp {
   constructor(config) {
     this.config = config;
-    this.exchange = false;
     this.queues = [];
-    this.connected = false;
-    this.connecting = false;
-    this.shuttingDown = false;
-    this.reconnectTimeout = 2000;
 
     // Attach functions to object context.
+    this.channel = channel;
     this.start = this.start.bind(this);
     this.reconnect = this.reconnect.bind(this);
   }
@@ -42,8 +41,8 @@ class BlinkApp {
     // Block other attempts to reconnect when in progress.
     this.connecting = true;
     try {
-      // Initialize and setup exchange.
-      this.exchange = await this.setupExchange();
+      // Initialize and setup connection.
+      this.channel = await this.setupChannel();
 
       // Initialize and setup all available queues.
       this.queues = await this.setupQueues([
@@ -75,79 +74,34 @@ class BlinkApp {
   async stop() {
     // TODO: log.
     this.queues = [];
-    this.shuttingDown = true;
-    this.exchange.channel.close();
-    this.exchange.connection.close();
-    this.exchange = false;
+    this.channel.stop();
     return true;
   }
 
-  async setupExchange() {
-    const exchange = new Exchange(this.config);
-    await exchange.setup();
+  async setupChannel() {
+    const reconnectManager = new ReconnectManager();
 
-    const socket = exchange.channel.connection.stream;
-    let meta;
-    meta = {
+    // Optional: tag connection for easier debug.
+    const appData = {
+      // TODO: add dyno name.
+      name: this.config.app.name,
+      version: this.config.app.version,
       env: this.config.app.env,
-      code: 'amqp_connected',
-      amqp_local: `${socket.localAddress}:${socket.localPort}`,
-      amqp_remote: `${socket.remoteAddress}:${socket.remotePort}`,
     };
-    logger.debug('AMQP connection established', meta);
 
-    exchange.channel.on('error', (error) => {
-      meta = {
-        env: this.config.app.env,
-        code: 'amqp_channel_error',
-      };
-      logger.warning(error.toString(), meta);
-    });
+    const connection = new Connection(this.config.amqp);
+    await connection.reconnect();
+    connection.enableAutoReconnect(reconnectManager);
 
-    exchange.connection.on('error', (error) => {
-      meta = {
-        env: this.config.app.env,
-        code: 'amqp_connection_error',
-      };
-      logger.warning(error.toString(), meta);
-    });
-
-    exchange.channel.on('close', () => {
-      this.scheduleReconnect(
-        0,
-        'amqp_channel_closed_from_server',
-        'Unexpected AMQP client shutdown',
-      );
-    });
-
-    exchange.connection.on('close', () => {
-      this.scheduleReconnect(
-        this.reconnectTimeout,
-        'amqp_connection_closed_from_server',
-        'Unexpected AMQP connection shutdown',
-      );
-    });
-
-    return exchange;
-  }
-
-  scheduleReconnect(timeout = 0, code, message) {
-    // Don't reconnect on programmatic shutdown.
-    if (this.shuttingDown) {
-      return;
-    }
-    const meta = {
-      env: this.config.app.env,
-      code,
-    };
-    logger.error(`${message}, reconnecting in ${timeout}ms`, meta);
-    this.connected = false;
-    setTimeout(this.reconnect, timeout);
+    const channel = new Channel(connection);
+    await channel.reconnect();
+    channel.enableAutoReconnect(reconnectManager);
+    this.channel = channel;
   }
 
   async setupQueues(queueClasses) {
     const queueMappingPromises = queueClasses.map(async (queueClass, i) => {
-      const queue = new queueClasses[i](this.exchange);
+      const queue = new queueClasses[i](this.channel);
       // Assert Rabbit Topology.
       await queue.setup();
       const mappingKey = changeCase.camelCase(queueClass.name);

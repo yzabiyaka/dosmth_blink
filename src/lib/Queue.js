@@ -6,9 +6,8 @@ const Dequeuer = require('./Dequeuer');
 const RetryManager = require('./RetryManager');
 
 class Queue {
-  constructor(exchange, name = false) {
-    this.exchange = exchange;
-    this.channel = exchange.channel;
+  constructor(channel, name = false) {
+    this.channel = channel;
 
     if (!name) {
       // If name is not explicitly set, generate Queue name from class name:
@@ -27,14 +26,14 @@ class Queue {
   }
 
   async setup() {
-    return this.exchange.setupQueue(this);
+    // return this.exchange.setupQueue(this);
   }
 
   /**
    * Send a single message to the queue bypassing routing.
    */
   publish(message) {
-    return this.exchange.publish(this.name, message);
+    // return this.exchange.publish(this.name, message);
   }
 
   nack(message) {
