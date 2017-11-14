@@ -22,7 +22,7 @@ build:
           export BLINK_AMQP_MANAGEMENT_PORT=$RABBITMQ_PORT_15672_TCP_PORT
     - script:
         name: run lint, BDD tests and code coverage
-        code: npm run all-tests
+        code: yarn test:full
     - script:
         name: publish coverage report to codecov
-        code: npm run publish-coverage-report
+        code: yarn coverage:report:publish
