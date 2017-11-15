@@ -41,29 +41,31 @@ class RabbitMQConnectionManager {
       connection = await this.establishTCPConnection();
     } catch (error) {
       // TODO: Try to reconnect on network errors?
-      RabbitMQConnectionManager.logFailure(error, this.amqpConfig);
+      RabbitMQConnectionManager.logFailure(error);
       return false;
     }
+    // TODO: make sure we can mock that.
+    this.connection = connection;
 
     // Create new communication channel within the connection.
     let channel;
     try {
       channel = await this.createChannelInTCPConnection(connection);
     } catch (error) {
-      RabbitMQConnectionManager.logFailure(error, this.toString());
+      RabbitMQConnectionManager.logFailure(error);
       return false;
     }
 
-
-    RabbitMQConnectionManager.logSuccess(connection);
-    this.connection = connection;
+    RabbitMQConnectionManager.logSuccess(channel);
     this.channel = channel;
     return true;
   }
 
 
   async disconnect() {
-    // await this.connectionManager.disconnect();
+    await this.channel.close();
+    await this.connection.close();
+    return true;
   }
 
   getActiveChannel() {
@@ -91,11 +93,11 @@ class RabbitMQConnectionManager {
     return connection;
   }
 
-  async createChannelInTCPConnection(connection) {
+  async createChannelInTCPConnection() {
     let channel;
     try {
       // TODO: consider ConfirmChannel?
-      channel = await connection.createChannel();
+      channel = await this.connection.createChannel();
     } catch (error) {
       // May fail if there are no more channels available
       // (i.e., if there are already `channelMax` channels open).
@@ -131,28 +133,28 @@ class RabbitMQConnectionManager {
       return 'Not connected';
     }
     // Todo: log actual amqpconfig?
-    return JSON.stringify(RabbitMQConnectionManager.getNetworkData(this.connection));
+    return JSON.stringify(RabbitMQConnectionManager.getNetworkData(this.getActiveChannel()));
   }
 
-  static logSuccess(connection) {
-    const networkData = RabbitMQConnectionManager.getNetworkData(connection);
-    logger.debug('AMQP connection created', {
-      code: 'amqp_connection_created',
+  static logSuccess(channel) {
+    const networkData = RabbitMQConnectionManager.getNetworkData(channel);
+    logger.debug('AMQP channel created', {
+      code: 'amqp_channel_created',
       amqp_local: `${networkData.localAddress}:${networkData.localPort}`,
       amqp_remote: `${networkData.remoteAddress}:${networkData.remotePort}`,
+      // TODO: dyno
     });
   }
 
-  static logFailure(error, metadata) {
-    logger.error(`AMQP connection failed: ${error.toString()}`, {
-      code: 'amqp_connection_failed',
-      metadata,
+  static logFailure(error) {
+    logger.error(`AMQP channel failed: ${error.toString()}`, {
+      code: 'amqp_channel_failed',
     });
   }
 
-  static getNetworkData(connection) {
+  static getNetworkData(channel) {
     // Instance of Duplex.
-    const socket = connection.stream;
+    const socket = channel.connection.stream;
     return {
       localAddress: socket.localAddress,
       localPort: socket.localPort,
