@@ -2,7 +2,7 @@
 
 const logger = require('winston');
 
-class Channel {
+class RabbitMQChannel {
   constructor(connection) {
     this.connection = connection;
     this.channel = false;
@@ -17,19 +17,19 @@ class Channel {
     try {
       channel = await this.connection.createChannel();
     } catch (error) {
-      Channel.logFailure(error, this.connection);
+      RabbitMQChannel.logFailure(error, this.connection);
       return false;
     }
 
     // Just in case.
     if (!channel) {
       const error = new BlinkConnectionError('Unexpected channel null pointer');
-      Channel.logFailure(error, this.connection);
+      RabbitMQChannel.logFailure(error, this.connection);
       return false;
     }
 
-    Channel.logSuccess(channel);
-    Channel.attachErrorLogging(channel);
+    RabbitMQChannel.logSuccess(channel);
+    RabbitMQChannel.attachErrorLogging(channel);
     this.channel = channel;
   }
 
@@ -65,4 +65,4 @@ class Channel {
   }
 }
 
-module.exports = Channel;
+module.exports = RabbitMQChannel;

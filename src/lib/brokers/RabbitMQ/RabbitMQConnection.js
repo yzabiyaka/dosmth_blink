@@ -3,7 +3,7 @@
 const logger = require('winston');
 const amqp = require('amqplib');
 
-class Connection {
+class RabbitMQConnection {
   constructor(amqpConfig, clientDescription = false) {
     this.amqpConfig = amqpConfig;
     this.clientDescription = clientDescription;
@@ -20,19 +20,19 @@ class Connection {
       connection = await this.establishConnection();
     } catch (error) {
       // TODO: Try to reconnect on network errors?
-      Connection.logFailure(error, this.amqpConfig);
+      RabbitMQConnection.logFailure(error, this.amqpConfig);
       return false;
     }
 
     // Just in case.
     if (!connection) {
       const error = new BlinkConnectionError('Unexpected connection null pointer');
-      Connection.logFailure(error, this.amqpConfig);
+      RabbitMQConnection.logFailure(error, this.amqpConfig);
       return false;
     }
 
-    Connection.logSuccess(connection);
-    Connection.attachErrorLogging(connection);
+    RabbitMQConnection.logSuccess(connection);
+    RabbitMQConnection.attachErrorLogging(connection);
     this.connection = connection;
   }
 
@@ -81,7 +81,7 @@ class Connection {
       return 'Not connected';
     }
     // Todo: log actual amqpconfig?
-    return JSON.stringify(Connection.getNetworkData(this.connection));
+    return JSON.stringify(RabbitMQConnection.getNetworkData(this.connection));
   }
 
   static attachErrorLogging(connection) {
@@ -91,7 +91,7 @@ class Connection {
   }
 
   static logSuccess(connection) {
-    const networkData = Connection.getNetworkData(connection);
+    const networkData = RabbitMQConnection.getNetworkData(connection);
     logger.debug('AMQP connection created', {
       code: 'amqp_connection_created',
       amqp_local: `${socket.localAddress}:${socket.localPort}`,
@@ -136,4 +136,4 @@ class Connection {
 
 }
 
-module.exports = Connection;
+module.exports = RabbitMQConnection;
