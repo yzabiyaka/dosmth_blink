@@ -1,7 +1,15 @@
 'use strict';
 
+// ------- Imports -------------------------------------------------------------
+
 const logger = require('winston');
 const amqp = require('amqplib');
+
+// ------- Internal imports ----------------------------------------------------
+
+const BlinkConnectionError = require('../../../errors/BlinkConnectionError');
+
+// ------- Class ---------------------------------------------------------------
 
 class RabbitMQConnection {
   constructor(amqpConfig, clientDescription = false) {
@@ -14,7 +22,7 @@ class RabbitMQConnection {
     this.create();
   }
 
-  async create() {
+  async connect() {
     let connection;
     try {
       connection = await this.establishConnection();
@@ -136,4 +144,8 @@ class RabbitMQConnection {
 
 }
 
+// ------- Exports -------------------------------------------------------------
+
 module.exports = RabbitMQConnection;
+
+// ------- End -----------------------------------------------------------------
