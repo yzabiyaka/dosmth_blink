@@ -15,6 +15,10 @@ class RabbitMQBroker extends Broker {
 
   }
 
+  async disconnect() {
+
+  }
+
   toString() {
     if (!this.connection) {
       return 'Not connected';
