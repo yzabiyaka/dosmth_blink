@@ -6,8 +6,8 @@ const Dequeuer = require('./Dequeuer');
 const RetryManager = require('./RetryManager');
 
 class Queue {
-  constructor(channel, name = false) {
-    this.channel = channel;
+  constructor(broker, name = false) {
+    this.broker = broker;
 
     if (!name) {
       // If name is not explicitly set, generate Queue name from class name:
@@ -37,11 +37,11 @@ class Queue {
   }
 
   nack(message) {
-    this.channel.reject(message, false);
+    this.broker.reject(message, false);
   }
 
   ack(message) {
-    this.channel.ack(message);
+    this.broker.ack(message);
   }
 
   /**
@@ -52,7 +52,7 @@ class Queue {
   async purge() {
     let result;
     try {
-      result = await this.channel.purgeQueue(this.name);
+      result = await this.broker.purgeQueue(this.name);
     } catch (error) {
       // Wrap HTTP exceptions in meaningful response.
       throw new Error(`Queue.purge(): failed to purge queue "${this.name}": ${error.message}`);
@@ -68,12 +68,12 @@ class Queue {
   async delete(ifUnused = false, ifEmpty = false) {
     let result;
     try {
-      result = await this.channel.deleteQueue(this.name, {
+      result = await this.broker.deleteQueue(this.name, {
         ifUnused,
         ifEmpty,
       });
     } catch (error) {
-      // TODO: handle channel closing on unsuccessful delete?
+      // TODO: handle broker closing on unsuccessful delete?
       throw new Error(`Queue.delete(): failed to delete queue "${this.name}": ${error.message}`);
     }
     return result.messageCount;
@@ -91,7 +91,7 @@ class Queue {
 
     const dequeuer = new Dequeuer(this, callback, retryManager, rateLimit);
     this.dequeuer = dequeuer;
-    this.channel.consume(this.name, dequeuer.dequeue);
+    this.broker.consume(this.name, dequeuer.dequeue);
   }
 }
 
