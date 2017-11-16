@@ -26,10 +26,41 @@ class RabbitMQConnectionManager {
   }
 
   async connect() {
-    if (this.reconnectManager) {
-      return this.reconnectManager.reconnect(this.createActiveChannel);
+    if (!this.reconnectManager) {
+      // No reconnection logic provided, just try once and return the result.
+      return this.createActiveChannel();
     }
-    return this.createActiveChannel();
+
+    // Manage automatic reconnect:
+    // 1. Enable automatic reconnects on first connection.
+    const result = this.reconnectManager.reconnect(this.createActiveChannel);
+    if (!result) {
+      // Even thought reconnect manager will try until it succeed,
+      // it could receive an interruption signal to stop trying.
+      // In this case, the result will be false.
+      return false;
+    }
+    // 2. Enable automatic reconnects on channel or connection failures.
+    // RabbitMQ is notorious for killing your channels for obvious reasons,
+    // and we want the connection to be persistent.
+    // Also, useful for living through RabbitMQ restarts.
+    this.connection.on('error', (error) => {
+      RabbitMQConnectionManager.logFailure(error);
+    })
+    this.channel.on('error', (error) => {
+      RabbitMQConnectionManager.logFailure(error);
+    })
+
+    this.connection.on('close', () => {
+      this.connection = false;
+      this.channel = false;
+      this.reconnectManager.reconnect(this.createActiveChannel)
+    });
+    this.channel.on('close', () => {
+      // Todo: queue operations?
+      this.channel = false;
+      this.reconnectManager.reconnect(this.createActiveChannel)
+    });
   }
 
   /**

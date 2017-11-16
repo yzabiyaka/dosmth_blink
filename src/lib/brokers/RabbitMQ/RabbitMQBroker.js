@@ -43,9 +43,11 @@ class RabbitMQBroker extends Broker {
    * Create managed RabbitMQ connection
    */
   async connect() {
-    await this.connectionManager.connect();
+    const result = await this.connectionManager.connect();
+    if (!result) {
+      return false;
+    }
     this.channel = this.connectionManager.getActiveChannel();
-    // TODO: return false when fails?
     return true;
   }
 

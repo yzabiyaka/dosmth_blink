@@ -29,8 +29,7 @@ class ReconnectManager {
 
     // Reconnect delay logic.
     if (!reconnectDelayLogic || typeof reconnectDelayLogic !== 'function') {
-      // Default exponential backoff logic
-      // Default: reconnect every 1 seconds
+      // Default constant time backoff, reconnect every 1 seconds
       this.getReconnectDelay = DelayLogic.constantTimeDelay(1000);
     } else {
       this.getReconnectDelay = reconnectDelayLogic;
