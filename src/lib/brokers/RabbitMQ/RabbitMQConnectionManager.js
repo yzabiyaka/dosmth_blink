@@ -20,6 +20,9 @@ class RabbitMQConnectionManager {
 
     // Inject reconnect manager.
     this.reconnectManager = reconnectManager;
+
+    // Expose function by binding it to object context.
+    this.createActiveChannel = this.createActiveChannel.bind(this);
   }
 
   async connect() {
@@ -159,7 +162,7 @@ class RabbitMQConnectionManager {
   }
 
   static logFailure(error) {
-    logger.error(`AMQP channel failed: ${error.toString()}`, {
+    logger.error(`AMQP channel failed: ${error.message}`, {
       code: 'amqp_channel_failed',
     });
   }

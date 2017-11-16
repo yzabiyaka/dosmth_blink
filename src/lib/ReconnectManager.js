@@ -20,26 +20,21 @@ const DelayLogic = require('./DelayLogic');
 
 class ReconnectManager {
   constructor(reconnectDelayLogic = false) {
-    // this.connected = false;
-    // this.connecting = false;
-    // this.shuttingDown = false;
-    // this.reconnectTimeout = 2000;
-
-    // Reconnect delay logic.
-    if (!reconnectDelayLogic || typeof reconnectDelayLogic !== 'function') {
-      // Default exponential backoff logic
-      // Default: reconnect every 2 seconds
-      this.getReconnectDelay = DelayLogic.constantTimeDelay(2000);
-    } else {
-      this.getReconnectDelay = reconnectDelayLogic;
-    }
-
     // Reconnect attempt
     this.attempt = 0;
     // Reconnect allowance.
     this.reconnectAllowed = true;
     // Clean exit indicator.
     this.interrupted = false;
+
+    // Reconnect delay logic.
+    if (!reconnectDelayLogic || typeof reconnectDelayLogic !== 'function') {
+      // Default exponential backoff logic
+      // Default: reconnect every 1 seconds
+      this.getReconnectDelay = DelayLogic.constantTimeDelay(1000);
+    } else {
+      this.getReconnectDelay = reconnectDelayLogic;
+    }
   }
 
   /**
