@@ -12,11 +12,21 @@ const BlinkConnectionError = require('../../../errors/BlinkConnectionError');
 // ------- Class ---------------------------------------------------------------
 
 class RabbitMQConnectionManager {
-  constructor(amqpConfig, clientDescription = false) {
+  constructor(amqpConfig, clientDescription = false, reconnectManager = false) {
     this.amqpConfig = amqpConfig;
     this.clientDescription = clientDescription;
     this.connection = false;
     this.channel = false;
+
+    // Inject reconnect manager.
+    this.reconnectManager = reconnectManager;
+  }
+
+  async connect() {
+    if (this.reconnectManager) {
+      return this.reconnectManager.reconnect(this.createActiveChannel);
+    }
+    return this.createActiveChannel();
   }
 
   /**
@@ -34,13 +44,12 @@ class RabbitMQConnectionManager {
    *
    * @return {bool} Result
    */
-  async connect() {
+  async createActiveChannel() {
     // Establish new RabbitMQ TCP/IP connection.
     let connection;
     try {
       connection = await this.establishTCPConnection();
     } catch (error) {
-      // TODO: Try to reconnect on network errors?
       RabbitMQConnectionManager.logFailure(error);
       return false;
     }
@@ -50,7 +59,7 @@ class RabbitMQConnectionManager {
     // Create new communication channel within the connection.
     let channel;
     try {
-      channel = await this.createChannelInTCPConnection(connection);
+      channel = await this.createChannelInTCPConnection();
     } catch (error) {
       RabbitMQConnectionManager.logFailure(error);
       return false;
@@ -63,6 +72,9 @@ class RabbitMQConnectionManager {
 
 
   async disconnect() {
+    if (this.reconnectManager) {
+      await this.reconnectManager.interrupt();
+    }
     await this.channel.close();
     await this.connection.close();
     return true;

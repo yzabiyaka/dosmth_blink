@@ -5,6 +5,7 @@ const changeCase = require('change-case');
 
 // Blink Libs.
 const RabbitMQBroker = require('../lib/brokers/RabbitMQ/RabbitMQBroker');
+const ReconnectManager = require('../lib/ReconnectManager');
 
 // Queues:
 // TODO: Register from microapps. See discoverQueueClasses().
@@ -58,8 +59,14 @@ class BlinkApp {
       env: this.config.app.env,
     };
 
+    const reconnectManager = new ReconnectManager();
+
     // Now only RabbitMQ is supported.
-    const broker = new RabbitMQBroker(this.config.amqp, clientDescription);
+    const broker = new RabbitMQBroker(
+      this.config.amqp,
+      clientDescription,
+      reconnectManager,
+    );
     // Establish connection or perform authorization.
     await broker.connect();
     return broker;
