@@ -50,16 +50,17 @@ class RabbitMQConnectionManager {
     this.channel.on('close', () => {
       // Todo: queue operations?
       // this.channel = false;
-      this.reconnectManager.reconnect(this.createActiveChannel)
+      this.reconnectManager.reconnect(this.createActiveChannel);
       console.dir('channel closed', { colors: true, showHidden: true });
     });
 
     this.connection.on('close', () => {
       // this.connection = false;
       // this.channel = false;
-      this.reconnectManager.reconnect(this.createActiveChannel)
+      this.reconnectManager.reconnect(this.createActiveChannel);
       console.dir('connection closed', { colors: true, showHidden: true });
     });
+    return true;
   }
 
   /**
@@ -86,7 +87,8 @@ class RabbitMQConnectionManager {
       RabbitMQConnectionManager.logFailure(error);
       return false;
     }
-    RabbitMQConnectionManager.attachOnErrorLogging(connection)
+    // TCP connection established.
+    RabbitMQConnectionManager.attachOnErrorLogging(connection);
     // TODO: make sure we can mock that.
     this.connection = connection;
 
@@ -98,9 +100,9 @@ class RabbitMQConnectionManager {
       RabbitMQConnectionManager.logFailure(error);
       return false;
     }
-
+    // Channels created.
     RabbitMQConnectionManager.logSuccess(channel);
-    RabbitMQConnectionManager.attachOnErrorLogging(channel)
+    RabbitMQConnectionManager.attachOnErrorLogging(channel);
     this.channel = channel;
     return true;
   }
