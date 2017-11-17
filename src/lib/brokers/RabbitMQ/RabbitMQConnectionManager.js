@@ -33,7 +33,7 @@ class RabbitMQConnectionManager {
 
     // Manage automatic reconnect:
     // 1. Enable automatic reconnects on first connection.
-    const result = this.reconnectManager.reconnect(this.createActiveChannel);
+    const result = await this.reconnectManager.reconnect(this.createActiveChannel);
     if (!result) {
       // Even thought reconnect manager will try until it succeed,
       // it could receive an interruption signal to stop trying.
@@ -44,22 +44,24 @@ class RabbitMQConnectionManager {
     // RabbitMQ is notorious for killing your channels for obvious reasons,
     // and we want the connection to be persistent.
     // Also, useful for living through RabbitMQ restarts.
-    this.connection.on('error', (error) => {
-      RabbitMQConnectionManager.logFailure(error);
-    })
     this.channel.on('error', (error) => {
       RabbitMQConnectionManager.logFailure(error);
     })
-
-    this.connection.on('close', () => {
-      this.connection = false;
-      this.channel = false;
-      this.reconnectManager.reconnect(this.createActiveChannel)
-    });
+    this.connection.on('error', (error) => {
+      RabbitMQConnectionManager.logFailure(error);
+    })
     this.channel.on('close', () => {
       // Todo: queue operations?
-      this.channel = false;
+      // this.channel = false;
       this.reconnectManager.reconnect(this.createActiveChannel)
+      console.dir('channel closed', { colors: true, showHidden: true });
+    });
+
+    this.connection.on('close', () => {
+      // this.connection = false;
+      // this.channel = false;
+      this.reconnectManager.reconnect(this.createActiveChannel)
+      console.dir('connection closed', { colors: true, showHidden: true });
     });
   }
 
