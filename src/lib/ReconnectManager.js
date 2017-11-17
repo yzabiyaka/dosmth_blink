@@ -22,10 +22,10 @@ class ReconnectManager {
   constructor(reconnectDelayLogic = false) {
     // Reconnect attempt
     this.attempt = 0;
-    // Reconnect allowance.
-    this.reconnectAllowed = true;
-    // Clean exit indicator.
+    // A signal to interrupt retries.
     this.interrupted = false;
+    // Reconnect allowance.
+    this.executionLock = false;
 
     // Reconnect delay logic.
     if (!reconnectDelayLogic || typeof reconnectDelayLogic !== 'function') {
@@ -48,10 +48,13 @@ class ReconnectManager {
    * @return {[bool]} ConnectFunction's execution result
    */
   async reconnect(connectFunction) {
+    // Indicate that reconnection in progress.
+    this.executionLock = true;
     // No retry limit on reconnection.
-    while (this.reconnectAllowed) {
+    while (!this.interrupted) {
       const result = await connectFunction();
       if (result) {
+        this.executionLock = false;
         return result;
       }
 
@@ -62,16 +65,16 @@ class ReconnectManager {
       // Wait.
       await ReconnectManager.wait(delayMs);
     }
-    // Let know this.interrupt of clean finish.
-    this.interrupted = true;
+    // Execution has been interrrupted. Let know this.interrupt of clean finish.
+    this.executionLock = false;
     return false;
   }
 
   async interrupt() {
-    this.reconnectAllowed = false;
+    this.interrupted = true;
     // Wait for clean finish of this.reconnect().
-    // Clean finish will be exposed throug this.interrupted state.
-    while (!this.interrupted) {
+    // Execution lock will be set to false on clean exit.
+    while (this.executionLock) {
       const delayMs = this.getReconnectDelay(this.attempt);
       await ReconnectManager.wait(delayMs);
     }
