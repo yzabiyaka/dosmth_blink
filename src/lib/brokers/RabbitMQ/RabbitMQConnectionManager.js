@@ -44,6 +44,9 @@ class RabbitMQConnectionManager {
     // RabbitMQ is notorious for killing your channels for obvious reasons,
     // and we want the connection to be persistent.
     // Also, useful for living through RabbitMQ restarts.
+    // TODO: move to a function, ensure in base case it's not called more
+    // than once at a time. Also ensure that new channel and connection
+    // also have autorecovery handlers.
     this.channel.on('error', (error) => {
       RabbitMQConnectionManager.logFailure(error);
     })
