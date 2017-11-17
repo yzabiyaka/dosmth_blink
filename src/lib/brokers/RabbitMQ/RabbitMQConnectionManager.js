@@ -47,12 +47,6 @@ class RabbitMQConnectionManager {
     // TODO: move to a function, ensure in base case it's not called more
     // than once at a time. Also ensure that new channel and connection
     // also have autorecovery handlers.
-    this.channel.on('error', (error) => {
-      RabbitMQConnectionManager.logFailure(error);
-    })
-    this.connection.on('error', (error) => {
-      RabbitMQConnectionManager.logFailure(error);
-    })
     this.channel.on('close', () => {
       // Todo: queue operations?
       // this.channel = false;
@@ -92,6 +86,7 @@ class RabbitMQConnectionManager {
       RabbitMQConnectionManager.logFailure(error);
       return false;
     }
+    RabbitMQConnectionManager.attachOnErrorLogging(connection)
     // TODO: make sure we can mock that.
     this.connection = connection;
 
@@ -105,6 +100,7 @@ class RabbitMQConnectionManager {
     }
 
     RabbitMQConnectionManager.logSuccess(channel);
+    RabbitMQConnectionManager.attachOnErrorLogging(channel)
     this.channel = channel;
     return true;
   }
@@ -190,7 +186,7 @@ class RabbitMQConnectionManager {
   static logSuccess(channel) {
     const networkData = RabbitMQConnectionManager.getNetworkData(channel);
     logger.debug('AMQP channel created', {
-      code: 'amqp_channel_created',
+      code: 'success_rabbitmq_connection_manager_channel_created',
       amqp_local: `${networkData.localAddress}:${networkData.localPort}`,
       amqp_remote: `${networkData.remoteAddress}:${networkData.remotePort}`,
       // TODO: dyno
@@ -198,8 +194,8 @@ class RabbitMQConnectionManager {
   }
 
   static logFailure(error) {
-    logger.error(`AMQP channel failed: ${error.message}`, {
-      code: 'amqp_channel_failed',
+    logger.error(`RabbitMQ connection error: ${error.message}`, {
+      code: 'error_rabbitmq_connection_manager_server_error',
     });
   }
 
@@ -212,6 +208,10 @@ class RabbitMQConnectionManager {
       remoteAddress: socket.remoteAddress,
       remotePort: socket.remotePort,
     };
+  }
+
+  static attachOnErrorLogging(eventEmitter) {
+    eventEmitter.on('error', RabbitMQConnectionManager.logFailure);
   }
 }
 
