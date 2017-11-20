@@ -227,8 +227,10 @@ class RabbitMQConnectionManager {
 
     // Reconnect.
     await this.connect();
+
+    // Success.
     this.recoveryLock = false;
-    logger.debug('AMQP automatic recovery successfull', {
+    logger.debug('AMQP automatic recovery successful', {
       code: 'success_rabbitmq_connection_manager_recovering_active_channel_finished',
     });
     return true;
