@@ -62,6 +62,9 @@ class BlinkApp {
     const broker = new RabbitMQBroker(this.config.amqp, clientDescription);
     // Establish connection or perform authorization.
     const result = await broker.connect();
+    if (!result) {
+      // Do what?
+    }
     // Return connected broker.
     return broker;
   }

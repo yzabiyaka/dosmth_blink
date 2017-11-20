@@ -11,7 +11,7 @@ module.exports = {
     password: process.env.BLINK_AMQP_PASSWORD || 'blink',
     vhost: process.env.BLINK_AMQP_VHOST || 'blink',
   },
-  options: {
-    topicExchange: process.env.BLINK_AMQP_TOPIC_EXCHANGE || 'blink',
+  settings: {
+    topicExchange: process.env.BLINK_AMQP_TOPIC_EXCHANGE || 'blink-topic',
   },
 };

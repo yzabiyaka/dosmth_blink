@@ -26,6 +26,9 @@ class RabbitMQConnectionManager {
     // despite multiple processes can request it asynchronously.
     this.recoveryLock = false;
 
+    // Connected indicator.
+    this.connected = false;
+
     // Expose function by binding it to object context.
     this.createActiveChannel = this.createActiveChannel.bind(this);
   }
@@ -61,6 +64,9 @@ class RabbitMQConnectionManager {
       code: 'debug_rabbitmq_connection_manager_disconnect_requested',
     });
 
+    // Lock auto recovery to prevent auto-reconnect during disconnection.
+    this.recoveryLock = true;
+
     // If automatic connection in progress, stop it.
     if (this.reconnectManager) {
       await this.reconnectManager.interrupt();
@@ -87,6 +93,8 @@ class RabbitMQConnectionManager {
       RabbitMQConnectionManager.logDebug(wrappedError);
     }
     this.connection = false;
+    // Indicate offline state.
+    this.connected = false;
     return true;
   }
 
@@ -137,6 +145,7 @@ class RabbitMQConnectionManager {
     RabbitMQConnectionManager.logSuccess(channel);
     RabbitMQConnectionManager.attachOnErrorLogging(channel);
     this.channel = channel;
+    this.connected = true;
     return true;
   }
 
@@ -187,6 +196,8 @@ class RabbitMQConnectionManager {
    * Useful for living through RabbitMQ restarts.
    */
   enableAutoRecovery() {
+    // Unlock auto recovery.
+    this.recoveryLock = false;
     this.channel.on('close', () => {
       const error = new BlinkConnectionError(
         'AMQP channel got closed, attempting automatic recovery.',
@@ -217,19 +228,23 @@ class RabbitMQConnectionManager {
       // Another recovery is already in progress.
       return false;
     }
+    // Recovery in progress.
+    this.recoveryLock = true;
+    // We're as good as offline.
+    this.connected = false;
+
+    // Log recovery start.
     logger.debug('AMQP automatic recovery in progress', {
       code: 'debug_rabbitmq_connection_manager_recovering_active_channel_started',
     });
-    this.recoveryLock = true;
 
     // Attempt to close what's left of connection and channel.
     await this.disconnect();
 
-    // Reconnect.
+    // Reconnect. Will reset this.connected and this.recoveryLock.
     await this.connect();
 
     // Success.
-    this.recoveryLock = false;
     logger.debug('AMQP automatic recovery successful', {
       code: 'success_rabbitmq_connection_manager_recovering_active_channel_finished',
     });
@@ -269,7 +284,7 @@ class RabbitMQConnectionManager {
       code: 'success_rabbitmq_connection_manager_channel_created',
       amqp_local: `${networkData.localAddress}:${networkData.localPort}`,
       amqp_remote: `${networkData.remoteAddress}:${networkData.remotePort}`,
-      // TODO: dyno
+      // TODO: dyno?
     });
   }
 

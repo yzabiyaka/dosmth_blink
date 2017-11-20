@@ -30,11 +30,8 @@ class RabbitMQBroker extends Broker {
       reconnectManager,
     );
 
-    // AMQP channel is false when not connected.
-    this.channel = false;
-
     // RabbitMQ exchange used for standart interfacing with queues.
-    this.topicExchange = amqpConfig.options.topicExchange;
+    this.topicExchange = amqpConfig.settings.topicExchange;
   }
 
   // ------- Public API  -------------------------------------------------------
@@ -49,12 +46,13 @@ class RabbitMQBroker extends Broker {
       return false;
     }
 
-    // Connection succesfull.
-    this.channel = this.connectionManager.getActiveChannel();
-
-    // Create necessary exchanges.
-    const assertionResult = await this.assertExchanges();
-    if (!assertionResult) {
+    // To perform normal operations, RabbitMQ needs exchanges.
+    // Without them, we're as good, as disconnected, so treat
+    // their assertion as a step of connecting to RabbitMQ.
+    // May make sense to move this to Broker.setup() if there are more
+    // use-cases for this in other broker implementations.
+    const exchangesAreReady = await this.assertExchanges();
+    if (!exchangesAreReady) {
       return false;
     }
 
@@ -75,15 +73,18 @@ class RabbitMQBroker extends Broker {
   // ------- Internal machinery  -----------------------------------------------
 
   async assertExchanges() {
-    // Assert topic exchange for standart interactions.
-    // We need all of them, so fail if any of this opperation isn't completed.
+    // Assert topic exchange for standard interactions.
+    // We need all of them, so fail if any of these operations aren't successful.
     try {
-      // TODO: create other exchanges.
       await this.getChannel().assertExchange(this.topicExchange, 'topic');
+      logger.info(`Topic exchange asserted: ${this.topicExchange}`, {
+        code: 'success_rabbitmq_broker_topic_exchange_asserted',
+      });
+      // TODO: create other exchanges.
       return true;
     } catch (error) {
       logger.error(`Couldn't assert neccessary exchanges: ${error}`, {
-        code: 'error_rabbitmq_connection_broker_exchange_assertion_failed',
+        code: 'error_rabbitmq_broker_exchange_assertion_failed',
       });
     }
     return false;
@@ -94,7 +95,7 @@ class RabbitMQBroker extends Broker {
     // compatible fake when channel is not available to
     // queue requests and feed them to an active channel
     // when it's recovered.
-    return this.channel;
+    return this.connectionManager.getActiveChannel();
   }
 }
 
