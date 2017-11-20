@@ -30,6 +30,8 @@ class RabbitMQConnectionManager {
     this.createActiveChannel = this.createActiveChannel.bind(this);
   }
 
+  // ------- Public API  -------------------------------------------------------
+
   async connect() {
     if (!this.reconnectManager) {
       // No reconnection logic provided, just try once and return the result.
@@ -51,6 +53,130 @@ class RabbitMQConnectionManager {
     // and we want the connection to be persistent.
     this.enableAutoRecovery();
     return true;
+  }
+
+  async disconnect() {
+    // Log request for disconnect.
+    logger.debug('AMQP disconnect requested', {
+      code: 'debug_rabbitmq_connection_manager_disconnect_requested',
+    });
+
+    // If automatic connection in progress, stop it.
+    if (this.reconnectManager) {
+      await this.reconnectManager.interrupt();
+    }
+    // Disconnect active channel.
+    // Ignore errors if the channels is already closed.
+    try {
+      await this.channel.close();
+    } catch (error) {
+      const wrappedError = new BlinkConnectionError(
+        `Ignoring: attepmeted closing active channel, but ${error}.`,
+      );
+      RabbitMQConnectionManager.logNotice(wrappedError);
+    }
+    this.channel = false;
+
+    // Disconnect its connection.
+    try {
+      await this.connection.close();
+    } catch (error) {
+      const wrappedError = new BlinkConnectionError(
+        `Ignoring: attepmeted closing active connection, but ${error}.`,
+      );
+      RabbitMQConnectionManager.logNotice(wrappedError);
+    }
+    this.connection = false;
+    return true;
+  }
+
+  getActiveChannel() {
+    return this.channel;
+  }
+
+  // ------- Internal machinery  -----------------------------------------------
+
+  /**
+   * Establish RabbitMQ connection.
+   *
+   * RabbitMQ connection consist of two parts:
+   * - Persistent AMQP connection though TCP/IP
+   * - Lightweight channels within the TCP connection
+   *
+   * Multiple channels are used when there's a need
+   * to have multiple inependent connections to AMQP broker.
+   *
+   * Blink shouldn't need more than one RabbitMQ link, so only one channel
+   * within one connection will be managed.
+   *
+   * @return {bool} Result
+   */
+  async createActiveChannel() {
+    // Establish new RabbitMQ TCP/IP connection.
+    let connection;
+    try {
+      connection = await this.establishTCPConnection();
+    } catch (error) {
+      RabbitMQConnectionManager.logFailure(error);
+      return false;
+    }
+    // TCP connection established.
+    RabbitMQConnectionManager.attachOnErrorLogging(connection);
+    // TODO: make sure we can mock that.
+    this.connection = connection;
+
+    // Create new communication channel within the connection.
+    let channel;
+    try {
+      channel = await this.createChannelInTCPConnection();
+    } catch (error) {
+      RabbitMQConnectionManager.logFailure(error);
+      return false;
+    }
+    // Channels created.
+    RabbitMQConnectionManager.logSuccess(channel);
+    RabbitMQConnectionManager.attachOnErrorLogging(channel);
+    this.channel = channel;
+    return true;
+  }
+
+  async establishTCPConnection() {
+    // Create AMQP connection.
+    let connection;
+    try {
+      connection = await amqp.connect(
+        this.amqpConfig,
+        this.getClientProperties(),
+      );
+    } catch (error) {
+      // Will throw an error on malformed URI, network problems or other issues.
+      // For now, just rethrow wrapped error.
+      throw new BlinkConnectionError(`Connectiod failed: ${error}`);
+    }
+
+    // Just in case.
+    if (!connection) {
+      throw new BlinkConnectionError('Unexpected connection null pointer');
+    }
+    return connection;
+  }
+
+  async createChannelInTCPConnection() {
+    let channel;
+    try {
+      // TODO: consider ConfirmChannel?
+      channel = await this.connection.createChannel();
+    } catch (error) {
+      // May fail if there are no more channels available
+      // (i.e., if there are already `channelMax` channels open).
+      throw new BlinkConnectionError(`Channel creation failed: ${error}`);
+    }
+
+    // Just in case.
+    if (!channel) {
+      throw new BlinkConnectionError('Unexpected channel null pointer');
+    }
+    return channel;
   }
 
   /**
@@ -108,129 +234,6 @@ class RabbitMQConnectionManager {
     return true;
   }
 
-  /**
-   * Establish RabbitMQ connection.
-   *
-   * RabbitMQ connection consist of two parts:
-   * - Persistent AMQP connection though TCP/IP
-   * - Lightweight channels within the TCP connection
-   *
-   * Multiple channels are used when there's a need
-   * to have multiple inependent connections to AMQP broker.
-   *
-   * Blink shouldn't need more than one RabbitMQ link, so only one channel
-   * within one connection will be managed.
-   *
-   * @return {bool} Result
-   */
-  async createActiveChannel() {
-    // Establish new RabbitMQ TCP/IP connection.
-    let connection;
-    try {
-      connection = await this.establishTCPConnection();
-    } catch (error) {
-      RabbitMQConnectionManager.logFailure(error);
-      return false;
-    }
-    // TCP connection established.
-    RabbitMQConnectionManager.attachOnErrorLogging(connection);
-    // TODO: make sure we can mock that.
-    this.connection = connection;
-
-    // Create new communication channel within the connection.
-    let channel;
-    try {
-      channel = await this.createChannelInTCPConnection();
-    } catch (error) {
-      RabbitMQConnectionManager.logFailure(error);
-      return false;
-    }
-    // Channels created.
-    RabbitMQConnectionManager.logSuccess(channel);
-    RabbitMQConnectionManager.attachOnErrorLogging(channel);
-    this.channel = channel;
-    return true;
-  }
-
-
-  async disconnect() {
-    // Log request for disconnect.
-    logger.debug('AMQP disconnect requested', {
-      code: 'debug_rabbitmq_connection_manager_disconnect_requested',
-    });
-
-    // If automatic connection in progress, stop it.
-    if (this.reconnectManager) {
-      await this.reconnectManager.interrupt();
-    }
-    // Disconnect active channel.
-    // Ignore errors if the channels is already closed.
-    try {
-      await this.channel.close();
-    } catch (error) {
-      const wrappedError = new BlinkConnectionError(
-        `Ignoring: attepmeted closing active channel, but ${error}.`,
-      );
-      RabbitMQConnectionManager.logNotice(wrappedError);
-    }
-    this.channel = false;
-
-    // Disconnect its connection.
-    try {
-      await this.connection.close();
-    } catch (error) {
-      const wrappedError = new BlinkConnectionError(
-        `Ignoring: attepmeted closing active connection, but ${error}.`,
-      );
-      RabbitMQConnectionManager.logNotice(wrappedError);
-    }
-    this.connection = false;
-    return true;
-  }
-
-  getActiveChannel() {
-    return this.channel;
-  }
-
-  async establishTCPConnection() {
-    // Create AMQP connection.
-    let connection;
-    try {
-      connection = await amqp.connect(
-        this.amqpConfig,
-        this.getClientProperties(),
-      );
-    } catch (error) {
-      // Will throw an error on malformed URI, network problems or other issues.
-      // For now, just rethrow wrapped error.
-      throw new BlinkConnectionError(`Connectiod failed: ${error}`);
-    }
-
-    // Just in case.
-    if (!connection) {
-      throw new BlinkConnectionError('Unexpected connection null pointer');
-    }
-    return connection;
-  }
-
-  async createChannelInTCPConnection() {
-    let channel;
-    try {
-      // TODO: consider ConfirmChannel?
-      channel = await this.connection.createChannel();
-    } catch (error) {
-      // May fail if there are no more channels available
-      // (i.e., if there are already `channelMax` channels open).
-      throw new BlinkConnectionError(`Channel creation failed: ${error}`);
-    }
-
-    // Just in case.
-    if (!channel) {
-      throw new BlinkConnectionError('Unexpected channel null pointer');
-    }
-    return channel;
-  }
-
   getClientProperties() {
     // Additional connection properties to make debugging easier.
     let clientDescription;
@@ -255,6 +258,8 @@ class RabbitMQConnectionManager {
     // Todo: log actual amqpconfig?
     return JSON.stringify(RabbitMQConnectionManager.getNetworkData(this.getActiveChannel()));
   }
+
+  // ------- Static helpers  ---------------------------------------------------
 
   static logSuccess(channel) {
     const networkData = RabbitMQConnectionManager.getNetworkData(channel);
