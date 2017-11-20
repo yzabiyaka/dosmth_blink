@@ -71,6 +71,11 @@ class ReconnectManager {
   }
 
   async interrupt() {
+    // We're connected, no need to interrupt antyhing.
+    if (!this.executionLock) {
+      return true;
+    }
+    // Request interruption.
     this.interrupted = true;
     // Wait for clean finish of this.reconnect().
     // Execution lock will be set to false on clean exit.
@@ -78,6 +83,7 @@ class ReconnectManager {
       const delayMs = this.getReconnectDelay(this.attempt);
       await ReconnectManager.wait(delayMs);
     }
+    this.interrupted = false;
     return true;
   }
 

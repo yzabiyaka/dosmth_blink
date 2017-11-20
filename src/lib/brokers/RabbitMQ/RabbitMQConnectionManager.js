@@ -21,6 +21,11 @@ class RabbitMQConnectionManager {
     // Inject reconnect manager.
     this.reconnectManager = reconnectManager;
 
+    // A lock indicates that connection recovery is in progress.
+    // We need this to make sure recovery is happened only once,
+    // despite multiple processes can request it asynchronously.
+    this.recoveryLock = false;
+
     // Expose function by binding it to object context.
     this.createActiveChannel = this.createActiveChannel.bind(this);
   }
@@ -28,6 +33,7 @@ class RabbitMQConnectionManager {
   async connect() {
     if (!this.reconnectManager) {
       // No reconnection logic provided, just try once and return the result.
+      // In this case, auto recovery will be disabled too.
       return this.createActiveChannel();
     }
 
@@ -40,25 +46,64 @@ class RabbitMQConnectionManager {
       // In this case, the result will be false.
       return false;
     }
-    // 2. Enable automatic reconnects on channel or connection failures.
+    // 2. Enable automatic recovery on channel or connection failures.
     // RabbitMQ is notorious for killing your channels for obvious reasons,
     // and we want the connection to be persistent.
-    // Also, useful for living through RabbitMQ restarts.
-    // TODO: move to a function, ensure in base case it's not called more
-    // than once at a time. Also ensure that new channel and connection
-    // also have autorecovery handlers.
-    this.channel.on('close', () => {
-      // Todo: queue operations?
-      // this.channel = false;
-      this.reconnectManager.reconnect(this.createActiveChannel);
-      console.dir('channel closed', { colors: true, showHidden: true });
-    });
+    this.enableAutoRecovery();
+    return true;
+  }
 
+  /**
+   * Enable automatic recovery on channel or connection failures
+   *
+   * RabbitMQ is notorious for killing your channels for obvious reasons,
+   * and we want the connection to be persistent.
+   * Useful for living through RabbitMQ restarts.
+   */
+  enableAutoRecovery() {
+    this.channel.on('close', () => {
+      const error = new BlinkConnectionError(
+        'AMQP channel got closed, attempting automatic recovery.',
+      );
+      RabbitMQConnectionManager.logNotice(error);
+      this.recoverActiveChannel();
+    });
     this.connection.on('close', () => {
-      // this.connection = false;
-      // this.channel = false;
-      this.reconnectManager.reconnect(this.createActiveChannel);
-      console.dir('connection closed', { colors: true, showHidden: true });
+      const error = new BlinkConnectionError(
+        'AMQP connection got closed, attempting automatic recovery.',
+      );
+      RabbitMQConnectionManager.logNotice(error);
+      this.recoverActiveChannel();
+    });
+  }
+
+  /**
+   * Recover active channel.
+   *
+   * Because we don't support multiple channels within one connection,
+   * to simplify recovery logic, we'll recreate both connection and channel
+   * from scratch.
+   */
+  async recoverActiveChannel() {
+    // This may be called asynchronously both on channel failure and
+    // connection failure, but we need to execute this only once.
+    if (this.recoveryLock) {
+      // Another recovery is already in progress.
+      return false;
+    }
+    logger.debug('AMQP automatic recovery in progress', {
+      code: 'debug_rabbitmq_connection_manager_recovering_active_channel_started',
+    });
+    this.recoveryLock = true;
+
+    // Attempt to close what's left of connection and channel.
+    await this.disconnect();
+
+    // Reconnect.
+    await this.connect();
+    this.recoveryLock = false;
+    logger.debug('AMQP automatic recovery successfull', {
+      code: 'success_rabbitmq_connection_manager_recovering_active_channel_finished',
     });
     return true;
   }
@@ -109,11 +154,37 @@ class RabbitMQConnectionManager {
 
 
   async disconnect() {
+    // Log request for disconnect.
+    logger.debug('AMQP disconnect requested', {
+      code: 'debug_rabbitmq_connection_manager_disconnect_requested',
+    });
+
+    // If automatic connection in progress, stop it.
     if (this.reconnectManager) {
       await this.reconnectManager.interrupt();
     }
-    await this.channel.close();
-    await this.connection.close();
+    // Disconnect active channel.
+    // Ignore errors if the channels is already closed.
+    try {
+      await this.channel.close();
+    } catch (error) {
+      const wrappedError = new BlinkConnectionError(
+        `Ignoring: attepmeted closing active channel, but ${error}.`,
+      );
+      RabbitMQConnectionManager.logNotice(wrappedError);
+    }
+    this.channel = false;
+
+    // Disconnect its connection.
+    try {
+      await this.connection.close();
+    } catch (error) {
+      const wrappedError = new BlinkConnectionError(
+        `Ignoring: attepmeted closing active connection, but ${error}.`,
+      );
+      RabbitMQConnectionManager.logNotice(wrappedError);
+    }
+    this.connection = false;
     return true;
   }
 
@@ -187,7 +258,7 @@ class RabbitMQConnectionManager {
 
   static logSuccess(channel) {
     const networkData = RabbitMQConnectionManager.getNetworkData(channel);
-    logger.debug('AMQP channel created', {
+    logger.info('AMQP channel created', {
       code: 'success_rabbitmq_connection_manager_channel_created',
       amqp_local: `${networkData.localAddress}:${networkData.localPort}`,
       amqp_remote: `${networkData.remoteAddress}:${networkData.remotePort}`,
@@ -198,6 +269,12 @@ class RabbitMQConnectionManager {
   static logFailure(error) {
     logger.error(`RabbitMQ connection error: ${error.message}`, {
       code: 'error_rabbitmq_connection_manager_server_error',
+    });
+  }
+
+  static logNotice(error) {
+    logger.debug(`RabbitMQ connection notice: ${error.message}`, {
+      code: 'debug_rabbitmq_connection_manager_notice',
     });
   }
 
