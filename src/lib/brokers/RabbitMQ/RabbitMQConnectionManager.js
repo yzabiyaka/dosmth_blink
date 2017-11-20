@@ -104,7 +104,7 @@ class RabbitMQConnectionManager {
    * - Lightweight channels within the TCP connection
    *
    * Multiple channels are used when there's a need
-   * to have multiple inependent connections to AMQP broker.
+   * to have multiple independent connections to AMQP broker.
    *
    * Blink shouldn't need more than one RabbitMQ link, so only one channel
    * within one connection will be managed.
