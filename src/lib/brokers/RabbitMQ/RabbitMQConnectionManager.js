@@ -73,7 +73,7 @@ class RabbitMQConnectionManager {
       const wrappedError = new BlinkConnectionError(
         `Ignoring: attepmeted closing active channel, but ${error}.`,
       );
-      RabbitMQConnectionManager.logNotice(wrappedError);
+      RabbitMQConnectionManager.logDebug(wrappedError);
     }
     this.channel = false;
 
@@ -84,7 +84,7 @@ class RabbitMQConnectionManager {
       const wrappedError = new BlinkConnectionError(
         `Ignoring: attepmeted closing active connection, but ${error}.`,
       );
-      RabbitMQConnectionManager.logNotice(wrappedError);
+      RabbitMQConnectionManager.logDebug(wrappedError);
     }
     this.connection = false;
     return true;
@@ -191,14 +191,14 @@ class RabbitMQConnectionManager {
       const error = new BlinkConnectionError(
         'AMQP channel got closed, attempting automatic recovery.',
       );
-      RabbitMQConnectionManager.logNotice(error);
+      RabbitMQConnectionManager.logDebug(error);
       this.recoverActiveChannel();
     });
     this.connection.on('close', () => {
       const error = new BlinkConnectionError(
         'AMQP connection got closed, attempting automatic recovery.',
       );
-      RabbitMQConnectionManager.logNotice(error);
+      RabbitMQConnectionManager.logDebug(error);
       this.recoverActiveChannel();
     });
   }
@@ -279,7 +279,7 @@ class RabbitMQConnectionManager {
     });
   }
 
-  static logNotice(error) {
+  static logDebug(error) {
     logger.debug(`RabbitMQ connection notice: ${error.message}`, {
       code: 'debug_rabbitmq_connection_manager_notice',
     });
