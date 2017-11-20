@@ -66,6 +66,9 @@ class RabbitMQBroker extends Broker {
 
   // ------- Broker interface methods implementation  --------------------------
 
+  async assertQueue(queue) {
+
+  }
 
   // ------- RabbitMQ specific methods  ----------------------------------------
 
@@ -91,7 +94,7 @@ class RabbitMQBroker extends Broker {
   }
 
   getChannel() {
-    // Todo: investigate possibity of replacing this with a
+    // Todo: investigate possibility of replacing this with a
     // compatible fake when channel is not available to
     // queue requests and feed them to an active channel
     // when it's recovered.

@@ -25,8 +25,8 @@ class Queue {
     this.routes.push(this.name);
   }
 
-  async setup() {
-    // return this.exchange.setupQueue(this);
+  async assert() {
+    this.broker.assertQueue(this);
   }
 
   /**

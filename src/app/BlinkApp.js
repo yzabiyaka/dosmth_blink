@@ -34,7 +34,7 @@ class BlinkApp {
     this.broker = await this.setupBroker();
 
     // Assert queues and add them to queue registry.
-    // this.queues = await this.setupQueues(BlinkApp.discoverQueueClasses());
+    this.queues = await this.setupQueues(BlinkApp.discoverQueueClasses());
 
     // TODO: Error handling?
     return true;
