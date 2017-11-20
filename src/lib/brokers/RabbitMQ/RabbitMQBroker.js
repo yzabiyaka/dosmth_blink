@@ -2,7 +2,7 @@
 
 // ------- Imports -------------------------------------------------------------
 
-// const logger = require('winston');
+const logger = require('winston');
 
 // ------- Internal imports ----------------------------------------------------
 
@@ -25,34 +25,76 @@ class RabbitMQBroker extends Broker {
 
     // TODO: use options array instead of clientDescription.
     this.connectionManager = new RabbitMQConnectionManager(
-      amqpConfig,
+      amqpConfig.connection,
       clientDescription,
       reconnectManager,
     );
 
-    // AMQP channel.
+    // AMQP channel is false when not connected.
     this.channel = false;
 
-    // Initialize connection class. By default it's not connected.
-    // this.connection = new RabbitMQConnection(this.amqpconfig, this.clientDescription);
-    // See connect() description.
-    // this.channel = new RabbitMQChannel(this.connection);
+    // RabbitMQ exchange used for standart interfacing with queues.
+    this.topicExchange = amqpConfig.options.topicExchange;
   }
+
+  // ------- Public API  -------------------------------------------------------
 
   /**
    * Create managed RabbitMQ connection
    */
   async connect() {
-    const result = await this.connectionManager.connect();
-    if (!result) {
+    // Create managed RabbitMQ connection.
+    const connectionResult = await this.connectionManager.connect();
+    if (!connectionResult) {
       return false;
     }
+
+    // Connection succesfull.
     this.channel = this.connectionManager.getActiveChannel();
+
+    // Create necessary exchanges.
+    const assertionResult = await this.assertExchanges();
+    if (!assertionResult) {
+      return false;
+    }
+
+    // Everything's ready.
     return true;
   }
 
   async disconnect() {
     await this.connectionManager.disconnect();
+  }
+
+  // ------- Broker interface methods implementation  --------------------------
+
+
+  // ------- RabbitMQ specific methods  ----------------------------------------
+
+
+  // ------- Internal machinery  -----------------------------------------------
+
+  async assertExchanges() {
+    // Assert topic exchange for standart interactions.
+    // We need all of them, so fail if any of this opperation isn't completed.
+    try {
+      // TODO: create other exchanges.
+      await this.getChannel().assertExchange(this.topicExchange, 'topic');
+      return true;
+    } catch (error) {
+      logger.error(`Couldn't assert neccessary exchanges: ${error}`, {
+        code: 'error_rabbitmq_connection_broker_exchange_assertion_failed',
+      });
+    }
+    return false;
+  }
+
+  getChannel() {
+    // Todo: investigate possibity of replacing this with a
+    // compatible fake when channel is not available to
+    // queue requests and feed them to an active channel
+    // when it's recovered.
+    return this.channel;
   }
 }
 

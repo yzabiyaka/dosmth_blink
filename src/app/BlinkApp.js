@@ -34,7 +34,7 @@ class BlinkApp {
     this.broker = await this.setupBroker();
 
     // Assert queues and add them to queue registry.
-    this.queues = await this.setupQueues(BlinkApp.discoverQueueClasses());
+    // this.queues = await this.setupQueues(BlinkApp.discoverQueueClasses());
 
     // TODO: Error handling?
     return true;
@@ -61,7 +61,8 @@ class BlinkApp {
     // Now only RabbitMQ is supported.
     const broker = new RabbitMQBroker(this.config.amqp, clientDescription);
     // Establish connection or perform authorization.
-    await broker.connect();
+    const result = await broker.connect();
+    // Return connected broker.
     return broker;
   }
 
