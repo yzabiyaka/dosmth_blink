@@ -93,12 +93,23 @@ class RabbitMQBroker extends Broker {
   }
 
   publishToQueue(queueName, message) {
-    // Todo use queue name instead?
+    // TODO: use queue.name instead?
     return this.publishToRoute(queueName, message);
   }
 
+  /**
+   * Publish to queue using RabbitMQ wildcard routing
+   *
+   * Note: this works out of box only with topic exchanges and only in RabbitMQ.
+   * In other brokers, we may need to compensate for lack of this
+   * functionality using own routing system.
+   * As an alternative, we may need to shift to direct exchanges only.
+   *
+   * @param  {string} routingKey Routing key
+   * @param  {object} message    Message
+   * @return {bool}              The result of publishing, always true.
+   */
   publishToRoute(routingKey, message) {
-    // TODO: get routing key from message
     const options = {
       // The message will be returned if it is not routed to a queue.
       mandatory: true,
