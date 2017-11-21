@@ -8,7 +8,7 @@ const Chance = require('chance');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const RabbitManagement = require('../../../src/lib/RabbitManagement');
+const RabbitManagement = require('../../helpers/RabbitManagement');
 const TwilioStatusCallbackMessage = require('../../../src/messages/TwilioStatusCallbackMessage');
 const TwilioSmsBroadcastGambitRelayWorker = require('../../../src/workers/TwilioSmsBroadcastGambitRelayWorker');
 const HooksHelper = require('../../helpers/HooksHelper');

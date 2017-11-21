@@ -7,7 +7,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const Queue = require('../../../src/lib/Queue');
-const RabbitManagement = require('../../../src/lib/RabbitManagement');
+const RabbitManagement = require('../../helpers/RabbitManagement');
 const Message = require('../../../src/messages/Message');
 const HooksHelper = require('../../helpers/HooksHelper');
 
