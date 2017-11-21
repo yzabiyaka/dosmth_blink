@@ -92,6 +92,31 @@ class RabbitMQBroker extends Broker {
     return true;
   }
 
+  publish(routingKey, message) {
+    // TODO: get routing key from message
+    const options = {
+      // The message will be returned if it is not routed to a queue.
+      mandatory: true,
+      // Always persistent.
+      persistent: true,
+    };
+
+    // Todo: save additional message metadata?
+
+    // TODO: handle drain and returned messages.
+    // See http://www.squaremobius.net/amqp.node/channel_api.html#channel-events
+    // eslint-disable-next-line no-unused-vars
+    const result = this.getChannel().publish(
+      this.topicExchange,
+      routingKey,
+      new Buffer(message.toString(), 'utf-8'),
+      options,
+    );
+
+    // Always true.
+    return true;
+  }
+
   // ------- RabbitMQ specific methods and mechanisms --------------------------
 
   async assertExchanges() {

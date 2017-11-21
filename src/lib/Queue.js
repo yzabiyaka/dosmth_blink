@@ -33,7 +33,9 @@ class Queue {
    * Send a single message to the queue bypassing routing.
    */
   publish(message) {
-    // return this.exchange.publish(this.name, message);
+    // Publish with routing key set to Queue name.
+    // WIll result in direct pulish to this queue.
+    return this.broker.publish(this.name, message);
   }
 
   nack(message) {
