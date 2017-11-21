@@ -135,7 +135,7 @@ class RabbitMQBroker extends Broker {
    * @param  {object} message The messgage to acknowledge
    * @return {undefined}      This method is RPC and does not have server response
    */
-  async ack(message) {
+  ack(message) {
     // Depends on the value of message.fields.deliveryTag.
     // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel_model.js#L221
     this.getChannel().ack(message);
