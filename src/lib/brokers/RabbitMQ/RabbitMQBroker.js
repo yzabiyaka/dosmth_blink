@@ -66,7 +66,11 @@ class RabbitMQBroker extends Broker {
 
   // ------- Broker interface methods implementation  --------------------------
 
-  async assertQueue(queue) {
+  async createQueue(queue) {
+    const topicAssertionResult = this.assertQueue(queue);
+    if (!topicAssertionResult) {
+      return false;
+    }
 
   }
 
@@ -91,6 +95,24 @@ class RabbitMQBroker extends Broker {
       });
     }
     return false;
+  }
+
+  async assertQueue(queue) {
+    try {
+      const assertResponse = await this.getChannel().assertQueue(queue.name);
+    } catch (error) {
+      // Will throw an exception when queue exists with the same name,
+      // but different settings.
+      logger.debug(`Error asserting queue ${queue.name}: ${error.message}`, {
+        code: 'error_rabbitmq_broker_assert_queue_failure',
+      });
+      return false;
+    }
+
+    logger.info(`Queue ${queue.name} present`, {
+      code: 'success_rabbitmq_broker_assert_queue',
+    });
+    return true;
   }
 
   getChannel() {

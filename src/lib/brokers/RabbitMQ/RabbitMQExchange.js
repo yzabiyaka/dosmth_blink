@@ -26,24 +26,24 @@ class Exchange {
   }
 
   async setupQueue(queue) {
-    // const assertResponse = await this.channel.assertQueue(queue.name);
+    const assertResponse = await this.channel.assertQueue(queue.name);
 
-    // // Rabbit echoes queue name on successful result.
-    // if (assertResponse.queue !== queue.name) {
-    //   throw new Error(`Exchange.setup(): Queue assertion failed for "${queue.name}"`);
-    // }
+    // Rabbit echoes queue name on successful result.
+    if (assertResponse.queue !== queue.name) {
+      throw new Error(`Exchange.setup(): Queue assertion failed for "${queue.name}"`);
+    }
 
-    // // TODO: bind queue to exchange.
-    // const bindPromises = queue.routes.map(async (route) => {
-    //   await this.channel.bindQueue(queue.name, this.name, route);
-    //   // Server returns nothing on bind operation,
-    //   // so we just assume it worked
-    //   return true;
-    // });
+    // TODO: bind queue to exchange.
+    const bindPromises = queue.routes.map(async (route) => {
+      await this.channel.bindQueue(queue.name, this.name, route);
+      // Server returns nothing on bind operation,
+      // so we just assume it worked
+      return true;
+    });
 
-    // // Resolves to true after all promises are fulfilled.
-    // await Promise.all(bindPromises);
-    // return true;
+    // Resolves to true after all promises are fulfilled.
+    await Promise.all(bindPromises);
+    return true;
   }
 
   publish(routingKey, message) {

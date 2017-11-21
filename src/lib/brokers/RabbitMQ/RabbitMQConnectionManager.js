@@ -290,7 +290,7 @@ class RabbitMQConnectionManager {
 
   static logFailure(error) {
     logger.error(`RabbitMQ connection error: ${error.message}`, {
-      code: 'error_rabbitmq_connection_manager_server_error',
+      code: 'error_rabbitmq_connection_manager_server_failure',
     });
   }
 

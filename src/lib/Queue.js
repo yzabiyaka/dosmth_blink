@@ -26,7 +26,7 @@ class Queue {
   }
 
   async assert() {
-    this.broker.assertQueue(this);
+    this.broker.createQueue(this);
   }
 
   /**
