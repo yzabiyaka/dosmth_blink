@@ -39,7 +39,7 @@ class Queue {
   }
 
   nack(message) {
-    this.broker.reject(message, false);
+    this.broker.nack(message);
   }
 
   ack(message) {

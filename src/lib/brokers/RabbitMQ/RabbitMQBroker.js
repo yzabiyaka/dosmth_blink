@@ -148,6 +148,34 @@ class RabbitMQBroker extends Broker {
     return response.consumerTag;
   }
 
+  /**
+   * Acknowledge message
+   *
+   * Note: This method works with the value of message.fields.deliveryTag.
+   * @see https://github.com/squaremo/amqp.node/blob/master/lib/channel_model.js#L221
+   *
+   * @param  {object} message The messgage to acknowledge
+   * @return {undefined}      This method is RPC and does not have server response
+   */
+  async ack(message) {
+    // Depends on the value of message.fields.deliveryTag.
+    // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel_model.js#L221
+    this.getChannel().ack(message);
+  }
+
+  /**
+   * Negative acknowledge message
+   *
+   * Note: This method works with the value of message.fields.deliveryTag.
+   * @see https://github.com/squaremo/amqp.node/blob/master/lib/channel_model.js#L231
+   *
+   * @param  {object} message The messgage to acknowledge negativly
+   * @return {undefined}      This method is RPC and does not have server response
+   */
+  nack(message) {
+    this.getChannel().reject(message, false);
+  }
+
   // ------- RabbitMQ specific methods and mechanisms --------------------------
 
   async assertExchanges() {
