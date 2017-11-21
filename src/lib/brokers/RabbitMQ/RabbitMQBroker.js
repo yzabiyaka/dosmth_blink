@@ -66,7 +66,7 @@ class RabbitMQBroker extends Broker {
 
   // ------- Broker interface methods implementation  --------------------------
 
-  async createQueue(queue) {
+  async createQueue(queueName, queueRoutes) {
     // 1. Create main queue.
     const mainQueueCreated = this.assertQueue(queue.name);
     if (!mainQueueCreated) {
@@ -74,8 +74,8 @@ class RabbitMQBroker extends Broker {
     }
 
     // 2. Bind main queue to topic exchange.
-    const mainQueueBinds = queue.routes.map(
-      async route => this.bindQueue(queue.name, this.topicExchange, route),
+    const mainQueueBinds = queueRoutes.map(
+      async route => this.bindQueue(queueName, this.topicExchange, route),
     );
     // Execute binds promise.
     const mainQueueBound = await Promise.all(mainQueueBinds);
@@ -84,7 +84,7 @@ class RabbitMQBroker extends Broker {
       return false;
     }
 
-    logger.info(`Queue ${queue.name} is ready.`, {
+    logger.info(`Queue ${queueName} is ready.`, {
       code: 'success_rabbitmq_broker_create_queue_topic',
     });
 

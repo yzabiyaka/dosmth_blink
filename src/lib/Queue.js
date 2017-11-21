@@ -26,14 +26,16 @@ class Queue {
   }
 
   async create() {
-    return this.broker.createQueue(this);
+    return this.broker.createQueue(this.name, this.routes);
   }
 
   /**
    * Send a single message to the queue bypassing routing.
    */
   publish(message) {
-    return this.broker.publishToQueue(this.name, message);
+    // By convention, queuess are mapped to their names.
+    // @see Queue.constructor().
+    return this.broker.publishToRoute(this.name, message);
   }
 
   nack(message) {
