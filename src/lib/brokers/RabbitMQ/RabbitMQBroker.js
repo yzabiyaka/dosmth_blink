@@ -66,32 +66,6 @@ class RabbitMQBroker extends Broker {
 
   // ------- Broker interface methods implementation  --------------------------
 
-  async createQueue(queueName, queueRoutes) {
-    // 1. Create main queue.
-    const mainQueueCreated = this.assertQueue(queueName);
-    if (!mainQueueCreated) {
-      return false;
-    }
-
-    // 2. Bind main queue to topic exchange.
-    const mainQueueBinds = queueRoutes.map(
-      async route => this.bindQueue(queueName, this.topicExchange, route),
-    );
-    // Execute binds promise.
-    const mainQueueBound = await Promise.all(mainQueueBinds);
-    // Ensure all promises are resolved to true.
-    if (!mainQueueBound.every(result => result)) {
-      return false;
-    }
-
-    logger.info(`Queue ${queueName} is ready.`, {
-      code: 'success_rabbitmq_broker_create_queue_topic',
-    });
-
-    // TODO: create technical queues: retry and dead-letters.
-    return true;
-  }
-
   /**
    * Publish to queue using RabbitMQ wildcard routing
    *
@@ -100,11 +74,12 @@ class RabbitMQBroker extends Broker {
    * functionality using own routing system.
    * As an alternative, we may need to shift to direct exchanges only.
    *
-   * @param  {string} route Routing key
+   * @param  {string} route      Routing key
    * @param  {object} message    Message
-   * @return {bool}              The result of publishing, always true.
+   * @return {undefined}         This method is RPC and does not have server response
    */
   publishToRoute(route, message) {
+    // Explicitly define desired options.
     const options = {
       // The message will be returned if it is not routed to a queue.
       mandatory: true,
@@ -113,21 +88,24 @@ class RabbitMQBroker extends Broker {
     };
 
     // Todo: save additional message metadata?
-
     // TODO: handle drain and returned messages.
-    // See http://www.squaremobius.net/amqp.node/channel_api.html#channel-events
-    // eslint-disable-next-line no-unused-vars
-    const result = this.getChannel().publish(
+    // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel-events
+    this.getChannel().publish(
       this.topicExchange,
       route,
       new Buffer(message.toString(), 'utf-8'),
       options,
     );
-
-    // Always true.
-    return true;
   }
 
+  /**
+   * Subscribe callback for new messages in the queue with provided name
+   *
+   * @param  {string}   queueName    The queue name
+   * @param  {Function} callback     The listener for new messages
+   * @param  {string}   consumerTag  Optional consumer tag
+   * @return {string}                Registered consumer tag
+   */
   async subscribe(queueName, callback, consumerTag = false) {
     // Explicitly define desired options.
     const options = {
@@ -174,6 +152,83 @@ class RabbitMQBroker extends Broker {
    */
   nack(message) {
     this.getChannel().reject(message, false);
+  }
+
+  /**
+   * Creates queue and bounds it to routes.
+   *
+   * 1. Creates main queue with the name provided
+   * 2. Binds it to the topic exchange on provided routes
+   * 3. TODO: create additional support queueus
+   *
+   * @param  {string} queueName    Queue name
+   * @param  {array}  queueRoutes  The list of routes, see publishToRoute()
+   * @return {bool}                Whether all operations were successful
+   */
+  async createQueue(queueName, queueRoutes) {
+    // 1. Create main queue.
+    const mainQueueCreated = this.assertQueue(queueName);
+    if (!mainQueueCreated) {
+      return false;
+    }
+
+    // 2. Bind main queue to topic exchange.
+    const mainQueueBinds = queueRoutes.map(
+      async route => this.bindQueue(queueName, this.topicExchange, route),
+    );
+    // Execute binds promise.
+    const mainQueueBound = await Promise.all(mainQueueBinds);
+    // Ensure all promises are resolved to true.
+    if (!mainQueueBound.every(result => result)) {
+      return false;
+    }
+
+    logger.info(`Queue ${queueName} is ready.`, {
+      code: 'success_rabbitmq_broker_create_queue_topic',
+    });
+
+    // TODO: create technical queues: retry and dead-letters.
+    return true;
+  }
+
+  /**
+   * Purge the queue.
+   *
+   * @return {Number} The number of messages purged from the queue
+   */
+  async purgeQueue(queueName) {
+    let result;
+    try {
+      result = await this.getChannel().purgeQueue(queueName);
+    } catch (error) {
+      // TODO: log error instead?
+      throw new Error(`Failed to purge queue "${queueName}": ${error.message}`);
+    }
+    return result.messageCount;
+  }
+
+  /**
+   * Deletes the queue.
+   *
+   * @return {Number} The number of messages deleted or dead-lettered along with the queue
+   */
+  async deleteQueue(queueName) {
+    let result;
+    try {
+      result = await this.getChannel().deleteQueue(queueName, {
+        // If true and the queue has consumers,
+        // it will not be deleted and the channel will be closed.
+        ifUnused: false,
+        // if true and the queue contains messages,
+        // the queue will not be deleted and the channel will be closed.
+        ifEmpty: false,
+      });
+    } catch (error) {
+      // TODO: handle broker closing on unsuccessful delete?
+      // TODO: log error instead?
+      throw new Error(`Failed to delete queue "${queueName}": ${error.message}`);
+    }
+    return result.messageCount;
   }
 
   // ------- RabbitMQ specific methods and mechanisms --------------------------
