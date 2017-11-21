@@ -294,6 +294,10 @@ class RabbitMQBroker extends Broker {
     // when it's recovered.
     return this.connectionManager.getActiveChannel();
   }
+
+  isConnected() {
+    return this.connectionManager.connected;
+  }
 }
 
 // ------- Exports -------------------------------------------------------------
