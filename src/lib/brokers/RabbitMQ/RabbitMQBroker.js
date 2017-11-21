@@ -133,9 +133,13 @@ class RabbitMQBroker extends Broker {
     return true;
   }
 
-  async subscribe(queueName, callback) {
-    // Todo: handle consumerTag.
-    const response = await this.getChannel().consume(queueName, callback);
+  async subscribe(queueName, callback, consumerTag = false) {
+    // Todo: handle consumerTag automatically?.
+    const options = {};
+    if (consumerTag) {
+      options.consumerTag = consumerTag;
+    }
+    const response = await this.getChannel().consume(queueName, callback, options);
     // Todo: handle errors?
     return response.consumerTag;
   }

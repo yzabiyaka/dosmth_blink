@@ -79,7 +79,7 @@ class Queue {
     return result.messageCount;
   }
 
-  async subscribe(callback, options) {
+  async subscribe(callback, options, consumerTag = false) {
     let { rateLimit, retryManager } = options;
 
     if (!retryManager) {
@@ -91,7 +91,7 @@ class Queue {
 
     const dequeuer = new Dequeuer(this, callback, retryManager, rateLimit);
     this.dequeuer = dequeuer;
-    return this.broker.subscribe(this.name, dequeuer.dequeue);
+    return this.broker.subscribe(this.name, dequeuer.dequeue, consumerTag);
   }
 }
 

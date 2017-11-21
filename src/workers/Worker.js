@@ -1,6 +1,7 @@
 'use strict';
 
 const logger = require('winston');
+const uuidV4 = require('uuid/v4');
 
 const DelayLogic = require('../lib/DelayLogic');
 const RetryManager = require('../lib/RetryManager');
@@ -18,11 +19,14 @@ class Worker {
 
       // @todo: make rate limit configurable per worker
       const rateLimit = this.blink.config.app.rateLimit;
+      const workerName = this.constructor.name;
+      // TODO: get from dyno?
+      const consumerName = `${workerName}-${uuidV4()}`;
 
       const meta = {
         env: this.blink.config.app.env,
         code: 'debug_rate_limit_set',
-        worker: this.constructor.name,
+        worker: workerName,
       };
 
       logger.debug(
@@ -36,9 +40,15 @@ class Worker {
       // @todo: remove
       retryManager.retryLimit = this.blink.config.app.retryLimit;
 
-      const tag = await this.queue.subscribe(this.consume, { rateLimit, retryManager });
-      logger.info(`Listening for messages in "${this.queue.name}" queue as ${tag}`, {
-        code: 'success_worker_start'
+      // Semi-generated name
+      const consumerTag = await this.queue.subscribe(
+        this.consume,
+        { rateLimit, retryManager },
+        consumerName,
+      );
+      // returned consumerTag should be the same as consumerName
+      logger.info(`Listening for messages in "${this.queue.name}" queue as ${consumerTag}`, {
+        code: 'success_worker_start',
       });
     } else {
       logger.warning('Queue is not established, waiting');
