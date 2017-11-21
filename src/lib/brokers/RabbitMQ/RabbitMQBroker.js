@@ -68,7 +68,7 @@ class RabbitMQBroker extends Broker {
 
   async createQueue(queueName, queueRoutes) {
     // 1. Create main queue.
-    const mainQueueCreated = this.assertQueue(queue.name);
+    const mainQueueCreated = this.assertQueue(queueName);
     if (!mainQueueCreated) {
       return false;
     }
@@ -92,11 +92,6 @@ class RabbitMQBroker extends Broker {
     return true;
   }
 
-  publishToQueue(queueName, message) {
-    // TODO: use queue.name instead?
-    return this.publishToRoute(queueName, message);
-  }
-
   /**
    * Publish to queue using RabbitMQ wildcard routing
    *
@@ -105,11 +100,11 @@ class RabbitMQBroker extends Broker {
    * functionality using own routing system.
    * As an alternative, we may need to shift to direct exchanges only.
    *
-   * @param  {string} routingKey Routing key
+   * @param  {string} route Routing key
    * @param  {object} message    Message
    * @return {bool}              The result of publishing, always true.
    */
-  publishToRoute(routingKey, message) {
+  publishToRoute(route, message) {
     const options = {
       // The message will be returned if it is not routed to a queue.
       mandatory: true,
@@ -124,7 +119,7 @@ class RabbitMQBroker extends Broker {
     // eslint-disable-next-line no-unused-vars
     const result = this.getChannel().publish(
       this.topicExchange,
-      routingKey,
+      route,
       new Buffer(message.toString(), 'utf-8'),
       options,
     );
