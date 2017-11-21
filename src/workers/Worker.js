@@ -10,12 +10,11 @@ class Worker {
     this.blink = blink;
   }
 
-  start() {
+  async start() {
     if (this.queue) {
-      logger.debug(`Listening for messages in "${this.queue.name}" queue`);
       // Limit the number of messages simultaneously loaded into
       // worker's memory to avoid reaching memory limit.
-      this.limitMessagesInMemory(this.blink.config.app.prefetchCount);
+      await this.limitMessagesInMemory(this.blink.config.app.prefetchCount);
 
       // @todo: make rate limit configurable per worker
       const rateLimit = this.blink.config.app.rateLimit;
@@ -37,13 +36,16 @@ class Worker {
       // @todo: remove
       retryManager.retryLimit = this.blink.config.app.retryLimit;
 
-      this.queue.subscribe(this.consume, { rateLimit, retryManager });
+      const tag = await this.queue.subscribe(this.consume, { rateLimit, retryManager });
+      logger.info(`Listening for messages in "${this.queue.name}" queue as ${tag}`, {
+        code: 'success_worker_start'
+      });
     } else {
       logger.warning('Queue is not established, waiting');
     }
   }
 
-  limitMessagesInMemory(prefetchCount) {
+  async limitMessagesInMemory(prefetchCount) {
     const meta = {
       env: this.blink.config.app.env,
       code: 'debug_prefetch_count_set',
@@ -59,7 +61,7 @@ class Worker {
     // TODO: Make sure this is abstracted out.
     // Workers shouldn't know internal specifics of brokers.
     // Might make sense to set it before App.start().
-    this.blink.broker.getChannel().prefetch(prefetchCount);
+    return this.blink.broker.getChannel().prefetch(prefetchCount);
   }
 }
 

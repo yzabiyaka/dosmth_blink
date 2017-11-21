@@ -28,7 +28,7 @@ class BlinkWorkerApp extends BlinkApp {
     const success = await super.start();
     if (success) {
       this.worker.setup();
-      this.worker.start();
+      await this.worker.start();
     }
   }
 

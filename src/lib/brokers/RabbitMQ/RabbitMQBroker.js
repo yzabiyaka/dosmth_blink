@@ -133,6 +133,13 @@ class RabbitMQBroker extends Broker {
     return true;
   }
 
+  async subscribe(queueName, callback) {
+    // Todo: handle consumerTag.
+    const response = await this.getChannel().consume(queueName, callback);
+    // Todo: handle errors?
+    return response.consumerTag;
+  }
+
   // ------- RabbitMQ specific methods and mechanisms --------------------------
 
   async assertExchanges() {
