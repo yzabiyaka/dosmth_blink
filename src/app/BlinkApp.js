@@ -34,6 +34,10 @@ class BlinkApp {
     this.broker = await this.setupBroker();
 
     // Assert queues and add them to queue registry.
+    // IMPORTANT: if the broker goes away and returns with no queues,
+    // we will be able to recover the connection automatically,
+    // but queues will not be created.
+    // Full topology is only asserted on app bootstrap.
     this.queues = await this.setupQueues(BlinkApp.discoverQueueClasses());
 
     // TODO: Error handling?
