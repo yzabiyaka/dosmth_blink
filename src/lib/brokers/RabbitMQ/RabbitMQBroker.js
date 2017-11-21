@@ -129,13 +129,22 @@ class RabbitMQBroker extends Broker {
   }
 
   async subscribe(queueName, callback, consumerTag = false) {
+    // Explicitly define desired options.
+    const options = {
+      // Acknowledge mode.
+      noAck: false,
+      // Allow multiple consumers to listen from same queue.
+      exclusive: false,
+      // noLocal option is not implemented by RabbitMQ and not needed.
+      // priority option is not needed.
+    };
     // Todo: handle consumerTag automatically?.
-    const options = {};
     if (consumerTag) {
+      // When omitted, RabbitMQ generates semi-random consumer name.
       options.consumerTag = consumerTag;
     }
     const response = await this.getChannel().consume(queueName, callback, options);
-    // Todo: handle errors?
+    // Todo: handle errors? return true/false?
     return response.consumerTag;
   }
 
