@@ -23,7 +23,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test CustomerIoUpdateCustomerQ
  */
 test('CustomerIoUpdateCustomerQ', (t) => {
-  const queue = new CustomerIoUpdateCustomerQ(t.context.blink.exchange);
+  const queue = new CustomerIoUpdateCustomerQ(t.context.blink.broker);
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('customer-io-update-customer');
   queue.routes.should.include('create.user.event');

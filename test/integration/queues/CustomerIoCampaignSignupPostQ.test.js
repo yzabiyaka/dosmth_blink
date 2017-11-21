@@ -23,7 +23,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test CustomerIoCampaignSignupPostQ
  */
 test('CustomerIoCampaignSignupPostQ', (t) => {
-  const queue = new CustomerIoCampaignSignupPostQ(t.context.blink.exchange);
+  const queue = new CustomerIoCampaignSignupPostQ(t.context.blink.broker);
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('customer-io-campaign-signup-post');
   queue.routes.should.include('signup-post.user.event');

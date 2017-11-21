@@ -23,7 +23,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test GambitCampaignSignupRelayQ
  */
 test('GambitCampaignSignupRelayQ', (t) => {
-  const queue = new GambitCampaignSignupRelayQ(t.context.blink.exchange);
+  const queue = new GambitCampaignSignupRelayQ(t.context.blink.broker);
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('gambit-campaign-signup-relay');
   queue.routes.should.include('signup.user.event');

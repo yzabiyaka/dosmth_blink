@@ -23,7 +23,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test FetchQ
  */
 test('FetchQ', (t) => {
-  const queue = new FetchQ(t.context.blink.exchange);
+  const queue = new FetchQ(t.context.blink.broker);
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('fetch');
 });

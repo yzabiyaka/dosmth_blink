@@ -23,7 +23,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test TwilioSmsBroadcastGambitRelayQ
  */
 test('TwilioSmsBroadcastGambitRelayQ', (t) => {
-  const queue = new TwilioSmsBroadcastGambitRelayQ(t.context.blink.exchange);
+  const queue = new TwilioSmsBroadcastGambitRelayQ(t.context.blink.broker);
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('twilio-sms-broadcast-gambit-relay');
   queue.routes.should.include('sms-broadcast.status-callback.twilio.webhook');

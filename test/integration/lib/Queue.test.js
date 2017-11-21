@@ -45,8 +45,8 @@ test('Queue: Test class interface', (t) => {
  */
 test('Queue.create(): Test RabbitMQ topology assertion', async (t) => {
   class TestBindingQ extends Queue {
-    constructor(exchange) {
-      super(exchange);
+    constructor(broker) {
+      super(broker);
       this.routes.push('*.taco');
     }
   }

@@ -23,7 +23,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test CustomerioSmsBroadcastRelayQ
  */
 test('CustomerioSmsBroadcastRelayQ', (t) => {
-  const queue = new CustomerioSmsBroadcastRelayQ(t.context.blink.exchange);
+  const queue = new CustomerioSmsBroadcastRelayQ(t.context.blink.broker);
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('customerio-sms-broadcast-relay');
 });

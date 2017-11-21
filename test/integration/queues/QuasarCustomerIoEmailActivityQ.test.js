@@ -23,7 +23,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test QuasarCustomerIoEmailActivityQ
  */
 test('QuasarCustomerIoEmailActivityQ', (t) => {
-  const queue = new QuasarCustomerIoEmailActivityQ(t.context.blink.exchange);
+  const queue = new QuasarCustomerIoEmailActivityQ(t.context.blink.broker);
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('quasar-customer-io-email-activity');
   queue.routes.should.include('generic-event.quasar');

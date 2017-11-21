@@ -36,7 +36,7 @@ test.serial('Gambit Broadcast relay should be consume close to 60 messages per s
       broadcastId: chance.word(),
     };
     const message = new TwilioStatusCallbackMessage({ data, meta });
-    blink.exchange.publish('sms-broadcast.status-callback.twilio.webhook', message);
+    blink.broker.publishToRoute('sms-broadcast.status-callback.twilio.webhook', message);
   }
 
   // Wait for all messages to sync into rabbit.
@@ -48,7 +48,7 @@ test.serial('Gambit Broadcast relay should be consume close to 60 messages per s
 
   // Kick off message consuming;
   worker.setup();
-  worker.perform();
+  worker.start();
 
   // Ensure that after one second worker consumed close to 60 messages.
   // = expected rate, 60 messages per second!
