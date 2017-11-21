@@ -26,10 +26,10 @@ class BlinkWorkerApp extends BlinkApp {
 
   async start() {
     const success = await super.start();
-    // if (success) {
-    //   this.worker.setup();
-    //   this.worker.perform();
-    // }
+    if (success) {
+      this.worker.setup();
+      this.worker.start();
+    }
   }
 
   // @todo: gracefull worker shutdown

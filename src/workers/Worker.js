@@ -10,7 +10,7 @@ class Worker {
     this.blink = blink;
   }
 
-  perform() {
+  start() {
     if (this.queue) {
       logger.debug(`Listening for messages in "${this.queue.name}" queue`);
       // Limit the number of messages simultaneously loaded into
@@ -55,7 +55,11 @@ class Worker {
       meta,
     );
 
-    this.blink.exchange.limitConsumerPrefetchCount(prefetchCount);
+    // WARNING: only compatible with RabbitMQ.
+    // TODO: Make sure this is abstracted out.
+    // Workers shouldn't know internal specifics of brokers.
+    // Might make sense to set it before App.start().
+    this.blink.broker.getChannel().prefetch(prefetchCount);
   }
 }
 
