@@ -92,7 +92,12 @@ class RabbitMQBroker extends Broker {
     return true;
   }
 
-  publish(routingKey, message) {
+  publishToQueue(queueName, message) {
+    // Todo use queue name instead?
+    return this.publishToRoute(queueName, message);
+  }
+
+  publishToRoute(routingKey, message) {
     // TODO: get routing key from message
     const options = {
       // The message will be returned if it is not routed to a queue.

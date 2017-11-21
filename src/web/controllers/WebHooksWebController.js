@@ -54,7 +54,7 @@ class WebHooksWebController extends WebController {
     try {
       const message = FreeFormMessage.fromCtx(ctx);
       message.validate();
-      this.blink.exchange.publish(
+      this.blink.broker.publishToRoute(
         'sms-inbound.twilio.webhook',
         message,
       );
@@ -69,7 +69,7 @@ class WebHooksWebController extends WebController {
     try {
       const message = TwilioStatusCallbackMessage.fromCtx(ctx);
       message.validate();
-      this.blink.exchange.publish(
+      this.blink.broker.publishToRoute(
         'sms-broadcast.status-callback.twilio.webhook',
         message,
       );
