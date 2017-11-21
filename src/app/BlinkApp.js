@@ -1,13 +1,16 @@
 'use strict';
 
-// Imports.
+// ------- Imports -------------------------------------------------------------
+
 const changeCase = require('change-case');
+const logger = require('winston');
+
+// ------- Internal imports ----------------------------------------------------
 
 // Blink Libs.
 const RabbitMQBroker = require('../lib/brokers/RabbitMQ/RabbitMQBroker');
 
-// Queues:
-// TODO: Register from microapps. See discoverQueueClasses().
+// Queues.
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
 const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
 const CustomerioSmsBroadcastRelayQ = require('../queues/CustomerioSmsBroadcastRelayQ');
@@ -18,16 +21,20 @@ const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailA
 const TwilioSmsBroadcastGambitRelayQ = require('../queues/TwilioSmsBroadcastGambitRelayQ');
 const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRelayQ');
 
+// ------- Class ---------------------------------------------------------------
+
 class BlinkApp {
   constructor(config) {
     this.config = config;
     this.queues = [];
     this.broker = false;
 
-    // Attach external function to object context.
+    // Attach Public API functions to object context.
     this.start = this.start.bind(this);
     this.stop = this.stop.bind(this);
   }
+
+  // ------- Public API  -------------------------------------------------------
 
   async start() {
     // Setup connection to message broker server.
@@ -40,9 +47,13 @@ class BlinkApp {
     // Full topology is only asserted on app bootstrap.
     this.queues = await this.setupQueues(BlinkApp.discoverQueueClasses());
 
+    // Log success.
+    logger.info(`Blink app is loaded.`, {
+      code: 'success_blink_app_loaded',
+    });
+
     // TODO: Error handling?
     return true;
-    // return this.reconnect();
   }
 
   async stop() {
@@ -52,6 +63,8 @@ class BlinkApp {
     await this.broker.disconnect();
     return true;
   }
+
+  // ------- Internal machinery  -----------------------------------------------
 
   async setupBroker() {
     // Optional: tag connection for easier debug.
@@ -81,8 +94,9 @@ class BlinkApp {
       // To construct a class dynamically, it's possible `new` its reference
       // stored as an array element: `new queueClasses[i]`.
       const queue = new queueClasses[i](this.broker);
-      // Create queue if not already present in broker.
-      await queue.assert();
+      // Ensure the queue is present with exptected settings.
+      // Todo: parse result.
+      await queue.create();
       // Registry key makes it more convenient to get queues from the
       // registry using Node's object destructing:
       // const { fetchQ } = this.blink.queues;
@@ -104,6 +118,8 @@ class BlinkApp {
     return queueRegistry;
   }
 
+  // ------- Static helpers  ---------------------------------------------------
+
   static discoverQueueClasses() {
     // TODO: register them from workers, bottom-up approach.
     return [
@@ -122,34 +138,10 @@ class BlinkApp {
   static generateQueueRegistryKey(queueClass) {
     return changeCase.camelCase(queueClass.name);
   }
-
-  // async reconnect() {
-  //   if (this.connected || this.connecting) {
-  //     return false;
-  //   }
-
-  //   // Block other attempts to reconnect when in progress.
-  //   this.connecting = true;
-  //   try {
-  //     // Initialize and setup connection.
-  //     this.channel = await this.setupChannel();
-
-  //     // Initialize and setup all available queues.
-  //     this.queues = await this.setupQueues();
-  //   } catch (error) {
-  //     this.connecting = false;
-  //     this.scheduleReconnect(
-  //       this.reconnectTimeout,
-  //       'blink_bootstrap_error',
-  //       `Blink bootrstrap failed: ${error}`,
-  //     );
-  //     return false;
-  //   }
-
-  //   this.connecting = false;
-  //   this.connected = true;
-  //   return true;
-  // }
 }
 
+// ------- Exports -------------------------------------------------------------
+
 module.exports = BlinkApp;
+
+// ------- End -----------------------------------------------------------------

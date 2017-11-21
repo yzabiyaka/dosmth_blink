@@ -25,8 +25,8 @@ class Queue {
     this.routes.push(this.name);
   }
 
-  async assert() {
-    this.broker.createQueue(this);
+  async create() {
+    return this.broker.createQueue(this);
   }
 
   /**

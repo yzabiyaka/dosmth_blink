@@ -85,7 +85,7 @@ class RabbitMQBroker extends Broker {
     }
 
     logger.info(`Queue ${queue.name} is ready.`, {
-      code: 'success_rabbitmq_broker_topic_queue_create',
+      code: 'success_rabbitmq_broker_create_queue_topic',
     });
 
     // TODO: create technical queues: retry and dead-letters.
@@ -141,13 +141,13 @@ class RabbitMQBroker extends Broker {
     try {
       await this.getChannel().assertExchange(this.topicExchange, 'topic');
       logger.info(`Topic exchange ${this.topicExchange} asserted`, {
-        code: 'success_rabbitmq_broker_topic_exchange_assert',
+        code: 'success_rabbitmq_broker_topic_assert_exchange',
       });
       // TODO: create other exchanges.
       return true;
     } catch (error) {
       logger.error(`Couldn't assert neccessary exchanges: ${error}`, {
-        code: 'error_rabbitmq_broker_exchange_assertion_failed',
+        code: 'error_rabbitmq_broker_assert_exchange_failed',
       });
     }
     return false;
@@ -160,7 +160,7 @@ class RabbitMQBroker extends Broker {
       // Will throw an exception when queue exists with the same name,
       // but different settings.
       logger.error(`Error asserting queue ${queueName}: ${error}`, {
-        code: 'error_rabbitmq_broker_assert_queue_failure',
+        code: 'error_rabbitmq_broker_assert_queue_failed',
       });
       return false;
     }
