@@ -67,25 +67,40 @@ class RabbitMQBroker extends Broker {
   // ------- Broker interface methods implementation  --------------------------
 
   async createQueue(queue) {
-    const topicAssertionResult = this.assertQueue(queue);
-    if (!topicAssertionResult) {
+    // 1. Create main queue.
+    const mainQueueCreated = this.assertQueue(queue.name);
+    if (!mainQueueCreated) {
       return false;
     }
 
+    // 2. Bind main queue to topic exchange.
+    const mainQueueBinds = queue.routes.map(
+      async route => this.bindQueue(queue.name, this.topicExchange, route),
+    );
+    // Execute binds promise.
+    const mainQueueBound = await Promise.all(mainQueueBinds);
+    // Ensure all promises are resolved to true.
+    if (!mainQueueBound.every(result => result)) {
+      return false;
+    }
+
+    logger.info(`Queue ${queue.name} is ready.`, {
+      code: 'success_rabbitmq_broker_topic_queue_create',
+    });
+
+    // TODO: create technical queues: retry and dead-letters.
+    return true;
   }
 
-  // ------- RabbitMQ specific methods  ----------------------------------------
-
-
-  // ------- Internal machinery  -----------------------------------------------
+  // ------- RabbitMQ specific methods and mechanisms --------------------------
 
   async assertExchanges() {
     // Assert topic exchange for standard interactions.
     // We need all of them, so fail if any of these operations aren't successful.
     try {
       await this.getChannel().assertExchange(this.topicExchange, 'topic');
-      logger.info(`Topic exchange asserted: ${this.topicExchange}`, {
-        code: 'success_rabbitmq_broker_topic_exchange_asserted',
+      logger.info(`Topic exchange ${this.topicExchange} asserted`, {
+        code: 'success_rabbitmq_broker_topic_exchange_assert',
       });
       // TODO: create other exchanges.
       return true;
@@ -97,20 +112,38 @@ class RabbitMQBroker extends Broker {
     return false;
   }
 
-  async assertQueue(queue) {
+  async assertQueue(queueName) {
     try {
-      const assertResponse = await this.getChannel().assertQueue(queue.name);
+      await this.getChannel().assertQueue(queueName);
     } catch (error) {
       // Will throw an exception when queue exists with the same name,
       // but different settings.
-      logger.debug(`Error asserting queue ${queue.name}: ${error.message}`, {
+      logger.error(`Error asserting queue ${queueName}: ${error}`, {
         code: 'error_rabbitmq_broker_assert_queue_failure',
       });
       return false;
     }
 
-    logger.info(`Queue ${queue.name} present`, {
+    logger.debug(`Queue ${queueName} created or already present in expected state`, {
       code: 'success_rabbitmq_broker_assert_queue',
+    });
+    return true;
+  }
+
+  async bindQueue(queueName, exhangeName, route) {
+    try {
+      await this.getChannel().bindQueue(queueName, exhangeName, route);
+    } catch (error) {
+      // Should never happen, but log this, just in case.
+      // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_bindQueue
+      logger.error(`Error binding queue ${queueName} to ${exhangeName} on ${route}: ${error}`, {
+        code: 'error_rabbitmq_broker_bind_queue_unexpected',
+      });
+      return false;
+    }
+
+    logger.debug(`Queue ${queueName} bound to ${exhangeName} on ${route}`, {
+      code: 'success_rabbitmq_broker_bind_queue',
     });
     return true;
   }
