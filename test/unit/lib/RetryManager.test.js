@@ -8,10 +8,10 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
 const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
-const RetryManager = require('../../../src/lib/RetryManager');
 const DelayLogic = require('../../../src/lib/DelayLogic');
-const HooksHelper = require('../../helpers/HooksHelper');
+const RetryManager = require('../../../src/lib/RetryManager');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
+const UnitHooksHelper = require('../../helpers/UnitHooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -19,8 +19,8 @@ chai.should();
 chai.use(sinonChai);
 
 // Setup blink app for each test.
-test.beforeEach(HooksHelper.createRandomQueueInMemory);
-test.afterEach.always(HooksHelper.destroyRandomQueueInMemory);
+test.beforeEach(UnitHooksHelper.createRandomQueueInMemory);
+test.afterEach.always(UnitHooksHelper.destroyRandomQueueInMemory);
 
 // ------- Tests ---------------------------------------------------------------
 

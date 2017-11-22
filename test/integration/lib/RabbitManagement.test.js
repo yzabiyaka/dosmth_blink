@@ -7,7 +7,7 @@ const test = require('ava');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
-const RabbitManagement = require('../../../src/lib/RabbitManagement');
+const RabbitManagement = require('../../helpers/RabbitManagement');
 
 // Chai setup.
 chai.should();

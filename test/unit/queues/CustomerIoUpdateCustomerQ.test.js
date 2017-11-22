@@ -5,25 +5,21 @@
 const test = require('ava');
 const chai = require('chai');
 
+const Broker = require('../../../src/lib/brokers/Broker');
 const Queue = require('../../../src/lib/Queue');
 const CustomerIoUpdateCustomerQ = require('../../../src/queues/CustomerIoUpdateCustomerQ');
-const HooksHelper = require('../../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-
-// Setup blink app for each test.
-test.beforeEach(HooksHelper.startBlinkApp);
-test.afterEach.always(HooksHelper.stopBlinkApp);
 
 // ------- Tests ---------------------------------------------------------------
 
 /**
  * Test CustomerIoUpdateCustomerQ
  */
-test('CustomerIoUpdateCustomerQ', (t) => {
-  const queue = new CustomerIoUpdateCustomerQ(t.context.blink.exchange);
+test('CustomerIoUpdateCustomerQ', () => {
+  const queue = new CustomerIoUpdateCustomerQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('customer-io-update-customer');
   queue.routes.should.include('create.user.event');
