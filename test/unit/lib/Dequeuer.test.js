@@ -11,8 +11,8 @@ const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
 const Dequeuer = require('../../../src/lib/Dequeuer');
 const RetryManager = require('../../../src/lib/RetryManager');
 const FreeFormMessage = require('../../../src/messages/FreeFormMessage');
-const UnitHooksHelper = require('../../helpers/UnitHooksHelper');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
+const UnitHooksHelper = require('../../helpers/UnitHooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
