@@ -18,7 +18,7 @@ chai.should();
 /**
  * Test CustomerioSmsBroadcastRelayQ
  */
-test('CustomerioSmsBroadcastRelayQ', (t) => {
+test('CustomerioSmsBroadcastRelayQ', () => {
   const queue = new CustomerioSmsBroadcastRelayQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('customerio-sms-broadcast-relay');

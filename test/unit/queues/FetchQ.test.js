@@ -18,7 +18,7 @@ chai.should();
 /**
  * Test FetchQ
  */
-test('FetchQ', (t) => {
+test('FetchQ', () => {
   const queue = new FetchQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('fetch');

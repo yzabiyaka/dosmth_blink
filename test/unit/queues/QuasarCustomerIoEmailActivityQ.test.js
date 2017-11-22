@@ -18,7 +18,7 @@ chai.should();
 /**
  * Test QuasarCustomerIoEmailActivityQ
  */
-test('QuasarCustomerIoEmailActivityQ', (t) => {
+test('QuasarCustomerIoEmailActivityQ', () => {
   const queue = new QuasarCustomerIoEmailActivityQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('quasar-customer-io-email-activity');

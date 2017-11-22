@@ -18,7 +18,7 @@ chai.should();
 /**
  * Test GambitCampaignSignupRelayQ
  */
-test('GambitCampaignSignupRelayQ', (t) => {
+test('GambitCampaignSignupRelayQ', () => {
   const queue = new GambitCampaignSignupRelayQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('gambit-campaign-signup-relay');

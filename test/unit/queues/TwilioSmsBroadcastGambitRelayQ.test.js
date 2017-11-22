@@ -18,7 +18,7 @@ chai.should();
 /**
  * Test TwilioSmsBroadcastGambitRelayQ
  */
-test('TwilioSmsBroadcastGambitRelayQ', (t) => {
+test('TwilioSmsBroadcastGambitRelayQ', () => {
   const queue = new TwilioSmsBroadcastGambitRelayQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('twilio-sms-broadcast-gambit-relay');

@@ -18,7 +18,7 @@ chai.should();
 /**
  * Test CustomerIoCampaignSignupQ
  */
-test('CustomerIoCampaignSignupQ', (t) => {
+test('CustomerIoCampaignSignupQ', () => {
   const queue = new CustomerIoCampaignSignupQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('customer-io-campaign-signup');
