@@ -5,17 +5,13 @@
 const test = require('ava');
 const chai = require('chai');
 
+const Broker = require('../../../src/lib/brokers/Broker');
 const Queue = require('../../../src/lib/Queue');
 const QuasarCustomerIoEmailActivityQ = require('../../../src/queues/QuasarCustomerIoEmailActivityQ');
-const HooksHelper = require('../../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-
-// Setup blink app for each test.
-test.beforeEach(HooksHelper.startBlinkApp);
-test.afterEach.always(HooksHelper.stopBlinkApp);
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -23,7 +19,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test QuasarCustomerIoEmailActivityQ
  */
 test('QuasarCustomerIoEmailActivityQ', (t) => {
-  const queue = new QuasarCustomerIoEmailActivityQ(t.context.blink.broker);
+  const queue = new QuasarCustomerIoEmailActivityQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('quasar-customer-io-email-activity');
   queue.routes.should.include('generic-event.quasar');

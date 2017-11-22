@@ -5,17 +5,13 @@
 const test = require('ava');
 const chai = require('chai');
 
+const Broker = require('../../../src/lib/brokers/Broker');
 const Queue = require('../../../src/lib/Queue');
 const CustomerioSmsBroadcastRelayQ = require('../../../src/queues/CustomerioSmsBroadcastRelayQ');
-const HooksHelper = require('../../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-
-// Setup blink app for each test.
-test.beforeEach(HooksHelper.startBlinkApp);
-test.afterEach.always(HooksHelper.stopBlinkApp);
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -23,7 +19,7 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
  * Test CustomerioSmsBroadcastRelayQ
  */
 test('CustomerioSmsBroadcastRelayQ', (t) => {
-  const queue = new CustomerioSmsBroadcastRelayQ(t.context.blink.broker);
+  const queue = new CustomerioSmsBroadcastRelayQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('customerio-sms-broadcast-relay');
 });
