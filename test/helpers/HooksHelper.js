@@ -2,18 +2,11 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const Chance = require('chance');
 const supertest = require('supertest');
 
 const BlinkApp = require('../../src/app/BlinkApp');
 const BlinkWebApp = require('../../src/app/BlinkWebApp');
-const RabbitMQBroker = require('../../src/lib/brokers/RabbitMQ/RabbitMQBroker');
-const Queue = require('../../src/lib/Queue');
-const FreeFormMessage = require('../../src/messages/FreeFormMessage');
-
-// ------- Init ----------------------------------------------------------------
-
-const chance = new Chance();
+const UnitHooksHelper = require('./UnitHooksHelper');
 
 // ------- Helpers -------------------------------------------------------------
 
@@ -43,7 +36,7 @@ class HooksHelper {
   }
 
   static async createRandomQueue(t) {
-    await HooksHelper.createRandomQueueInMemory(t);
+    await UnitHooksHelper.createRandomQueueInMemory(t);
     await t.context.broker.connect();
     await t.context.queue.create();
   }
@@ -51,30 +44,7 @@ class HooksHelper {
   static async destroyRandomQueue(t) {
     await t.context.queue.delete();
     await t.context.broker.disconnect();
-    HooksHelper.destroyRandomQueueInMemory(t);
-  }
-
-  static async createRandomQueueInMemory(t) {
-    const config = require('../../config');
-
-    // Optional: tag connection for easier debug.
-    const clientDescription = {
-      name: `${config.app.name}-test-client`,
-      version: config.app.version,
-      env: config.app.env,
-    };
-    const broker = new RabbitMQBroker(config.amqp, clientDescription);
-
-    const queue = new Queue(broker, `test-autogen-${chance.word()}-${chance.word()}`);
-    queue.messageClass = FreeFormMessage;
-
-    t.context.broker = broker;
-    t.context.queue = queue;
-  }
-
-  static destroyRandomQueueInMemory(t) {
-    t.context.queue = false;
-    t.context.broker = false;
+    UnitHooksHelper.destroyRandomQueueInMemory(t);
   }
 }
 
