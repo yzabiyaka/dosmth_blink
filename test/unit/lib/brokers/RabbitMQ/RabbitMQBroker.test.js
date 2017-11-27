@@ -7,13 +7,11 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const net = require('net');
-const AMQPChannel = require('amqplib/lib/channel_model').Channel;
-const AMQPConnection = require('amqplib/lib/connection').Connection;
-
+// ------- Internal imports ----------------------------------------------------
 
 const RabbitMQBroker = require('../../../../../src/lib/brokers/RabbitMQ/RabbitMQBroker');
 const MessageFactoryHelper = require('../../../../helpers/MessageFactoryHelper');
+const UnitHooksHelper = require('../../../../helpers/UnitHooksHelper');
 // const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
 // const Dequeuer = require('../../../src/lib/Dequeuer');
 // const UnitHooksHelper = require('../../helpers/UnitHooksHelper');
@@ -24,8 +22,8 @@ chai.should();
 chai.use(sinonChai);
 
 // Setup blink app for each test.
-// test.beforeEach(UnitHooksHelper.createRandomQueueInMemory);
-// test.afterEach.always(UnitHooksHelper.destroyRandomQueueInMemory);
+test.beforeEach(UnitHooksHelper.createFakeAmqpChannel);
+test.afterEach.always(UnitHooksHelper.destroyFakeAmqpChannel);
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -49,27 +47,26 @@ test('RabbitMQBroker: Should implement Broker interface', () => {
 /**
  * RabbitMQBroker: ack()
  */
-test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', () => {
+test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
   const broker = new RabbitMQBroker({});
   const message = MessageFactoryHelper.getFakeRabbitMessage();
   message.fields.deliveryTag.should.be.not.empty;
 
   // Stub channel.
-  const socket = new net.Socket();
-  const connection = new AMQPConnection(socket);
-  const channel = new AMQPChannel(connection);
+  const channel = t.context.amqpChannel;
   const sendImmediatelyStub = sinon.stub(channel, 'sendImmediately').returns(42);
   const ackSpy = sinon.spy(channel, 'ack');
 
   // Stub broker to work with stubbed channel.
   const brokerChannelStub = sinon.stub(broker, 'getChannel').returns(channel);
 
+  // Perform the ack.
   broker.ack(message);
 
   // Ack should be called.
   ackSpy.should.have.been.calledOnce;
 
-  // Channel.ack shuld pass message delivery tag to sendImmediately();
+  // Channel.ack() should pass message delivery tag to sendImmediately().
   sendImmediatelyStub.should.have.been.calledOnce;
   // Arg[0] = operation code, arg[1] = arguments object.
   const deliveryTagCallArgument = sendImmediatelyStub.firstCall.args[1].deliveryTag;

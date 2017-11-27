@@ -2,7 +2,10 @@
 
 // ------- Imports -------------------------------------------------------------
 
+const AMQPChannel = require('amqplib/lib/channel_model').Channel;
+const AMQPConnection = require('amqplib/lib/connection').Connection;
 const Chance = require('chance');
+const net = require('net');
 
 const RabbitMQBroker = require('../../src/lib/brokers/RabbitMQ/RabbitMQBroker');
 const Queue = require('../../src/lib/Queue');
@@ -15,7 +18,7 @@ const chance = new Chance();
 // ------- Helpers -------------------------------------------------------------
 
 class UnitHooksHelper {
-  static async createRandomQueueInMemory(t) {
+  static createRandomQueueInMemory(t) {
     const config = require('../../config');
 
     // Optional: tag connection for easier debug.
@@ -36,6 +39,16 @@ class UnitHooksHelper {
   static destroyRandomQueueInMemory(t) {
     t.context.queue = false;
     t.context.broker = false;
+  }
+
+  static createFakeAmqpChannel(t) {
+    const socket = new net.Socket();
+    const connection = new AMQPConnection(socket);
+    t.context.amqpChannel = new AMQPChannel(connection);
+  }
+
+  static destroyFakeAmqpChannel(t) {
+    t.context.amqpChannel = false;
   }
 }
 
