@@ -133,7 +133,7 @@ test('POST /api/v1/webhooks/customerio-sms-broadcast should publish message to c
   const data = MessageFactoryHelper.getValidCustomerBroadcastData(broadcastId);
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-broadcast')
-    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .set('Content-Type', 'application/json')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
