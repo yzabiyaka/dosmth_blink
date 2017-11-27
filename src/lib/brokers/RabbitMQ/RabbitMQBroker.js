@@ -14,8 +14,9 @@ const RabbitMQConnectionManager = require('./RabbitMQConnectionManager');
 // ------- Class ---------------------------------------------------------------
 
 class RabbitMQBroker extends Broker {
-  constructor(amqpConfig, clientDescription = false) {
+  constructor({ connection = {}, settings = {} }, clientDescription = false) {
     super();
+
     // Initialize reconnect manager suitable for RabbitMQ.
     // Anecdotally, Constant time backoff every 2 seconds works best.
     // TODO: confirm if that's true.
@@ -25,13 +26,13 @@ class RabbitMQBroker extends Broker {
 
     // TODO: use options array instead of clientDescription.
     this.connectionManager = new RabbitMQConnectionManager(
-      amqpConfig.connection,
+      connection,
       clientDescription,
       reconnectManager,
     );
 
     // RabbitMQ exchange used for standart interfacing with queues.
-    this.topicExchange = amqpConfig.settings.topicExchange;
+    this.topicExchange = settings.topicExchange;
   }
 
   // ------- Public API  -------------------------------------------------------
@@ -67,7 +68,7 @@ class RabbitMQBroker extends Broker {
   // ------- Broker interface methods implementation  --------------------------
 
   /**
-   * Publish to queue using RabbitMQ wildcard routing
+   * Publish to queues using RabbitMQ topic exchange routing rules
    *
    * Note: this works out of box only with topic exchanges and only in RabbitMQ.
    * In other brokers, we may need to compensate for lack of this
