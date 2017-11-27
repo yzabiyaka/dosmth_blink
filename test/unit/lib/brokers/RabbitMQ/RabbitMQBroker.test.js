@@ -61,7 +61,7 @@ test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
   // AMQPLib's ack method implicitly depends on mesaage.fields.deliveryTag.
   // We'll ensure it works correctly by by spying on sendImmediately();
   message.fields.deliveryTag.should.be.not.empty;
-  // Acknowledge fake message.
+  // Acknowledge the fake message.
   broker.ack(message);
 
   // Ack should be called.
@@ -71,7 +71,42 @@ test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
   sendImmediatelyStub.should.have.been.calledOnce;
   // Arg[0] = operation code, arg[1] = arguments object.
   const deliveryTagCallArgument = sendImmediatelyStub.firstCall.args[1].deliveryTag;
-  // Ensure channel.ack() passed message's deliveryTag to sendImmediately().
+  message.fields.deliveryTag.should.be.equal(deliveryTagCallArgument);
+});
+
+
+/**
+ * RabbitMQBroker: nack()
+ */
+test('RabbitMQBroker.nack(): Should delegate message nack to amqplib', (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Stub channel.sendImmediately() that sends all synchronous requests
+  // the socket.
+  // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel.js#L63
+  const sendImmediatelyStub = sandbox.stub(channel, 'sendImmediately').returns(42);
+
+  // Spy on reject. We don't need to replace this completely, as it
+  // uses channel.sendImmediately() to perform actual call.
+  // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel_model.js#L243
+  const rejectSpy = sandbox.spy(channel, 'reject');
+
+  // Prepare fake message to acknowledgement.
+  const message = MessageFactoryHelper.getFakeRabbitMessage();
+  // AMQPLib's reject() method implicitly depends on mesaage.fields.deliveryTag.
+  // We'll ensure it works correctly by by spying on sendImmediately();
+  message.fields.deliveryTag.should.be.not.empty;
+  // Negative acknowledge the fake message.
+  broker.nack(message);
+
+  // Reject should be called.
+  rejectSpy.should.have.been.calledOnce;
+
+  // Channel.reject() should pass message delivery tag to sendImmediately().
+  sendImmediatelyStub.should.have.been.calledOnce;
+  // Arg[0] = operation code, arg[1] = arguments object.
+  const deliveryTagCallArgument = sendImmediatelyStub.firstCall.args[1].deliveryTag;
   message.fields.deliveryTag.should.be.equal(deliveryTagCallArgument);
 });
 
