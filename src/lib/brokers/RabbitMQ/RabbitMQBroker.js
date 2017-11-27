@@ -166,7 +166,7 @@ class RabbitMQBroker extends Broker {
    */
   async createQueue(queueName, queueRoutes) {
     // 1. Create main queue.
-    const mainQueueCreated = this.assertQueue(queueName);
+    const mainQueueCreated = await this.assertQueue(queueName);
     if (!mainQueueCreated) {
       return false;
     }

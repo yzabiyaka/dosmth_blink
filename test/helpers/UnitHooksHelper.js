@@ -54,7 +54,13 @@ class UnitHooksHelper {
     const channel = new AMQPChannel(connection);
 
     // Fake Broker.
-    const broker = new RabbitMQBroker({});
+    const amqpConfig = {
+      connection: {},
+      settings: {
+        topicExchange: chance.word(),
+      },
+    };
+    const broker = new RabbitMQBroker(amqpConfig);
 
     // Stub broker to return the fake channel.
     sandbox.stub(broker, 'getChannel').returns(channel);

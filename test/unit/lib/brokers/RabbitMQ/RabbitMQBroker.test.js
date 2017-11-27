@@ -4,6 +4,7 @@
 
 const test = require('ava');
 const chai = require('chai');
+const Chance = require('chance');
 const sinonChai = require('sinon-chai');
 
 // ------- Internal imports ----------------------------------------------------
@@ -13,6 +14,8 @@ const MessageFactoryHelper = require('../../../../helpers/MessageFactoryHelper')
 const UnitHooksHelper = require('../../../../helpers/UnitHooksHelper');
 
 // ------- Init ----------------------------------------------------------------
+
+const chance = new Chance();
 
 chai.should();
 chai.use(sinonChai);
@@ -74,7 +77,6 @@ test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
   message.fields.deliveryTag.should.be.equal(deliveryTagCallArgument);
 });
 
-
 /**
  * RabbitMQBroker: nack()
  */
@@ -108,6 +110,42 @@ test('RabbitMQBroker.nack(): Should delegate message nack to amqplib', (t) => {
   // Arg[0] = operation code, arg[1] = arguments object.
   const deliveryTagCallArgument = sendImmediatelyStub.firstCall.args[1].deliveryTag;
   message.fields.deliveryTag.should.be.equal(deliveryTagCallArgument);
+});
+
+/**
+ * RabbitMQBroker: createQueue()
+ */
+test('RabbitMQBroker.createQueue(): Should create requested queue and bind it to the topic exchange', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+  const numberOfRoutes = 5;
+  const queueRoutes = chance.n(chance.word, numberOfRoutes);
+
+  // Stub amqplib's assertQueue().
+  // TODO: document response.
+  const assertQueueStub = sandbox.stub(channel, 'assertQueue').resolves({
+    queue: queueName,
+    messageCount: 0,
+    consumerCount: 0,
+  });
+
+  // Stub amqplib's bindQueue().
+  const bindQueueStub = sandbox.stub(channel, 'bindQueue').resolves({});
+
+  // Execute the function.
+  const result = await broker.createQueue(queueName, queueRoutes);
+
+  // Positive path.
+  result.should.be.true;
+
+  // Check correct execution of channel methods.
+  assertQueueStub.should.have.been.calledOnce;
+  bindQueueStub.should.have.callCount(numberOfRoutes);
+
+  // TODO: test params.
 });
 
 // ------- End -----------------------------------------------------------------
