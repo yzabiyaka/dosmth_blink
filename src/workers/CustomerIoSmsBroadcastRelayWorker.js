@@ -17,7 +17,6 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
       this.blink.config.twilio.authToken,
     );
 
-    this.useTestCreds = this.blink.config.twilio.useTestCreds;
     this.baseURL = this.blink.config.gambit.converationsBaseUrl;
     this.apiKey = this.blink.config.gambit.converationsApiKey;
 
@@ -148,17 +147,11 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
   }
 
   getTwilioRequest(message) {
-    const request = {
+    return {
       body: message.getBody(),
       to: message.getPhoneNumber(),
+      from: this.blink.config.twilio.from,
     };
-
-    if (this.useTestCreds) {
-      request.from = this.blink.config.twilio.from;
-    } else {
-      request.messagingServiceSid = this.blink.config.twilio.serviceSid;
-    }
-    return request;
   }
 
   getRequestHeaders(message) {
