@@ -148,19 +148,15 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
   }
 
   getTwilioRequest(message) {
-    let request = {
+    const request = {
       body: message.getBody(),
       to: message.getPhoneNumber(),
     };
 
     if (this.useTestCreds) {
-      request = Object.assign({}, request, {
-        from: this.blink.config.twilio.from,
-      });
+      request.from = this.blink.config.twilio.from;
     } else {
-      request = Object.assign({}, request, {
-        messagingServiceSid: this.blink.config.twilio.serviceSid,
-      });
+      request.messagingServiceSid = this.blink.config.twilio.serviceSid;
     }
     return request;
   }
