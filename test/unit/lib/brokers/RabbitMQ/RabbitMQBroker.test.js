@@ -4,7 +4,6 @@
 
 const test = require('ava');
 const chai = require('chai');
-const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
 // ------- Internal imports ----------------------------------------------------
@@ -12,18 +11,15 @@ const sinonChai = require('sinon-chai');
 const RabbitMQBroker = require('../../../../../src/lib/brokers/RabbitMQ/RabbitMQBroker');
 const MessageFactoryHelper = require('../../../../helpers/MessageFactoryHelper');
 const UnitHooksHelper = require('../../../../helpers/UnitHooksHelper');
-// const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
-// const Dequeuer = require('../../../src/lib/Dequeuer');
-// const UnitHooksHelper = require('../../helpers/UnitHooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
 chai.use(sinonChai);
 
-// Setup blink app for each test.
-test.beforeEach(UnitHooksHelper.createFakeAmqpChannel);
-test.afterEach.always(UnitHooksHelper.destroyFakeAmqpChannel);
+// Prepare fakes for each test and clean up after them.
+test.beforeEach(UnitHooksHelper.createFakeRabbitMQBroker);
+test.afterEach.always(UnitHooksHelper.destroyFakeRabbitMQBroker);
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -43,24 +39,29 @@ test('RabbitMQBroker: Should implement Broker interface', () => {
   broker.should.respondTo('deleteQueue');
 });
 
-
 /**
  * RabbitMQBroker: ack()
  */
 test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
-  const broker = new RabbitMQBroker({});
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Stub channel.sendImmediately() that sends all synchronous requests
+  // the socket.
+  // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel.js#L63
+  const sendImmediatelyStub = sandbox.stub(channel, 'sendImmediately').returns(42);
+
+  // Spy on ack. We don't need to replace this completely, as it
+  // uses channel.sendImmediately() to perform actual call.
+  // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel_model.js#L218
+  const ackSpy = sandbox.spy(channel, 'ack');
+
+  // Prepare fake message to acknowledgement.
   const message = MessageFactoryHelper.getFakeRabbitMessage();
+  // AMQPLib's ack method implicitly depends on mesaage.fields.deliveryTag.
+  // We'll ensure it works correctly by by spying on sendImmediately();
   message.fields.deliveryTag.should.be.not.empty;
-
-  // Stub channel.
-  const channel = t.context.amqpChannel;
-  const sendImmediatelyStub = sinon.stub(channel, 'sendImmediately').returns(42);
-  const ackSpy = sinon.spy(channel, 'ack');
-
-  // Stub broker to work with stubbed channel.
-  const brokerChannelStub = sinon.stub(broker, 'getChannel').returns(channel);
-
-  // Perform the ack.
+  // Acknowledge fake message.
   broker.ack(message);
 
   // Ack should be called.
@@ -70,12 +71,8 @@ test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
   sendImmediatelyStub.should.have.been.calledOnce;
   // Arg[0] = operation code, arg[1] = arguments object.
   const deliveryTagCallArgument = sendImmediatelyStub.firstCall.args[1].deliveryTag;
+  // Ensure channel.ack() passed message's deliveryTag to sendImmediately().
   message.fields.deliveryTag.should.be.equal(deliveryTagCallArgument);
-
-  // Cleanup.
-  ackSpy.restore();
-  sendImmediatelyStub.restore();
-  brokerChannelStub.restore();
 });
 
 // ------- End -----------------------------------------------------------------

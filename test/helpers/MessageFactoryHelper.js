@@ -235,15 +235,13 @@ class MessageFactoryHelper {
     // @see http://www.squaremobius.net/amqp.node/channel_api.html#callbacks
     const rabbitMessage = {
       fields: {
-        deliveryTag: chance.word()
+        deliveryTag: chance.word(),
       },
       properties: {},
     };
 
     // Generate random contentString if content is not provided.
-    const contentString = content
-      ? content
-      : MessageFactoryHelper.getRandomMessage().toString();
+    const contentString = content || MessageFactoryHelper.getRandomMessage().toString();
 
     // Todo: add option to set message tag.
     rabbitMessage.content = Buffer.from(contentString);
