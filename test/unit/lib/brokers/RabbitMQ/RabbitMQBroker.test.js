@@ -214,7 +214,7 @@ test('RabbitMQBroker.deleteQueue(): Happy path', async (t) => {
 /**
  * RabbitMQBroker: publishToRoute()
  */
-test('RabbitMQBroker.publishToRoute(): Happy path', async (t) => {
+test('RabbitMQBroker.publishToRoute(): Happy path', (t) => {
   // Set variables from the context.
   const { sandbox, channel, broker } = t.context;
 
@@ -232,8 +232,9 @@ test('RabbitMQBroker.publishToRoute(): Happy path', async (t) => {
 
   // Check that the message publishing has been correctly delegated to amqplib.
   publishStub.should.have.been.calledOnce;
-  const [exchangeArg, routeArg, bufferArg, optionsArg ] = publishStub.firstCall.args;
+  const [exchangeArg, routeArg, bufferArg, optionsArg] = publishStub.firstCall.args;
   exchangeArg.should.be.equal(broker.topicExchange);
+  routeArg.should.be.equal(routeName);
   bufferArg.toString().should.be.equal(message.toString());
   optionsArg.should.be.have.property('mandatory', true);
   optionsArg.should.be.have.property('persistent', true);
