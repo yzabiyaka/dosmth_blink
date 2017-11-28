@@ -115,7 +115,7 @@ test('RabbitMQBroker.nack(): Should delegate message nack to amqplib', (t) => {
 /**
  * RabbitMQBroker: createQueue()
  */
-test('RabbitMQBroker.createQueue(): Should create requested queue and bind it to the topic exchange', async (t) => {
+test('RabbitMQBroker.createQueue(): Happy path', async (t) => {
   // Set variables from the context.
   const { sandbox, channel, broker } = t.context;
 
@@ -125,7 +125,8 @@ test('RabbitMQBroker.createQueue(): Should create requested queue and bind it to
   const queueRoutes = chance.n(chance.word, numberOfRoutes);
 
   // Stub amqplib's assertQueue().
-  // TODO: document response.
+  // Response example take from the docs.
+  // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertQueue
   const assertQueueStub = sandbox.stub(channel, 'assertQueue').resolves({
     queue: queueName,
     messageCount: 0,
@@ -133,19 +134,24 @@ test('RabbitMQBroker.createQueue(): Should create requested queue and bind it to
   });
 
   // Stub amqplib's bindQueue().
+  // The server reply resolves to an empty object.
+  // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_bindExchange
   const bindQueueStub = sandbox.stub(channel, 'bindQueue').resolves({});
 
   // Execute the function.
   const result = await broker.createQueue(queueName, queueRoutes);
-
-  // Positive path.
   result.should.be.true;
 
-  // Check correct execution of channel methods.
+  // Ensure queue assertion has been called.
   assertQueueStub.should.have.been.calledOnce;
-  bindQueueStub.should.have.callCount(numberOfRoutes);
 
-  // TODO: test params.
+  // Ensure the queue has been bound to the topic exchange on expected routes.
+  bindQueueStub.should.have.callCount(numberOfRoutes);
+  for (const [queueArg, exchangeArg, routeArg] of bindQueueStub.args) {
+    queueArg.should.equal(queueName);
+    exchangeArg.should.equal(broker.topicExchange);
+    routeArg.should.be.oneOf(queueRoutes);
+  }
 });
 
 // ------- End -----------------------------------------------------------------

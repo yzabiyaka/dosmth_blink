@@ -251,8 +251,27 @@ class RabbitMQBroker extends Broker {
   }
 
   async assertQueue(queueName) {
+    // Explicitly define desired options.
+    // See https://www.rabbitmq.com/queues.html
+    const options = {
+      // This option allows only one connection to the queue.
+      // The queue will be deleted when that connection closes.
+      // We don't need that.
+      exclusive: false,
+      // The queue will survive a broker restart. Yes!
+      durable: true,
+      // The queue will be deleted when last consumer unsubscribes.
+      // Nope.
+      autoDelete: false,
+      // Used by plugins and broker-specific features such as message TTL,
+      // queue length limit, etc. Also know as "x-arguments".
+      // We may want to use them in the future for
+      // declaring corresponding deadLetterExchange.
+      arguments: {},
+    };
+
     try {
-      await this.getChannel().assertQueue(queueName);
+      await this.getChannel().assertQueue(queueName, options);
     } catch (error) {
       // Will throw an exception when queue exists with the same name,
       // but different settings.
@@ -270,7 +289,7 @@ class RabbitMQBroker extends Broker {
 
   async bindQueue(queueName, exhangeName, route) {
     try {
-      await this.getChannel().bindQueue(queueName, exhangeName, route);
+      const result = await this.getChannel().bindQueue(queueName, exhangeName, route);
     } catch (error) {
       // Should never happen, but log this, just in case.
       // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_bindQueue
