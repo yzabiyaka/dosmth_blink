@@ -240,4 +240,39 @@ test('RabbitMQBroker.publishToRoute(): Happy path', (t) => {
   optionsArg.should.be.have.property('persistent', true);
 });
 
+/**
+ * RabbitMQBroker: subscribe()
+ */
+test('RabbitMQBroker.subscribe(): Happy path', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+  const consumerTag = chance.word();
+  const callback = () => true;
+
+  // Stub amqplib's consume().
+  // Response example take from the docs.
+  // http://www.squaremobius.net/amqp.node/channel_api.html#channel_consume
+  const consumeStub = sandbox.stub(channel, 'consume').resolves({
+    consumerTag,
+  });
+
+  // Execute the function.
+  const result = await broker.subscribe(queueName, callback, consumerTag);
+  result.should.be.equal(consumerTag);
+
+
+  // Check that the callback subscription has been correctly delegated to amqplib.
+  consumeStub.should.have.been.calledOnce;
+  const [queueArg, callbackArg, optionsArg] = consumeStub.firstCall.args;
+  queueArg.should.be.equal(queueName);
+  callbackArg.should.be.equal(callback);
+  callbackArg.should.be.equal(callback);
+  optionsArg.should.be.have.property('noAck', false);
+  optionsArg.should.be.have.property('exclusive', false);
+  optionsArg.should.be.have.property('consumerTag', consumerTag);
+});
+
 // ------- End -----------------------------------------------------------------
