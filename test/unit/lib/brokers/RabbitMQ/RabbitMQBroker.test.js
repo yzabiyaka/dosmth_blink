@@ -176,7 +176,7 @@ test('RabbitMQBroker.purgeQueue(): Happy path', async (t) => {
   const result = await broker.purgeQueue(queueName);
   result.should.equal(messageCount);
 
-  // Ensure queue assertion has been called.
+  // Ensure queue purging has been correctly delegated to amqplib.
   purgeQueueStub.should.have.been.calledOnce;
   purgeQueueStub.should.have.been.calledWithExactly(queueName);
 });
@@ -203,12 +203,40 @@ test('RabbitMQBroker.deleteQueue(): Happy path', async (t) => {
   const result = await broker.deleteQueue(queueName);
   result.should.equal(messageCount);
 
-  // Ensure queue assertion has been called.
+  // Ensure queue deletion has been correctly delegated to amqplib.
   deleteQueueStub.should.have.been.calledOnce;
   deleteQueueStub.should.have.been.calledWithExactly(queueName, {
     ifUnused: false,
     ifEmpty: false,
   });
+});
+
+/**
+ * RabbitMQBroker: publishToRoute()
+ */
+test('RabbitMQBroker.publishToRoute(): Happy path', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const routeName = chance.word();
+  const message = MessageFactoryHelper.getRandomMessage(true);
+
+  // Stub amqplib's publish().
+  // Response example take from the docs.
+  // http://www.squaremobius.net/amqp.node/channel_api.html#channel_publish
+  const publishStub = sandbox.stub(channel, 'publish').returns(true);
+
+  // Execute the function.
+  broker.publishToRoute(routeName, message);
+
+  // Check that the message publishing has been correctly delegated to amqplib.
+  publishStub.should.have.been.calledOnce;
+  const [exchangeArg, routeArg, bufferArg, optionsArg ] = publishStub.firstCall.args;
+  exchangeArg.should.be.equal(broker.topicExchange);
+  bufferArg.toString().should.be.equal(message.toString());
+  optionsArg.should.be.have.property('mandatory', true);
+  optionsArg.should.be.have.property('persistent', true);
 });
 
 // ------- End -----------------------------------------------------------------
