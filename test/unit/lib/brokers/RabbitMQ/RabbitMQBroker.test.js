@@ -154,4 +154,61 @@ test('RabbitMQBroker.createQueue(): Happy path', async (t) => {
   }
 });
 
+/**
+ * RabbitMQBroker: purgeQueue()
+ */
+test('RabbitMQBroker.purgeQueue(): Happy path', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+  const messageCount = chance.integer({ min: 1 });
+
+  // Stub amqplib's purgeQueue().
+  // Response example take from the docs.
+  // http://www.squaremobius.net/amqp.node/channel_api.html#channel_purgeQueue
+  const purgeQueueStub = sandbox.stub(channel, 'purgeQueue').resolves({
+    messageCount,
+  });
+
+  // Execute the function.
+  const result = await broker.purgeQueue(queueName);
+  result.should.equal(messageCount);
+
+  // Ensure queue assertion has been called.
+  purgeQueueStub.should.have.been.calledOnce;
+  purgeQueueStub.should.have.been.calledWithExactly(queueName);
+});
+
+/**
+ * RabbitMQBroker: deleteQueue()
+ */
+test('RabbitMQBroker.deleteQueue(): Happy path', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+  const messageCount = chance.integer({ min: 1 });
+
+  // Stub amqplib's deleteQueue().
+  // Response example take from the docs.
+  // http://www.squaremobius.net/amqp.node/channel_api.html#channel_deleteQueue
+  const deleteQueueStub = sandbox.stub(channel, 'deleteQueue').resolves({
+    messageCount,
+  });
+
+  // Execute the function.
+  const result = await broker.deleteQueue(queueName);
+  result.should.equal(messageCount);
+
+  // Ensure queue assertion has been called.
+  deleteQueueStub.should.have.been.calledOnce;
+  deleteQueueStub.should.have.been.calledWithExactly(queueName, {
+    ifUnused: false,
+    ifEmpty: false,
+  });
+});
+
 // ------- End -----------------------------------------------------------------

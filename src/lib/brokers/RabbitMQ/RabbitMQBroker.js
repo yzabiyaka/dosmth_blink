@@ -193,6 +193,9 @@ class RabbitMQBroker extends Broker {
   /**
    * Purge the queue.
    *
+   * Note that this won’t remove messages that have been delivered
+   * but not yet acknowledged.
+   *
    * @return {Number} The number of messages purged from the queue
    */
   async purgeQueue(queueName) {
