@@ -289,7 +289,7 @@ class RabbitMQBroker extends Broker {
 
   async bindQueue(queueName, exhangeName, route) {
     try {
-      const result = await this.getChannel().bindQueue(queueName, exhangeName, route);
+      await this.getChannel().bindQueue(queueName, exhangeName, route);
     } catch (error) {
       // Should never happen, but log this, just in case.
       // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_bindQueue
