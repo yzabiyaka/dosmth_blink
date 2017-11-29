@@ -43,6 +43,72 @@ test('RabbitMQBroker: Should implement Broker interface', () => {
 });
 
 /**
+ * RabbitMQBroker: connect()
+ */
+test('RabbitMQBroker.connect(): Should delegate connection to connection manager and assert dependencies', async (t) => {
+  // Set variables from the context.
+  const { sandbox, broker } = t.context;
+
+  // Stub connection manager's connect.
+  const connectStub = sandbox.stub(broker.connectionManager, 'connect').resolves(true);
+  const assertExchangesStub = sandbox.stub(broker, 'assertExchanges').resolves(true);
+
+  // Execute the connect.
+  const result = await broker.connect();
+  result.should.be.true;
+
+  // Ensure connection is delegated
+  connectStub.should.be.calledOnce;
+
+  // Ensure dependencies are asserted.
+  assertExchangesStub.should.be.calledOnce;
+});
+
+/**
+ * RabbitMQBroker: connect()
+ */
+test('RabbitMQBroker.connect(): Should fail on unsuccessful connection', async (t) => {
+  // Set variables from the context.
+  const { sandbox, broker } = t.context;
+
+  // Stub connection manager's connect.
+  const connectStub = sandbox.stub(broker.connectionManager, 'connect').resolves(false);
+  const assertExchangesStub = sandbox.stub(broker, 'assertExchanges').resolves(true);
+
+  // Execute the connect.
+  const result = await broker.connect();
+  result.should.be.false;
+
+  // Ensure connection is delegated
+  connectStub.should.be.calledOnce;
+
+  // Ensure dependencies are asserted.
+  assertExchangesStub.should.not.be.called;
+});
+
+/**
+ * RabbitMQBroker: connect()
+ */
+test('RabbitMQBroker.connect(): Should fail on unsuccessful dependencies assertion', async (t) => {
+  // Set variables from the context.
+  const { sandbox, broker } = t.context;
+
+  // Stub connection manager's connect.
+  const connectStub = sandbox.stub(broker.connectionManager, 'connect').resolves(true);
+  const assertExchangesStub = sandbox.stub(broker, 'assertExchanges').resolves(false);
+
+  // Execute the connect.
+  const result = await broker.connect();
+  result.should.be.false;
+
+  // Ensure connection is delegated
+  connectStub.should.be.calledOnce;
+
+  // Ensure dependencies are asserted.
+  assertExchangesStub.should.be.calledOnce;
+});
+
+/**
  * RabbitMQBroker: ack()
  */
 test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
