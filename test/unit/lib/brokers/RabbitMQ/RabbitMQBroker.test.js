@@ -60,6 +60,9 @@ test('RabbitMQBroker.connect(): Should delegate connection to the connection man
       this.connected = true;
       return true;
     });
+  // Restore original getChannel() function, as we're setting channel manualy.
+  broker.getChannel.restore();
+
   // Stub assert exchanegs in broker.
   const assertExchangesStub = sandbox.stub(broker, 'assertExchanges').resolves(true);
 
