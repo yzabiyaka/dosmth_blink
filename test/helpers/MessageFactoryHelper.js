@@ -231,7 +231,7 @@ class MessageFactoryHelper {
     return new FreeFormMessage({ data, meta });
   }
 
-  static getFakeRabbitMessage(content = false) {
+  static getFakeRabbitMessage(content = false, consumerTag = false) {
     // @see http://www.squaremobius.net/amqp.node/channel_api.html#callbacks
     const rabbitMessage = {
       fields: {
@@ -239,6 +239,9 @@ class MessageFactoryHelper {
       },
       properties: {},
     };
+    if (consumerTag) {
+      rabbitMessage.fields.consumerTag = consumerTag;
+    }
 
     // Generate random contentString if content is not provided.
     const contentString = content || MessageFactoryHelper.getRandomMessage().toString();

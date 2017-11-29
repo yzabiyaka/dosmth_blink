@@ -275,4 +275,39 @@ test('RabbitMQBroker.subscribe(): Happy path', async (t) => {
   optionsArg.should.be.have.property('consumerTag', consumerTag);
 });
 
+/**
+ * RabbitMQBroker: subscribe()
+ */
+test('RabbitMQBroker.subscribe(): Callback is executed on new message', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+  const consumerTag = chance.word();
+  const dequeuerSpy = sandbox.spy(rabbitMessage => rabbitMessage);
+
+  // Stub amqplib's consume().
+  // @see https://github.com/squaremo/amqp.node/blob/master/lib/callback_model.js#L186
+  // Make it register consumer without actually performing RPC to rabbit.
+  const consumeStub = sandbox.stub(channel, 'consume').callsFake(async function () {
+    // `this` is amqplib's Channel.
+    this.registerConsumer(consumerTag, dequeuerSpy);
+    return consumerTag;
+  });
+
+  // Execute the function.
+  await broker.subscribe(queueName, dequeuerSpy);
+  consumeStub.should.have.been.calledOnce;
+
+  // Imitate broker senfing a message to the consumer.
+  const message = MessageFactoryHelper.getFakeRabbitMessage(false, consumerTag);
+  channel.emit('delivery', message);
+
+  // Ensure the callback recieved the message. So cool.
+  dequeuerSpy.should.have.been.calledOnce;
+  const [messageArg] = dequeuerSpy.firstCall.args;
+  messageArg.should.be.deep.equal(message);
+});
+
 // ------- End -----------------------------------------------------------------
