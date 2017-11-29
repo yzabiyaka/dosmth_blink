@@ -45,7 +45,7 @@ test('RabbitMQBroker: Should implement Broker interface', () => {
 /**
  * RabbitMQBroker: connect()
  */
-test('RabbitMQBroker.connect(): Should delegate connection to connection manager and assert dependencies', async (t) => {
+test('RabbitMQBroker.connect(): Should delegate connection to the connection manager and assert dependencies', async (t) => {
   // Set variables from the context.
   const { sandbox, broker } = t.context;
 
@@ -58,10 +58,10 @@ test('RabbitMQBroker.connect(): Should delegate connection to connection manager
   result.should.be.true;
 
   // Ensure connection is delegated
-  connectStub.should.be.calledOnce;
+  connectStub.should.have.been.calledOnce;
 
   // Ensure dependencies are asserted.
-  assertExchangesStub.should.be.calledOnce;
+  assertExchangesStub.should.have.been.calledOnce;
 });
 
 /**
@@ -80,10 +80,10 @@ test('RabbitMQBroker.connect(): Should fail on unsuccessful connection', async (
   result.should.be.false;
 
   // Ensure connection is delegated
-  connectStub.should.be.calledOnce;
+  connectStub.should.have.been.calledOnce;
 
   // Ensure dependencies are asserted.
-  assertExchangesStub.should.not.be.called;
+  assertExchangesStub.should.have.not.been.called;
 });
 
 /**
@@ -102,11 +102,30 @@ test('RabbitMQBroker.connect(): Should fail on unsuccessful dependencies asserti
   result.should.be.false;
 
   // Ensure connection is delegated
-  connectStub.should.be.calledOnce;
+  connectStub.should.have.been.calledOnce;
 
   // Ensure dependencies are asserted.
-  assertExchangesStub.should.be.calledOnce;
+  assertExchangesStub.should.have.been.calledOnce;
 });
+
+
+/**
+ * RabbitMQBroker: disconnect()
+ */
+test('RabbitMQBroker.disconnect(): Should delegate disconnect to the connection manager', async (t) => {
+  // Set variables from the context.
+  const { sandbox, broker } = t.context;
+
+  // Stub connection manager's connect.
+  const disconnectStub = sandbox.stub(broker.connectionManager, 'disconnect').resolves(true);
+
+  // Execute the connect.
+  await broker.disconnect();
+
+  // Ensure connection is delegated
+  disconnectStub.should.have.been.calledOnce;
+});
+
 
 /**
  * RabbitMQBroker: ack()
