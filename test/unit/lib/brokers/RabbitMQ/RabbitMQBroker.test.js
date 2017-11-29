@@ -255,6 +255,39 @@ test('RabbitMQBroker.createQueue(): Happy path', async (t) => {
 });
 
 /**
+ * RabbitMQBroker: createQueue()
+ */
+test('RabbitMQBroker.createQueue(): should fail on channel.assertQueue() errors', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+  const numberOfRoutes = 5;
+  const queueRoutes = chance.n(chance.word, numberOfRoutes);
+
+  // Stub amqplib's assertQueue().
+  // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertQueue
+  const assertQueueStub = sandbox.stub(channel, 'assertQueue').throws(() => {
+    // Fake unexpected error thrown from Message.assertQueue().
+    const error = new Error('Testing unexpected exception from Channel.assertQueue()');
+    return error;
+  });
+  // Stub amqplib's bindQueue().
+  const bindQueueStub = sandbox.stub(channel, 'bindQueue').resolves({});
+
+  // Execute the function.
+  const result = await broker.createQueue(queueName, queueRoutes);
+  result.should.be.false;
+
+  // Ensure queue assertion has been called.
+  assertQueueStub.should.have.been.calledOnce;
+
+  // Ensure function returns before attempting to bind the queue.
+  bindQueueStub.should.have.not.been.called;
+});
+
+/**
  * RabbitMQBroker: purgeQueue()
  */
 test('RabbitMQBroker.purgeQueue(): Happy path', async (t) => {
