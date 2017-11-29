@@ -288,6 +288,50 @@ test('RabbitMQBroker.createQueue(): should fail on channel.assertQueue() errors'
 });
 
 /**
+ * RabbitMQBroker: createQueue()
+ */
+test('RabbitMQBroker.createQueue(): should fail on any channel.bindQueue() error', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+  const numberOfRoutes = 5;
+  const queueRoutes = chance.n(chance.word, numberOfRoutes);
+
+  // Stub amqplib's assertQueue().
+  // Response example take from the docs.
+  // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertQueue
+  const assertQueueStub = sandbox.stub(channel, 'assertQueue').resolves({
+    queue: queueName,
+    messageCount: 0,
+    consumerCount: 0,
+  });
+
+  // Stub amqplib's bindQueue().
+  // It will return success for all calls except the third one.
+  // On the third call it'll sumulate unexpected error.
+  const bindQueueStub = sandbox.stub(channel, 'bindQueue');
+  bindQueueStub.onThirdCall().throws(() => {
+    // Fake unexpected error thrown from Message.assertQueue().
+    const error = new Error('Testing unexpected exception from Channel.bindQueue()');
+    return error;
+  });
+  bindQueueStub.resolves({});
+
+  // Execute the function.
+  const result = await broker.createQueue(queueName, queueRoutes);
+  // Failure on the third bindQueue() call should still count as a failure.
+  result.should.be.false;
+
+  // Ensure queue assertion has been called.
+  assertQueueStub.should.have.been.calledOnce;
+
+  // We just need to know that we, in fact, called bindQueue().
+  bindQueueStub.should.have.called;
+});
+
+/**
  * RabbitMQBroker: purgeQueue()
  */
 test('RabbitMQBroker.purgeQueue(): Happy path', async (t) => {
