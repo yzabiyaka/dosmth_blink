@@ -150,7 +150,7 @@ test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
   const { sandbox, channel, broker } = t.context;
 
   // Stub channel.sendImmediately() that sends all synchronous requests
-  // the socket.
+  // to the socket.
   // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel.js#L63
   const sendImmediatelyStub = sandbox.stub(channel, 'sendImmediately').returns(42);
 
@@ -310,7 +310,7 @@ test('RabbitMQBroker.createQueue(): should fail on any channel.bindQueue() error
 
   // Stub amqplib's bindQueue().
   // It will return success for all calls except the third one.
-  // On the third call it'll sumulate unexpected error.
+  // On the third call it'll simulate unexpected error.
   const bindQueueStub = sandbox.stub(channel, 'bindQueue');
   bindQueueStub.onThirdCall().throws(() => {
     // Fake unexpected error thrown from Message.assertQueue().
@@ -529,7 +529,7 @@ test('RabbitMQBroker.subscribe(): Callback is executed on new message', async (t
   await broker.subscribe(queueName, dequeuerSpy);
   consumeStub.should.have.been.calledOnce;
 
-  // Imitate broker senfing a message to the consumer.
+  // Imitate broker sending a message to the consumer.
   const message = MessageFactoryHelper.getFakeRabbitMessage(false, consumerTag);
   channel.emit('delivery', message);
 

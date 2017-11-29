@@ -31,7 +31,7 @@ class RabbitMQBroker extends Broker {
       reconnectManager,
     );
 
-    // RabbitMQ exchange used for standart interfacing with queues.
+    // RabbitMQ exchange used for standard interfacing with queues.
     this.topicExchange = settings.topicExchange;
   }
 
