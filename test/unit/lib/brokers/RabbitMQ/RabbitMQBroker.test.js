@@ -64,6 +64,38 @@ test('RabbitMQBroker.connect(): Should delegate connection to the connection man
   assertExchangesStub.should.have.been.calledOnce;
 });
 
+
+/**
+ * RabbitMQBroker: assertExchanges()
+ */
+test('RabbitMQBroker.assertExchanges(): Should assert all dependencies', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // // Define test parameters.
+  // const queueName = chance.word();
+  // const numberOfRoutes = 5;
+  // const queueRoutes = chance.n(chance.word, numberOfRoutes);
+
+  // Stub channel.assertExchange()
+  // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel.js#L63
+  const assertExchangeStub = sandbox.stub(channel, 'assertExchange')
+    .onFirstCall().resolves({ exchange: broker.topicExchange });
+
+  // Execute the connect.
+  const result = await broker.assertExchanges();
+  result.should.be.true;
+
+  // Ensure all exchanges have been created.
+  assertExchangeStub.should.have.callCount(1);
+
+  // Ensure dependencies are asserted.
+  assertExchangeStub.getCall(0).args.should.deep.equal([
+    broker.topicExchange,
+    'topic',
+  ]);
+});
+
 /**
  * RabbitMQBroker: connect()
  */
@@ -108,7 +140,6 @@ test('RabbitMQBroker.connect(): Should fail on unsuccessful dependencies asserti
   assertExchangesStub.should.have.been.calledOnce;
 });
 
-
 /**
  * RabbitMQBroker: disconnect()
  */
@@ -125,7 +156,6 @@ test('RabbitMQBroker.disconnect(): Should delegate disconnect to the connection 
   // Ensure connection is delegated
   disconnectStub.should.have.been.calledOnce;
 });
-
 
 /**
  * RabbitMQBroker: ack()
