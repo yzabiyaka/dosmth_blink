@@ -4,6 +4,7 @@
 
 const test = require('ava');
 const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const Chance = require('chance');
 const sinonChai = require('sinon-chai');
 
@@ -18,6 +19,7 @@ const UnitHooksHelper = require('../../../../helpers/UnitHooksHelper');
 const chance = new Chance();
 
 chai.should();
+chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 // Prepare fakes for each test and clean up after them.
@@ -304,6 +306,32 @@ test('RabbitMQBroker.deleteQueue(): Happy path', async (t) => {
     ifUnused: false,
     ifEmpty: false,
   });
+});
+
+/**
+ * RabbitMQBroker: deleteQueue()
+ */
+test('RabbitMQBroker.deleteQueue(): should fail on incorrect server response', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+
+  // Stub channel.deleteQueue()
+  const assertExchangeStub = sandbox.stub(channel, 'deleteQueue').throws(() => {
+    // Fake unexpected error thrown from Message.deleteQueue().
+    const error = new Error('Testing unexpected exception from Channel.deleteQueue()');
+    return error;
+  });
+
+  // Execute the connect.
+  const deletePromise = broker.deleteQueue(queueName);
+  await deletePromise.should.be.rejectedWith(
+    Error,
+    `Failed to delete queue "${queueName}"`,
+  );
+  assertExchangeStub.should.have.been.calledOnce;
 });
 
 /**
