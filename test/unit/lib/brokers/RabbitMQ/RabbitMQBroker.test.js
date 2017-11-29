@@ -76,38 +76,6 @@ test('RabbitMQBroker.connect(): Should delegate connection to the connection man
   broker.getChannel().should.be.deep.equal(channel);
 });
 
-
-/**
- * RabbitMQBroker: assertExchanges()
- */
-test('RabbitMQBroker.assertExchanges(): Should assert all dependencies', async (t) => {
-  // Set variables from the context.
-  const { sandbox, channel, broker } = t.context;
-
-  // // Define test parameters.
-  // const queueName = chance.word();
-  // const numberOfRoutes = 5;
-  // const queueRoutes = chance.n(chance.word, numberOfRoutes);
-
-  // Stub channel.assertExchange()
-  // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel.js#L63
-  const assertExchangeStub = sandbox.stub(channel, 'assertExchange')
-    .onFirstCall().resolves({ exchange: broker.topicExchange });
-
-  // Execute the connect.
-  const result = await broker.assertExchanges();
-  result.should.be.true;
-
-  // Ensure all exchanges have been created.
-  assertExchangeStub.should.have.callCount(1);
-
-  // Ensure dependencies are asserted.
-  assertExchangeStub.getCall(0).args.should.deep.equal([
-    broker.topicExchange,
-    'topic',
-  ]);
-});
-
 /**
  * RabbitMQBroker: connect()
  */
@@ -435,6 +403,52 @@ test('RabbitMQBroker.subscribe(): Callback is executed on new message', async (t
   dequeuerSpy.should.have.been.calledOnce;
   const [messageArg] = dequeuerSpy.firstCall.args;
   messageArg.should.be.deep.equal(message);
+});
+
+/**
+ * RabbitMQBroker: assertExchanges()
+ */
+test('RabbitMQBroker.assertExchanges(): Should assert all dependencies', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Stub channel.assertExchange()
+  // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel.js#L63
+  const assertExchangeStub = sandbox.stub(channel, 'assertExchange')
+    .onFirstCall().resolves({ exchange: broker.topicExchange });
+
+  // Execute the connect.
+  const result = await broker.assertExchanges();
+  result.should.be.true;
+
+  // Ensure all exchanges have been created.
+  assertExchangeStub.should.have.callCount(1);
+
+  // Ensure dependencies are asserted.
+  assertExchangeStub.getCall(0).args.should.deep.equal([
+    broker.topicExchange,
+    'topic',
+  ]);
+});
+
+/**
+ * RabbitMQBroker: assertExchanges()
+ */
+test('RabbitMQBroker.assertExchanges(): should fail on incorrect server response', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Stub channel.assertExchange()
+  const assertExchangeStub = sandbox.stub(channel, 'assertExchange').throws(() => {
+    // Fake unexpected error thrown from Message.assertExchange().
+    const error = new Error('Testing unexpected exception from Channel.fromRabbitMessage()');
+    return error;
+  });
+
+  // Execute the connect.
+  const result = await broker.assertExchanges();
+  result.should.be.false;
+  assertExchangeStub.should.have.been.calledOnce;
 });
 
 // ------- End -----------------------------------------------------------------
