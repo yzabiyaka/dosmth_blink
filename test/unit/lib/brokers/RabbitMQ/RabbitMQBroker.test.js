@@ -47,10 +47,18 @@ test('RabbitMQBroker: Should implement Broker interface', () => {
  */
 test('RabbitMQBroker.connect(): Should delegate connection to the connection manager and assert dependencies', async (t) => {
   // Set variables from the context.
-  const { sandbox, broker } = t.context;
+  const { sandbox, channel, broker } = t.context;
 
   // Stub connection manager's connect.
-  const connectStub = sandbox.stub(broker.connectionManager, 'connect').resolves(true);
+  const connectStub = sandbox
+    .stub(broker.connectionManager, 'connect')
+    .callsFake(async function () {
+      // `this` is an instance of RabbitMQConnectionManager.
+      this.channel = channel;
+      this.connected = true;
+      return true;
+    });
+  // Stub assert exchanegs in broker.
   const assertExchangesStub = sandbox.stub(broker, 'assertExchanges').resolves(true);
 
   // Execute the connect.
@@ -62,6 +70,10 @@ test('RabbitMQBroker.connect(): Should delegate connection to the connection man
 
   // Ensure dependencies are asserted.
   assertExchangesStub.should.have.been.calledOnce;
+
+  // Ensure broker exposes connected state and the channel.
+  broker.isConnected().should.be.true;
+  broker.getChannel().should.be.deep.equal(channel);
 });
 
 
