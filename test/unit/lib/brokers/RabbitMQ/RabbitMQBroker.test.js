@@ -359,6 +359,32 @@ test('RabbitMQBroker.purgeQueue(): Happy path', async (t) => {
 });
 
 /**
+ * RabbitMQBroker: purgeQueue()
+ */
+test('RabbitMQBroker.purgeQueue(): should fail on incorrect server response', async (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const queueName = chance.word();
+
+  // Stub channel.purgeQueue()
+  const purgeQueueStub = sandbox.stub(channel, 'purgeQueue').throws(() => {
+    // Fake unexpected error thrown from Message.purgeQueue().
+    const error = new Error('Testing unexpected exception from Channel.purgeQueue()');
+    return error;
+  });
+
+  // Execute the connect.
+  const purgePromise = broker.purgeQueue(queueName);
+  await purgePromise.should.be.rejectedWith(
+    Error,
+    `Failed to purge queue "${queueName}"`,
+  );
+  purgeQueueStub.should.have.been.calledOnce;
+});
+
+/**
  * RabbitMQBroker: deleteQueue()
  */
 test('RabbitMQBroker.deleteQueue(): Happy path', async (t) => {
@@ -399,7 +425,7 @@ test('RabbitMQBroker.deleteQueue(): should fail on incorrect server response', a
   const queueName = chance.word();
 
   // Stub channel.deleteQueue()
-  const assertExchangeStub = sandbox.stub(channel, 'deleteQueue').throws(() => {
+  const deleteQueueStub = sandbox.stub(channel, 'deleteQueue').throws(() => {
     // Fake unexpected error thrown from Message.deleteQueue().
     const error = new Error('Testing unexpected exception from Channel.deleteQueue()');
     return error;
@@ -411,7 +437,7 @@ test('RabbitMQBroker.deleteQueue(): should fail on incorrect server response', a
     Error,
     `Failed to delete queue "${queueName}"`,
   );
-  assertExchangeStub.should.have.been.calledOnce;
+  deleteQueueStub.should.have.been.calledOnce;
 });
 
 /**
