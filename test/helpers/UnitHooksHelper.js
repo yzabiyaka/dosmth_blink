@@ -2,7 +2,13 @@
 
 // ------- Imports -------------------------------------------------------------
 
+const AMQPChannel = require('amqplib/lib/channel_model').Channel;
+const AMQPConnection = require('amqplib/lib/connection').Connection;
 const Chance = require('chance');
+const net = require('net');
+const sinon = require('sinon');
+
+// ------- Internal imports ----------------------------------------------------
 
 const RabbitMQBroker = require('../../src/lib/brokers/RabbitMQ/RabbitMQBroker');
 const Queue = require('../../src/lib/Queue');
@@ -15,7 +21,7 @@ const chance = new Chance();
 // ------- Helpers -------------------------------------------------------------
 
 class UnitHooksHelper {
-  static async createRandomQueueInMemory(t) {
+  static createRandomQueueInMemory(t) {
     const config = require('../../config');
 
     // Optional: tag connection for easier debug.
@@ -36,6 +42,41 @@ class UnitHooksHelper {
   static destroyRandomQueueInMemory(t) {
     t.context.queue = false;
     t.context.broker = false;
+  }
+
+  static createFakeRabbitMQBroker(t) {
+    // Automatically provide sandbox for stubbing the channel.
+    const sandbox = sinon.createSandbox();
+
+    // Fake channel.
+    const socket = new net.Socket();
+    const connection = new AMQPConnection(socket);
+    const channel = new AMQPChannel(connection);
+
+    // Fake Broker.
+    const amqpConfig = {
+      connection: {},
+      settings: {
+        topicExchange: chance.word(),
+      },
+    };
+    const broker = new RabbitMQBroker(amqpConfig);
+
+    // Stub broker to return the fake channel.
+    sandbox.stub(broker, 'getChannel').returns(channel);
+
+    // Expose stubs through test context.
+    t.context.sandbox = sandbox;
+    t.context.channel = channel;
+    t.context.broker = broker;
+  }
+
+  static destroyFakeRabbitMQBroker(t) {
+    // Cleanup stubs and reset context.
+    t.context.sandbox.restore();
+    t.context.channel = false;
+    t.context.broker = false;
+    t.context.sandbox = false;
   }
 }
 

@@ -14,8 +14,9 @@ const RabbitMQConnectionManager = require('./RabbitMQConnectionManager');
 // ------- Class ---------------------------------------------------------------
 
 class RabbitMQBroker extends Broker {
-  constructor(amqpConfig, clientDescription = false) {
+  constructor({ connection = {}, settings = {} }, clientDescription = false) {
     super();
+
     // Initialize reconnect manager suitable for RabbitMQ.
     // Anecdotally, Constant time backoff every 2 seconds works best.
     // TODO: confirm if that's true.
@@ -25,13 +26,13 @@ class RabbitMQBroker extends Broker {
 
     // TODO: use options array instead of clientDescription.
     this.connectionManager = new RabbitMQConnectionManager(
-      amqpConfig.connection,
+      connection,
       clientDescription,
       reconnectManager,
     );
 
-    // RabbitMQ exchange used for standart interfacing with queues.
-    this.topicExchange = amqpConfig.settings.topicExchange;
+    // RabbitMQ exchange used for standard interfacing with queues.
+    this.topicExchange = settings.topicExchange;
   }
 
   // ------- Public API  -------------------------------------------------------
@@ -67,7 +68,7 @@ class RabbitMQBroker extends Broker {
   // ------- Broker interface methods implementation  --------------------------
 
   /**
-   * Publish to queue using RabbitMQ wildcard routing
+   * Publish to queues using RabbitMQ topic exchange routing rules
    *
    * Note: this works out of box only with topic exchanges and only in RabbitMQ.
    * In other brokers, we may need to compensate for lack of this
@@ -136,8 +137,6 @@ class RabbitMQBroker extends Broker {
    * @return {undefined}      This method is RPC and does not have server response
    */
   ack(message) {
-    // Depends on the value of message.fields.deliveryTag.
-    // @see https://github.com/squaremo/amqp.node/blob/master/lib/channel_model.js#L221
     this.getChannel().ack(message);
   }
 
@@ -167,7 +166,7 @@ class RabbitMQBroker extends Broker {
    */
   async createQueue(queueName, queueRoutes) {
     // 1. Create main queue.
-    const mainQueueCreated = this.assertQueue(queueName);
+    const mainQueueCreated = await this.assertQueue(queueName);
     if (!mainQueueCreated) {
       return false;
     }
@@ -193,6 +192,9 @@ class RabbitMQBroker extends Broker {
 
   /**
    * Purge the queue.
+   *
+   * Note that this won’t remove messages that have been delivered
+   * but not yet acknowledged.
    *
    * @return {Number} The number of messages purged from the queue
    */
@@ -252,8 +254,27 @@ class RabbitMQBroker extends Broker {
   }
 
   async assertQueue(queueName) {
+    // Explicitly define desired options.
+    // See https://www.rabbitmq.com/queues.html
+    const options = {
+      // This option allows only one connection to the queue.
+      // The queue will be deleted when that connection closes.
+      // We don't need that.
+      exclusive: false,
+      // The queue will survive a broker restart. Yes!
+      durable: true,
+      // The queue will be deleted when last consumer unsubscribes.
+      // Nope.
+      autoDelete: false,
+      // Used by plugins and broker-specific features such as message TTL,
+      // queue length limit, etc. Also know as "x-arguments".
+      // We may want to use them in the future for
+      // declaring corresponding deadLetterExchange.
+      arguments: {},
+    };
+
     try {
-      await this.getChannel().assertQueue(queueName);
+      await this.getChannel().assertQueue(queueName, options);
     } catch (error) {
       // Will throw an exception when queue exists with the same name,
       // but different settings.
