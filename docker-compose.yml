@@ -11,3 +11,7 @@ services:
     ports:
       - 15672:15672 # Management
       - 5672:5672 # AMQP
+  redis:
+    image: redis:4.0.6
+    ports:
+      - 6379:6379 # Telnet
