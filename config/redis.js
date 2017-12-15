@@ -1,7 +1,8 @@
 'use strict';
 
 const config = {
-  redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
+  host: process.env.BLINK_REDIS_HOST || 'localhost',
+  port: process.env.BLINK_REDIS_PORT || '6379',
 };
 
 module.exports = config;
