@@ -8,15 +8,15 @@ class RetryDelayer {
 
   /**
    * Schedules delay of `delayMs` milliseconds after which the message
-   * with content `messageContent` will be redelivered to the queue `queueName`.
+   * with content `messageContent` will be redelivered to the `queue`.
    *
-   * @param  {string}  queueName      The name of the queue to return the message to
-   * @param  {string}  messageContent The message content, serialized to a string
+   * @param  {Queue}   queue          The queue to return the message to
+   * @param  {Message} message        The message
    * @param  {integer} delayMs        The delay, milliseconds
    * @return {boolean}                The result of the operation
    */
-  async retryAfterDelay(queueName, messageContent, delayMs) {
-    throw new TypeError('retryAfterDelay() method must be implemented when extending from RetryDelayer');
+  async delayMessageRetry(queue, message, delayMs) {
+    throw new TypeError('delayMessageRetry() method must be implemented when extending from RetryDelayer');
   }
 
   /* eslint-enable */
