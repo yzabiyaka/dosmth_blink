@@ -7,7 +7,7 @@ const logger = require('winston');
 // ------- Internal imports ----------------------------------------------------
 
 const Broker = require('../Broker');
-const DelayLogic = require('../../DelayLogic');
+const DelayLogic = require('../../delayers/DelayLogic');
 const ReconnectManager = require('../../ReconnectManager');
 const RabbitMQConnectionManager = require('./RabbitMQConnectionManager');
 

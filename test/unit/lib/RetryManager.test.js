@@ -8,7 +8,7 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
 const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
-const DelayLogic = require('../../../src/lib/DelayLogic');
+const DelayLogic = require('../../../src/lib/delayers/DelayLogic');
 const RetryManager = require('../../../src/lib/RetryManager');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 const UnitHooksHelper = require('../../helpers/UnitHooksHelper');

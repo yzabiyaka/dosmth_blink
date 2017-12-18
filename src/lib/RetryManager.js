@@ -2,7 +2,7 @@
 
 const logger = require('winston');
 
-const DelayLogic = require('./DelayLogic');
+const DelayLogic = require('./delayers/DelayLogic');
 
 class RetryManager {
   constructor(queue, republishDelayLogic = false) {

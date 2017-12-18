@@ -5,7 +5,7 @@
 const test = require('ava');
 const chai = require('chai');
 
-const DelayLogic = require('../../../src/lib/DelayLogic');
+const DelayLogic = require('../../../../src/lib/delayers/DelayLogic');
 
 // ------- Init ----------------------------------------------------------------
 

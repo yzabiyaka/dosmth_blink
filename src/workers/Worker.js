@@ -3,7 +3,7 @@
 const logger = require('winston');
 const uuidV4 = require('uuid/v4');
 
-const DelayLogic = require('../lib/DelayLogic');
+const DelayLogic = require('../lib/delayers/DelayLogic');
 const RetryManager = require('../lib/RetryManager');
 
 class Worker {
