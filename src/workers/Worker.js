@@ -2,7 +2,6 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const Redis = require('ioredis');
 const uuidV4 = require('uuid/v4');
 const logger = require('winston');
 
@@ -46,10 +45,9 @@ class Worker {
     );
 
     // Initialize ioredis for the delay infrastructure.
-    const ioredis = new Redis(this.blink.config.redis.connection);
     const redisRetryDelayer = new RedisRetryDelayer(
-      ioredis,
-      this.blink.config.redis.settings.retrySetName,
+      this.blink.redis.getClient(),
+      this.blink.redis.retrySet,
     );
 
     // @todo: make retry manager configurable.

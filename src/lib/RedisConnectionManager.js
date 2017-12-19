@@ -20,7 +20,7 @@ class RedisConnectionManager {
     // Setup automatic reconnect.
     // Also, this will enable automatic resend of unfulfilled commands.
     // See https://github.com/luin/ioredis/tree/master/#auto-reconnect
-    this.redisConfig.retryStrategy = DelayLogic.constantTimeDelay(1000),
+    this.redisConfig.retryStrategy = DelayLogic.constantTimeDelay(1000);
 
     // The name of the sorted set used for delaying retried messages.
     this.retrySet = settings.retrySet;
