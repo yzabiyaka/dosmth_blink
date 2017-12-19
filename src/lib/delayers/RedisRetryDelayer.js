@@ -67,7 +67,7 @@ class RedisRetryDelayer extends RetryDelayer {
       code: 'sucess_redis_retry_delayer_message_saved',
     });
 
-    // Acknowledge original message.
+    // Free original message from the broker.
     queue.ack(message);
 
     return true;

@@ -41,11 +41,11 @@ class Message {
     return this.payload.meta.retryAttempt || 0;
   }
 
-  getRetryRedeliverToQueue() {
+  getRetryReturnToQueue() {
     return this.payload.meta.retryReturnToQueue;
   }
 
-  setRetryRedeliverToQueue(queueName) {
+  setRetryReturnToQueue(queueName) {
     this.payload.meta.retryReturnToQueue = queueName;
   }
 
