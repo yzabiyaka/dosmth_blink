@@ -3,7 +3,7 @@
 // ------- Imports -------------------------------------------------------------
 
 // const Redis = require('ioredis');
-const logger = require('winston');
+// const logger = require('winston');
 
 // ------- Internal imports ----------------------------------------------------
 
@@ -15,14 +15,21 @@ const logger = require('winston');
 class Timer {
   constructor(blink) {
     this.blink = blink;
+    this.tick = this.tick.bind(this);
+    this.counter = 0;
+    this.concurrent = 0;
   }
 
-  setup() {
-    logger.info('Timer setup', { test: this });
+  start() {
+    setInterval(this.tick, this.interval);
   }
 
-  async start() {
-    logger.info('Timer start', { test: this });
+  async tick() {
+    // Todo: implement pause when to many concurrent?
+    this.counter += 1;
+    this.concurrent += 1;
+    await this.run(this.counter);
+    this.concurrent -= 1;
   }
 }
 

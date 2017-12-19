@@ -24,6 +24,7 @@ class RedisConnectionManager {
 
     // The name of the sorted set used for delaying retried messages.
     this.retrySet = settings.retrySet;
+    this.retrySetProcessLimit = settings.retrySetProcessLimit;
 
     // Bind function that use object context.
     // LogSuccess logs out connection debug info.
@@ -64,7 +65,7 @@ class RedisConnectionManager {
   }
 
   getClient() {
-    return this.cleint;
+    return this.client;
   }
 
   // ------- Static helpers  ---------------------------------------------------

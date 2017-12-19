@@ -1,6 +1,6 @@
 'use strict';
 
-const logger = require('winston');
+// const logger = require('winston');
 
 const Timer = require('./Timer');
 
@@ -9,18 +9,25 @@ class RedisRetriesRepublishTimer extends Timer {
     super(blink);
 
     // Bind process method to queue context
-    logger.info('RedisRetriesRepublishTimer construct', {});
-    // this.consume = this.consume.bind(this);
+    this.run = this.run.bind(this);
   }
 
   setup() {
-    logger.info('RedisRetriesRepublishTimer setup', { test: this });
-    // this.queue = this.blink.queues.fetchQ;
+    // Repeat inteval, ms.
+    this.interval = 1000;
+    this.redisClient = this.blink.redis.getClient();
+    this.retrySet = this.blink.redis.retrySet;
+    this.retrySetProcessLimit = this.blink.redis.retrySetProcessLimit;
   }
 
-  async start() {
-    logger.info('RedisRetriesRepublishTimer start', { test: this });
-    // this.queue = this.blink.queues.fetchQ;
+  async run() {
+    const result = await this.redisClient.zrangebyscore(
+      this.retrySet,
+      0, // from 0
+      1, // to date
+      ['LIMIT', 0, this.retrySetProcessLimit],
+    );
+    console.dir(result, { colors: true, showHidden: true });
   }
 
   // async consume(fetchMessage) {

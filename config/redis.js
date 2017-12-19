@@ -6,7 +6,8 @@ const config = {
     port: process.env.BLINK_REDIS_PORT || '6379',
   },
   settings: {
-    retrySet: process.env.BLINK_REDIS_RETRY_SET || 'blink_retries',
+    retrySet: process.env.BLINK_REDIS_RETRY_SET_NAME || 'blink_retries',
+    retrySetProcessLimit: process.env.BLINK_REDIS_RETRY_SET_PROCESS_LIMIT || 100,
   },
 };
 
