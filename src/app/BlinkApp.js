@@ -9,6 +9,7 @@ const logger = require('winston');
 
 // Blink Libs.
 const RabbitMQBroker = require('../lib/brokers/RabbitMQ/RabbitMQBroker');
+const RedisConnectionManager = require('../lib/RedisConnectionManager');
 
 // Queues.
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
@@ -40,6 +41,9 @@ class BlinkApp {
     // Setup connection to message broker server.
     this.broker = await this.setupBroker();
 
+    // Setup connection to redis.
+    this.redis = await this.setupRedis();
+
     // Assert queues and add them to queue registry.
     // IMPORTANT: if the broker goes away and returns with no queues,
     // we will be able to recover the connection automatically,
@@ -59,6 +63,7 @@ class BlinkApp {
     // Flush queues.
     this.queues = [];
     await this.broker.disconnect();
+    await this.redis.disconnect();
     return true;
   }
 
@@ -82,6 +87,18 @@ class BlinkApp {
     }
     // Return connected broker.
     return broker;
+  }
+
+  async setupRedis() {
+    // Now only RabbitMQ is supported.
+    const redis = new RedisConnectionManager(this.config.redis);
+    // Establish connection or perform authorization.
+    const result = await redis.connect();
+    if (!result) {
+      // Do what?
+    }
+    // Return connected redis.
+    return redis;
   }
 
   async setupQueues(queueClasses) {
