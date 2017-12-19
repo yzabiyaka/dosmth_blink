@@ -17,7 +17,8 @@
     "coverage:report:publish": "nyc report --reporter=lcov && codecov",
     "lint": "eslint .",
     "web": "node start.js web",
-    "worker": "node start.js worker"
+    "worker": "node start.js worker",
+    "timer": "node start.js timer"
   },
   "repository": {
     "type": "git",
