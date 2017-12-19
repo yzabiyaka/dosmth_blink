@@ -46,8 +46,11 @@ class Worker {
     );
 
     // Initialize ioredis for the delay infrastructure.
-    const ioredis = new Redis(this.blink.config.redis);
-    const redisRetryDelayer = new RedisRetryDelayer(ioredis);
+    const ioredis = new Redis(this.blink.config.redis.connection);
+    const redisRetryDelayer = new RedisRetryDelayer(
+      ioredis,
+      this.blink.config.redis.settings.retrySetName,
+    );
 
     // @todo: make retry manager configurable.
     const retryManager = new RetryManager(this.queue, false, redisRetryDelayer);
