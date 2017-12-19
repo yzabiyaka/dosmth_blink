@@ -11,6 +11,8 @@ const sinonChai = require('sinon-chai');
 
 const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
 const DelayLogic = require('../../../src/lib/delayers/DelayLogic');
+const InMemoryRetryDelayer = require('../../../src/lib/delayers/InMemoryRetryDelayer');
+const RetryDelayer = require('../../../src/lib/delayers/RetryDelayer');
 const RetryManager = require('../../../src/lib/RetryManager');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 const UnitHooksHelper = require('../../helpers/UnitHooksHelper');
@@ -35,14 +37,25 @@ test('RetryManager: Test class interface', (t) => {
   retryManager.should.respondTo('retryAttemptToDelayTime');
   retryManager.should.respondTo('log');
   retryManager.should.have.property('retryLimit');
+  // Ensure default message delayers is InMemoryRetryDelayer.
+  retryManager.retryDelayer.should.be.an.instanceof(RetryDelayer);
+  retryManager.retryDelayer.should.be.an.instanceof(InMemoryRetryDelayer);
   // Ensure default retry delay logic is DelayLogic.exponentialBackoff
   retryManager.retryAttemptToDelayTime.should.be.equal(DelayLogic.exponentialBackoff);
 
-  // Ensure it's possible to override DelayLogic
+  // Ensure it's possible to override RetryDelayer.
+  class CustomRetryDelayer extends RetryDelayer {}
+  const retryDelayer = new CustomRetryDelayer();
+  const retryManagerCustomRetryDelayer = new RetryManager(t.context.queue, false, retryDelayer);
+  retryManagerCustomRetryDelayer.retryDelayer.should.be.an.instanceof(RetryDelayer);
+  retryManagerCustomRetryDelayer.retryDelayer.should.be.an.instanceof(CustomRetryDelayer);
+  retryManagerCustomRetryDelayer.retryDelayer.should.respondTo('delayMessageRetry');
+
+  // Ensure it's possible to override DelayLogic.
   const customDelayLogic = currentRetryNumber => currentRetryNumber;
-  const retryManagerCustom = new RetryManager(t.context.queue, customDelayLogic);
-  retryManagerCustom.should.respondTo('retryAttemptToDelayTime');
-  retryManagerCustom.retryAttemptToDelayTime.should.be.equal(customDelayLogic);
+  const retryManagerCustomDelayLogic = new RetryManager(t.context.queue, customDelayLogic);
+  retryManagerCustomDelayLogic.should.respondTo('retryAttemptToDelayTime');
+  retryManagerCustomDelayLogic.retryAttemptToDelayTime.should.be.equal(customDelayLogic);
 });
 
 /**
