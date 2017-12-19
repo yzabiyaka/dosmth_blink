@@ -51,7 +51,7 @@ class Worker {
     );
 
     // @todo: make retry manager configurable.
-    const retryManager = new RetryManager(this.queue, false, redisRetryDelayer);
+    const retryManager = new RetryManager(this.queue, redisRetryDelayer);
 
     // Semi-generated name
     const consumerTag = await this.queue.subscribe(

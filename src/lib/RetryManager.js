@@ -13,7 +13,7 @@ const RetryDelayer = require('./delayers/RetryDelayer');
 // ------- Class ---------------------------------------------------------------
 
 class RetryManager {
-  constructor(queue, republishDelayLogic = false, retryDelayer = false) {
+  constructor(queue, retryDelayer = false, delayLogic = false) {
     this.queue = queue;
 
     // Retry delay mechanism.
@@ -25,11 +25,11 @@ class RetryManager {
     }
 
     // Retry delay logic.
-    if (typeof republishDelayLogic === 'function') {
-      this.retryAttemptToDelayTime = republishDelayLogic;
+    if (typeof delayLogic === 'function') {
+      this.delayLogic = delayLogic;
     } else {
       // Default exponential backoff logic
-      this.retryAttemptToDelayTime = DelayLogic.exponentialBackoff;
+      this.delayLogic = DelayLogic.exponentialBackoff;
     }
 
     // Retry limit is a hardcoded const now.
@@ -50,7 +50,7 @@ class RetryManager {
     message.incrementRetryAttempt(reason);
 
     // Calculate wait time until the redelivery.
-    const delayMs = this.retryAttemptToDelayTime(message.getRetryAttempt());
+    const delayMs = this.delayLogic(message.getRetryAttempt());
 
     // Log retry information.
     this.log(
