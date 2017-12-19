@@ -26,7 +26,7 @@ test.afterEach.always(UnitHooksHelper.destroyRandomQueueInMemory);
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * RetryManager: constructor()
+ * InMemoryRetryDelayer: constructor()
  */
 test('InMemoryRetryDelayer: Test class interface', () => {
   const inMemoryRetryDelayer = new InMemoryRetryDelayer();
@@ -35,7 +35,7 @@ test('InMemoryRetryDelayer: Test class interface', () => {
 });
 
 /**
- * RetryManager.republishWithDelay()
+ * InMemoryRetryDelayer.delayMessageRetry()
  */
 test('InMemoryRetryDelayer.delayMessageRetry(): should republish original message', async (t) => {
   const queue = t.context.queue;
@@ -43,7 +43,7 @@ test('InMemoryRetryDelayer.delayMessageRetry(): should republish original messag
   const nackStub = sinon.stub(queue, 'nack').returns(null);
   const publishStub = sinon.stub(queue, 'publish').returns(null);
 
-  // Create retryManager.
+  // Create InMemoryRetryDelayer.
   const inMemoryRetryDelayer = new InMemoryRetryDelayer();
 
   // Prepare retry message for the manager.
