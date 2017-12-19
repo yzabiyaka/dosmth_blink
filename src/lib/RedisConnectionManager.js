@@ -40,13 +40,13 @@ class RedisConnectionManager {
   async connect() {
     // Create Redis connection.
     // This will automatically initiate the connection.
-    this.redis = new Redis(this.redisConfig);
+    this.client = new Redis(this.redisConfig);
 
     // Attach event handles
-    this.attachEventHandlers(this.redis);
+    this.attachEventHandlers(this.client);
 
     // Test the connection by sending PING.
-    const pingResult = await this.redis.ping();
+    const pingResult = await this.client.ping();
     if (pingResult !== 'PONG') {
       const wrappedError = new BlinkConnectionError(
         `Redis didn't resond expected PONG to PING. Response was: ${pingResult}`,
@@ -60,7 +60,11 @@ class RedisConnectionManager {
   }
 
   async disconnect() {
-    await this.redis.disconnect();
+    await this.client.disconnect();
+  }
+
+  getClient() {
+    return this.cleint;
   }
 
   // ------- Static helpers  ---------------------------------------------------
@@ -72,14 +76,14 @@ class RedisConnectionManager {
    *
    * @param  {Redis} redis Redis instance
    */
-  attachEventHandlers(redis) {
-    redis.on('error', RedisConnectionManager.logFailure);
-    redis.on('connect', this.logSuccess);
-    redis.on('reconnecting', this.logRetryAttempt);
+  attachEventHandlers(client) {
+    client.on('error', RedisConnectionManager.logFailure);
+    client.on('connect', this.logSuccess);
+    client.on('reconnecting', this.logRetryAttempt);
   }
 
   logSuccess() {
-    const networkData = RedisConnectionManager.getNetworkData(this.redis);
+    const networkData = RedisConnectionManager.getNetworkData(this.client);
     logger.info('Redis connection created', {
       code: 'success_redis_connection_manager_connection_created',
       redis_local: `${networkData.localAddress}:${networkData.localPort}`,
@@ -90,7 +94,7 @@ class RedisConnectionManager {
   logRetryAttempt() {
     // Log retry information.
     logger.debug(
-      `Redis reconnect scheduled, attempt ${this.redis.retryAttempts}`,
+      `Redis reconnect scheduled, attempt ${this.client.retryAttempts}`,
       {
         code: 'debug_redis_connection_manager_reconnect_scheduled',
       },
