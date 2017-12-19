@@ -7,6 +7,8 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
+// ------- Internal imports ----------------------------------------------------
+
 const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
 const DelayLogic = require('../../../src/lib/delayers/DelayLogic');
 const RetryManager = require('../../../src/lib/RetryManager');
@@ -31,7 +33,6 @@ test('RetryManager: Test class interface', (t) => {
   const retryManager = new RetryManager(t.context.queue);
   retryManager.should.respondTo('retry');
   retryManager.should.respondTo('retryAttemptToDelayTime');
-  retryManager.should.respondTo('republishWithDelay');
   retryManager.should.respondTo('log');
   retryManager.should.have.property('retryLimit');
   // Ensure default retry delay logic is DelayLogic.exponentialBackoff
@@ -78,7 +79,7 @@ test('RetryManager.retry(): ensure nack when retry limit is reached', async (t) 
 /**
  * RetryManager.retry()
  */
-test('RetryManager.retry(): should call republishWithDelay with correct params', async (t) => {
+test('RetryManager.retry(): should delegate the delay procedure to an instance of RetryDelayer', async (t) => {
   const queue = t.context.queue;
 
   // Create retryManager.
@@ -92,9 +93,9 @@ test('RetryManager.retry(): should call republishWithDelay with correct params',
   const retryAttempt = retryManager.retryLimit - 1;
   message.getMeta().retryAttempt = retryAttempt;
 
-  // Stub republishWithDelay.
-  const republishWithDelayStub = sinon.stub(retryManager, 'republishWithDelay');
-  republishWithDelayStub.resolves(true);
+  // Stub RetryDelayer.delayMessageRetryStub().
+  const delayMessageRetryStub = sinon.stub(retryManager.retryDelayer, 'delayMessageRetry');
+  delayMessageRetryStub.resolves(true);
 
   // Pass the message to retry().
   const result = await retryManager.retry(message, retryError);
@@ -104,60 +105,15 @@ test('RetryManager.retry(): should call republishWithDelay with correct params',
   // In example above, it will be 100.
   message.getRetryAttempt().should.equal(retryAttempt + 1);
 
-  // Ensure republishWithDelay() recived correct message and delay call.
-  republishWithDelayStub.should.have.been.calledWith(
+  // Ensure delayMessageRetryStub() recived correct message and delay call.
+  delayMessageRetryStub.should.have.been.calledWith(
+    queue,
     message,
     DelayLogic.exponentialBackoff(retryAttempt + 1),
   );
 
   // Cleanup.
-  republishWithDelayStub.restore();
-});
-
-/**
- * RetryManager.republishWithDelay()
- */
-test('RetryManager.republishWithDelay(): should republish original message', async (t) => {
-  const queue = t.context.queue;
-  // Stub queue method to ensure nack() will be called.
-  const nackStub = sinon.stub(queue, 'nack').returns(null);
-  const publishStub = sinon.stub(queue, 'publish').returns(null);
-
-  // Create retryManager.
-  const retryManager = new RetryManager(queue);
-
-  // Prepare retry message for the manager.
-  const message = MessageFactoryHelper.getRandomMessage();
-  const retryError = new BlinkRetryError('Testing BlinkRetryError', message);
-  message.incrementRetryAttempt(retryError.message);
-
-
-  // Fake clock so we don't have to wait on this implementation,
-  // but still are providing real wait time.
-  const waitTime = 60 * 1000; // 60s.
-  const clock = sinon.useFakeTimers();
-
-  // Request message republish in 60s.
-  const resultPromise = retryManager.republishWithDelay(message, waitTime);
-
-  // Advace the clock to wait time before actually waiting on promise.
-  clock.tick(waitTime);
-
-  // Should be resolved immidiatelly.
-  const result = await resultPromise;
-  // Important: reset the clock.
-  clock.restore();
-
-  // Unless error is thrown, result will be true.
-  result.should.be.true;
-
-  // Make sure message hasn been nackd and then republished again.
-  nackStub.should.have.been.calledWith(message);
-  publishStub.should.have.been.calledWith(message);
-
-  // Cleanup.
-  nackStub.restore();
-  publishStub.restore();
+  delayMessageRetryStub.restore();
 });
 
 // ------- End -----------------------------------------------------------------

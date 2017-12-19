@@ -1,19 +1,35 @@
 'use strict';
 
+// ------- Imports -------------------------------------------------------------
+
 const logger = require('winston');
 
+// ------- Internal imports ----------------------------------------------------
+
 const DelayLogic = require('./delayers/DelayLogic');
+const InMemoryRetryDelayer = require('./delayers/InMemoryRetryDelayer');
+const RetryDelayer = require('./delayers/RetryDelayer');
+
+// ------- Class ---------------------------------------------------------------
 
 class RetryManager {
-  constructor(queue, republishDelayLogic = false) {
+  constructor(queue, republishDelayLogic = false, retryDelayer = false) {
     this.queue = queue;
 
+    // Retry delay mechanism.
+    if (retryDelayer instanceof RetryDelayer) {
+      this.retryDelayer = retryDelayer;
+    } else {
+      // Defaults to in-memory delayer.
+      this.retryDelayer = new InMemoryRetryDelayer();
+    }
+
     // Retry delay logic.
-    if (!republishDelayLogic || typeof republishDelayLogic !== 'function') {
+    if (typeof republishDelayLogic === 'function') {
+      this.retryAttemptToDelayTime = republishDelayLogic;
+    } else {
       // Default exponential backoff logic
       this.retryAttemptToDelayTime = DelayLogic.exponentialBackoff;
-    } else {
-      this.retryAttemptToDelayTime = republishDelayLogic;
     }
 
     // Retry limit is a hardcoded const now.
@@ -44,19 +60,7 @@ class RetryManager {
       'debug_retry_manager_redeliver_scheduled',
     );
 
-    return this.republishWithDelay(message, delayMs);
-  }
-
-  async republishWithDelay(message, delayMs) {
-    // Delay republish using timeout.
-    // Note: this conflicts with prefetch_count functionality, see issue #70.
-    await new Promise(resolve => setTimeout(resolve, delayMs));
-
-    // Discard original message.
-    this.queue.nack(message);
-    // Republish modified message.
-    this.queue.publish(message);
-    return true;
+    return this.retryDelayer.delayMessageRetry(this.queue, message, delayMs);
   }
 
   retryAllowed(message, reason) {
@@ -86,4 +90,8 @@ class RetryManager {
   }
 }
 
+// ------- Exports -------------------------------------------------------------
+
 module.exports = RetryManager;
+
+// ------- End -----------------------------------------------------------------
