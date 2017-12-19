@@ -1,10 +1,17 @@
 'use strict';
 
-const logger = require('winston');
-const uuidV4 = require('uuid/v4');
+// ------- Imports -------------------------------------------------------------
 
-const DelayLogic = require('../lib/delayers/DelayLogic');
+const Redis = require('ioredis');
+const uuidV4 = require('uuid/v4');
+const logger = require('winston');
+
+// ------- Internal imports ----------------------------------------------------
+
+const RedisRetryDelayer = require('../lib/delayers/RedisRetryDelayer');
 const RetryManager = require('../lib/RetryManager');
+
+// ------- Class ---------------------------------------------------------------
 
 class Worker {
   constructor(blink) {
@@ -12,47 +19,49 @@ class Worker {
   }
 
   async start() {
-    if (this.queue) {
-      // Limit the number of messages simultaneously loaded into
-      // worker's memory to avoid reaching memory limit.
-      await this.limitMessagesInMemory(this.blink.config.app.prefetchCount);
-
-      // @todo: make rate limit configurable per worker
-      const rateLimit = this.blink.config.app.rateLimit;
-      const workerName = this.constructor.name;
-      // TODO: get from dyno?
-      const consumerName = `${workerName}-${uuidV4()}`;
-
-      const meta = {
-        env: this.blink.config.app.env,
-        code: 'debug_rate_limit_set',
-        worker: workerName,
-      };
-
-      logger.debug(
-        `Rate limit set to ${rateLimit}`,
-        meta,
-      );
-
-      // @todo: make retry manager configurable.
-      const retryManager = new RetryManager(this.queue, DelayLogic.constantTimeDelay(1000));
-      // Hardcoding rate limit to be 18,000 (approx 5 hours)
-      // @todo: remove
-      retryManager.retryLimit = this.blink.config.app.retryLimit;
-
-      // Semi-generated name
-      const consumerTag = await this.queue.subscribe(
-        this.consume,
-        { rateLimit, retryManager },
-        consumerName,
-      );
-      // returned consumerTag should be the same as consumerName
-      logger.info(`Listening for messages in "${this.queue.name}" queue as ${consumerTag}`, {
-        code: 'success_worker_start',
-      });
-    } else {
+    if (!this.queue) {
       logger.warning('Queue is not established, waiting');
+      return;
     }
+
+    // Limit the number of messages simultaneously loaded into
+    // worker's memory to avoid reaching memory limit.
+    await this.limitMessagesInMemory(this.blink.config.app.prefetchCount);
+
+    // @todo: make rate limit configurable per worker
+    const rateLimit = this.blink.config.app.rateLimit;
+    const workerName = this.constructor.name;
+    // TODO: get from dyno?
+    const consumerName = `${workerName}-${uuidV4()}`;
+
+    const meta = {
+      env: this.blink.config.app.env,
+      code: 'debug_rate_limit_set',
+      worker: workerName,
+    };
+
+    logger.debug(
+      `Rate limit set to ${rateLimit}`,
+      meta,
+    );
+
+    // Initialize ioredis for the delay infrastructure.
+    const ioredis = new Redis(this.blink.config.redis);
+    const redisRetryDelayer = new RedisRetryDelayer(ioredis);
+
+    // @todo: make retry manager configurable.
+    const retryManager = new RetryManager(this.queue, false, redisRetryDelayer);
+
+    // Semi-generated name
+    const consumerTag = await this.queue.subscribe(
+      this.consume,
+      { rateLimit, retryManager },
+      consumerName,
+    );
+    // returned consumerTag should be the same as consumerName
+    logger.info(`Listening for messages in "${this.queue.name}" queue as ${consumerTag}`, {
+      code: 'success_worker_start',
+    });
   }
 
   async limitMessagesInMemory(prefetchCount) {
@@ -75,4 +84,8 @@ class Worker {
   }
 }
 
+// ------- Exports -------------------------------------------------------------
+
 module.exports = Worker;
+
+// ------- End -----------------------------------------------------------------
