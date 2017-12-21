@@ -1,7 +1,7 @@
 'use strict';
 
 const BlinkError = require('../errors/BlinkError');
-const RedisRetriesRepublishTimer = require('../timers/RedisRetriesRepublishTimer');
+const RedisRetriesRepublishTimerTask = require('../timers/RedisRetriesRepublishTimerTask');
 const BlinkApp = require('./BlinkApp');
 
 class BlinkWorkerApp extends BlinkApp {
@@ -26,7 +26,7 @@ class BlinkWorkerApp extends BlinkApp {
 
   static getAvailableTimers() {
     return {
-      'redis-retries-republish-timer': RedisRetriesRepublishTimer,
+      'redis-retries-republish': RedisRetriesRepublishTimerTask,
     };
   }
 }

@@ -2,9 +2,9 @@
 
 // const logger = require('winston');
 
-const Timer = require('./Timer');
+const SkipTimer = require('./SkipTimer');
 
-class RedisRetriesRepublishTimer extends Timer {
+class RedisRetriesRepublishTimerTask extends SkipTimer {
   constructor(blink) {
     super(blink);
 
@@ -13,8 +13,9 @@ class RedisRetriesRepublishTimer extends Timer {
   }
 
   setup() {
-    // Repeat inteval, ms.
-    this.interval = 1000;
+    // Repeat delay, ms.
+    this.delay = 1000;
+    // Convenience properties.
     this.redisClient = this.blink.redis.getClient();
     this.retrySet = this.blink.redis.retrySet;
     this.retrySetProcessLimit = this.blink.redis.retrySetProcessLimit;
@@ -70,4 +71,4 @@ class RedisRetriesRepublishTimer extends Timer {
   // }
 }
 
-module.exports = RedisRetriesRepublishTimer;
+module.exports = RedisRetriesRepublishTimerTask;

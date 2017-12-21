@@ -1,36 +1,28 @@
 'use strict';
 
-// ------- Imports -------------------------------------------------------------
-
-// const Redis = require('ioredis');
-// const logger = require('winston');
-
-// ------- Internal imports ----------------------------------------------------
-
-// const RedisRetryDelayer = require('../lib/delayers/RedisRetryDelayer');
-// const RetryManager = require('../lib/RetryManager');
-
-// ------- Class ---------------------------------------------------------------
+// ------- Interface -----------------------------------------------------------
 
 class Timer {
-  constructor(blink) {
-    this.blink = blink;
-    this.tick = this.tick.bind(this);
-    this.counter = 0;
-    this.concurrent = 0;
-  }
+  /* eslint-disable no-unused-vars, class-methods-use-this */
+  /* Next methods are interface methods declarations */
 
   start() {
-    setInterval(this.tick, this.interval);
+    throw new TypeError('start() method must be implemented when extending from Timer');
+  }
+
+  stop() {
+    throw new TypeError('stop() method must be implemented when extending from Timer');
   }
 
   async tick() {
-    // Todo: implement pause when to many concurrent?
-    this.counter += 1;
-    this.concurrent += 1;
-    await this.run(this.counter);
-    this.concurrent -= 1;
+    throw new TypeError('tick() method must be implemented when extending from Timer');
   }
+
+  async run(tickCount) {
+    throw new TypeError('run() method must be implemented when extending from Timer');
+  }
+
+  /* eslint-enable */
 }
 
 // ------- Exports -------------------------------------------------------------
