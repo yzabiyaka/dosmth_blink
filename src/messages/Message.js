@@ -76,7 +76,40 @@ class Message {
     return true;
   }
 
-  static parseIncomingPayload(incomingMessage) {
+  static fromCtx(ctx) {
+    const messageData = {
+      data: ctx.request.body,
+      meta: {
+        // TODO: save more metadata/
+        request_id: ctx.id,
+      },
+    };
+    return this.heuristicMessageFactory(messageData);
+  }
+
+  static fromRabbitMessage(rabbitMessage) {
+    const payload = this.unpackRabbitMessage(rabbitMessage);
+    if (!payload.data || !payload.meta) {
+      throw new MessageParsingBlinkError('No data in message', payload);
+    }
+
+    const messageData = {
+      data: payload.data,
+      meta: payload.meta,
+    };
+    const message = this.heuristicMessageFactory(messageData);
+    // Required to be compatible with RabbitMQ.
+    // See RabbitMQBroker.ack() note.
+    // TODO: make this method independent from RabbitMQ specifics..
+    message.fields = rabbitMessage.fields;
+    return message;
+  }
+
+  static heuristicMessageFactory(messageData = {}) {
+    return new this.prototype.constructor(messageData);
+  }
+
+  static unpackRabbitMessage(incomingMessage) {
     let payload = false;
     const rawPayload = incomingMessage.content.toString();
     try {
