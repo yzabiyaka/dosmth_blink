@@ -84,6 +84,13 @@ class Message {
         request_id: ctx.id,
       },
     };
+
+    // Save GET params when present.
+    // TODO: only save whitelsited query params?
+    if (ctx.query && Object.keys(ctx.query).length) {
+      messageData.meta.query = ctx.query;
+    }
+
     return this.heuristicMessageFactory(messageData);
   }
 
@@ -105,6 +112,35 @@ class Message {
     return message;
   }
 
+  /**
+   * Dynamicly create a new instance of the concrete message class.
+   *
+   * This function automatically figures out on what of concrete message
+   * subclasses one of static factory methods has been called and dynamically
+   * creates a new instance of it.
+   *
+   * For example FreeFormMessage.heuristicMessageFactory({}) will return
+   * an instance of FreeFormMessage. Despite the fact that actual
+   * heuristicMessageFactory() method lives in its superclass, Message.
+   *
+   * This feature depends on the property of `this` context
+   * inside of static method to have `prototype` property
+   * that is a class on which static method is called.
+   * For example:
+   *
+   * ```
+   * class Message {
+   *   static printClassName() {
+   *     console.log(this.prototype.constructor.name);
+   *   }
+   * }
+   * class SpecificMessage extends Message {}
+   * SpecificMessage.printClassName(); // prints 'SpecificMessage'
+   * ```
+   *
+   * @param  {Object} messageData The message data, see consturctor()
+   * @return {this.prototype}  A new instance of the concrete message class.
+   */
   static heuristicMessageFactory(messageData = {}) {
     return new this.prototype.constructor(messageData);
   }
