@@ -113,7 +113,7 @@ class Message {
   }
 
   /**
-   * Dynamicly create a new instance of the concrete message class.
+   * Dynamically create a new instance of the concrete message class.
    *
    * This function automatically figures out on what of concrete message
    * subclasses one of static factory methods has been called and dynamically
@@ -124,8 +124,8 @@ class Message {
    * heuristicMessageFactory() method lives in its superclass, Message.
    *
    * This feature depends on the property of `this` context
-   * inside of static method to have `prototype` property
-   * that is a class on which static method is called.
+   * inside of a static method to have `prototype` property
+   * that is the class on which static method is called.
    * For example:
    *
    * ```
@@ -138,7 +138,7 @@ class Message {
    * SpecificMessage.printClassName(); // prints 'SpecificMessage'
    * ```
    *
-   * @param  {Object} messageData The message data, see consturctor()
+   * @param  {Object} messageData The message data, see constructor()
    * @return {this.prototype}  A new instance of the concrete message class.
    */
   static heuristicMessageFactory(messageData = {}) {
