@@ -17,14 +17,15 @@ const RetryDelayer = require('./RetryDelayer');
 // ------- Class ---------------------------------------------------------------
 
 class RedisRetryDelayer extends RetryDelayer {
-  constructor(ioredis, retrySetName) {
+  constructor(redisClient, { retrySet, retrySetProcessLimit }) {
     super();
-    this.ioredis = ioredis;
-    this.retrySetName = retrySetName;
+    this.redisClient = redisClient;
+    this.retrySet = retrySet;
+    this.retrySetProcessLimit = retrySetProcessLimit;
   }
 
   /**
-   * Sends `message` to Redis Sorted Set, ordered by the expected retry time,
+   * Sends `message` to Redis Sorted Set, ordered by the return time,
    * which is calculated from unix timestamp + `delayMs`.
    * When time has come, special Redis Retry Redelivery Worker
    * will republish it back to the `queue`.
@@ -40,14 +41,14 @@ class RedisRetryDelayer extends RetryDelayer {
   async delayMessageRetry(queue, message, delayMs) {
     // Calculate return (redelivery) time.
     // This will serve as the index for the ordered set.
-    const redeliveryTime = RedisRetryDelayer.calculateRedeliveryTime(delayMs);
+    const redeliveryTime = RedisRetryDelayer.calculateReturnTime(delayMs);
     // Save queue name to redeliver message to and convert message to String.
-    const messageContent = RedisRetryDelayer.prepareMessage(message, queue);
+    const messageContent = RedisRetryDelayer.packMessage(message, queue);
     // Publish message to redis.
     let result;
     try {
-      result = await this.ioredis.zadd(
-        this.retrySetName,
+      result = await this.redisClient.zadd(
+        this.retrySet,
         redeliveryTime,
         messageContent,
       );
@@ -73,13 +74,24 @@ class RedisRetryDelayer extends RetryDelayer {
     return true;
   }
 
-  static calculateRedeliveryTime(delayMs) {
+  async getReadyMessages() {
+    const packedMessages = await this.redisClient.zrangebyscore(
+      this.retrySet,
+      0, // from 0
+      moment().unix(), // to date
+      ['LIMIT', 0, this.retrySetProcessLimit],
+    );
+
+    return packedMessages;
+  }
+
+  static calculateReturnTime(delayMs) {
     const currentMoment = moment();
     currentMoment.add(delayMs, 'milliseconds');
     return currentMoment.unix();
   }
 
-  static prepareMessage(message, queue) {
+  static packMessage(message, queue) {
     message.setRetryReturnToQueue(queue.name);
     return message.toString();
   }

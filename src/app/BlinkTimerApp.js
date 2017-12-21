@@ -4,11 +4,11 @@ const BlinkError = require('../errors/BlinkError');
 const RedisRetriesRepublishTimerTask = require('../timers/RedisRetriesRepublishTimerTask');
 const BlinkApp = require('./BlinkApp');
 
-class BlinkWorkerApp extends BlinkApp {
+class BlinkTimerApp extends BlinkApp {
   constructor(config, name) {
     super(config);
 
-    const timersMapping = BlinkWorkerApp.getAvailableTimers();
+    const timersMapping = BlinkTimerApp.getAvailableTimers();
     if (!timersMapping[name]) {
       throw new BlinkError(`Timer ${name} is not found`);
     }
@@ -31,4 +31,4 @@ class BlinkWorkerApp extends BlinkApp {
   }
 }
 
-module.exports = BlinkWorkerApp;
+module.exports = BlinkTimerApp;
