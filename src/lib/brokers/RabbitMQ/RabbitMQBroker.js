@@ -33,6 +33,15 @@ class RabbitMQBroker extends Broker {
 
     // RabbitMQ exchange used for standard interfacing with queues.
     this.topicExchange = settings.topicExchange;
+
+    // Supported priorities.
+    this.priorities = new Map();
+    // Process after all other messages are done.
+    this.priorities.set('LOW', 0);
+    // Normal messages.
+    this.priorities.set('MEDUIM', 1);
+    // Skip the line pass: put messages directly to the front of the queue.
+    this.priorities.set('HIGH', 2);
   }
 
   // ------- Public API  -------------------------------------------------------
@@ -270,7 +279,10 @@ class RabbitMQBroker extends Broker {
       // queue length limit, etc. Also know as "x-arguments".
       // We may want to use them in the future for
       // declaring corresponding deadLetterExchange.
-      arguments: {},
+      arguments: {
+        // Define 3 priority levels: HIGH, LOW, MEDIUM.
+        maxPriority: 2, // Actually amounts to 3 levels: 0, 1, 2
+      },
     };
 
     try {
