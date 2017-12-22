@@ -96,7 +96,7 @@ class RabbitMQBroker extends Broker {
     let priorityId = this.priorities.get(priority);
     // We explicitly check for undefined to allow 0 as a valid value.
     if (priorityId === undefined) {
-      // All messages will be published with standart priority: 1.
+      // All messages will be published with standard priority: 1.
       priorityId = this.priorities.get('STANDARD');
     }
 

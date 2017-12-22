@@ -475,7 +475,7 @@ test('RabbitMQBroker.publishToRoute(): Happy path', (t) => {
   bufferArg.toString().should.be.equal(message.toString());
   optionsArg.should.be.have.property('mandatory', true);
   optionsArg.should.be.have.property('persistent', true);
-  // Should publish with standart priority be default.
+  // Should publish with standard priority be default.
   optionsArg.should.be.have.property('priority', broker.priorities.get('STANDARD'));
 });
 

@@ -86,14 +86,14 @@ test('Exchange.publishToRoute(): Make sure exchanges are created with expected p
   // Purge queue in case it already existed.
   await priorityTestQ.purge();
 
-  const messageStandart1 = new Message({ data: 'standart-1' });
-  const messageStandart2 = new Message({ data: 'standart-2' });
+  const messageStandard1 = new Message({ data: 'standard-1' });
+  const messageStandard2 = new Message({ data: 'standard-2' });
   const messageLow = new Message({ data: 'low' });
   const messageHigh = new Message({ data: 'high' });
 
-  // Publish 1 and 2 as standart messages.
-  broker.publishToRoute(priorityTestQ.name, messageStandart1);
-  broker.publishToRoute(priorityTestQ.name, messageStandart2);
+  // Publish 1 and 2 as standard messages.
+  broker.publishToRoute(priorityTestQ.name, messageStandard1);
+  broker.publishToRoute(priorityTestQ.name, messageStandard2);
 
   // Publish 3 to the end
   broker.publishToRoute(priorityTestQ.name, messageLow, 'LOW');
@@ -120,13 +120,13 @@ test('Exchange.publishToRoute(): Make sure exchanges are created with expected p
   messages[1].should.have.property('properties');
   messages[1].properties.should.have.property('priority', 1);
   messages[1].should.have.property('payload');
-  messages[1].payload.should.have.string('"data":"standart-1"');
+  messages[1].payload.should.have.string('"data":"standard-1"');
   messages.should.have.lengthOf(4);
   // STANDARD 2:
   messages[2].should.have.property('properties');
   messages[2].properties.should.have.property('priority', 1);
   messages[2].should.have.property('payload');
-  messages[2].payload.should.have.string('"data":"standart-2"');
+  messages[2].payload.should.have.string('"data":"standard-2"');
   messages.should.have.lengthOf(4);
   // LOW:
   messages[3].should.have.property('properties');
