@@ -86,7 +86,7 @@ class RabbitMQBroker extends Broker {
    *
    * @param  {string} route      Routing key
    * @param  {object} message    Message
-   * @param  {string} priority   Set message priority to one of the follwing:
+   * @param  {string} priority   Set message priority to one of the following:
    *                             STANDARD, LOW, HIGH, Defaults to STANDARD.
    *                             Make sure to use uppercase.
    * @return {undefined}         This method is RPC and does not have server response
