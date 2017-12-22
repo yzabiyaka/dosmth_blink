@@ -106,7 +106,8 @@ test('Exchange.publishToRoute(): Make sure exchanges are created with expected p
 
   // Test messages in the queue using RabbitMQ Management Plugin API.
   const rabbit = new RabbitManagement(config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom(priorityTestQ.name, 4, false);
+  // Ask for 100 messages, but expect only 4 in response.
+  const messages = await rabbit.getMessagesFrom(priorityTestQ.name, 100, false);
 
   // Ensure the order of messages:
   messages.should.have.lengthOf(4);
