@@ -116,13 +116,13 @@ test('Exchange.publishToRoute(): Make sure exchanges are created with expected p
   messages[0].should.have.property('payload');
   messages[0].payload.should.have.string('"data":"high"');
   messages.should.have.lengthOf(4);
-  // STANDART 1:
+  // STANDARD 1:
   messages[1].should.have.property('properties');
   messages[1].properties.should.have.property('priority', 1);
   messages[1].should.have.property('payload');
   messages[1].payload.should.have.string('"data":"standart-1"');
   messages.should.have.lengthOf(4);
-  // STANDART 2:
+  // STANDARD 2:
   messages[2].should.have.property('properties');
   messages[2].properties.should.have.property('priority', 1);
   messages[2].should.have.property('payload');

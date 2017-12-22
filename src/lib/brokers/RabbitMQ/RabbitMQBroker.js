@@ -39,7 +39,7 @@ class RabbitMQBroker extends Broker {
     // Process after all other messages are done.
     this.priorities.set('LOW', 0);
     // Normal messages.
-    this.priorities.set('STANDART', 1);
+    this.priorities.set('STANDARD', 1);
     // Skip the line pass: put messages directly to the front of the queue.
     this.priorities.set('HIGH', 2);
   }
@@ -87,17 +87,17 @@ class RabbitMQBroker extends Broker {
    * @param  {string} route      Routing key
    * @param  {object} message    Message
    * @param  {string} priority   Set message priority to one of the follwing:
-   *                             STANDART, LOW, HIGH, Defaults to STANDART.
+   *                             STANDARD, LOW, HIGH, Defaults to STANDARD.
    *                             Make sure to use uppercase.
    * @return {undefined}         This method is RPC and does not have server response
    */
-  publishToRoute(route, message, priority = 'STANDART') {
+  publishToRoute(route, message, priority = 'STANDARD') {
     // Will return undefined if requested prio is unknown.
     let priorityId = this.priorities.get(priority);
     // We explicitly check for undefined to allow 0 as a valid value.
     if (priorityId === undefined) {
       // All messages will be published with standart priority: 1.
-      priorityId = this.priorities.get('STANDART');
+      priorityId = this.priorities.get('STANDARD');
     }
 
     // Explicitly define desired options.
