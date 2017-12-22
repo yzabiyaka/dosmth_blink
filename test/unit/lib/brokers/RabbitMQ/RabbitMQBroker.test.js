@@ -244,6 +244,14 @@ test('RabbitMQBroker.createQueue(): Happy path', async (t) => {
 
   // Ensure queue assertion has been called.
   assertQueueStub.should.have.been.calledOnce;
+  // Would be neat to check actual arguments passed to channel's rpc call.
+  const [queueNameArg, optionsArg] = assertQueueStub.firstCall.args;
+  queueNameArg.should.equal(queueName);
+  optionsArg.should.be.have.property('exclusive', false);
+  optionsArg.should.be.have.property('durable', true);
+  optionsArg.should.be.have.property('autoDelete', false);
+  // It's zero-indexed, so -1.
+  optionsArg.should.be.have.property('maxPriority', broker.priorities.size - 1);
 
   // Ensure the queue has been bound to the topic exchange on expected routes.
   bindQueueStub.should.have.callCount(numberOfRoutes);
@@ -467,6 +475,8 @@ test('RabbitMQBroker.publishToRoute(): Happy path', (t) => {
   bufferArg.toString().should.be.equal(message.toString());
   optionsArg.should.be.have.property('mandatory', true);
   optionsArg.should.be.have.property('persistent', true);
+  // Should publish with standart priority be default.
+  optionsArg.should.be.have.property('priority', broker.priorities.get('STANDART'));
 });
 
 /**
