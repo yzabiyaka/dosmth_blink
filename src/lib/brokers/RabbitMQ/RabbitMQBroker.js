@@ -92,7 +92,7 @@ class RabbitMQBroker extends Broker {
    * @return {undefined}         This method is RPC and does not have server response
    */
   publishToRoute(route, message, priority = 'STANDARD') {
-    // Will return undefined if requested prio is unknown.
+    // Will return undefined if requested priority is unknown.
     let priorityId = this.priorities.get(priority);
     // We explicitly check for undefined to allow 0 as a valid value.
     if (priorityId === undefined) {
@@ -293,8 +293,8 @@ class RabbitMQBroker extends Broker {
       autoDelete: false,
       // See http://www.rabbitmq.com/priority.html
       // Define 3 priority levels: HIGH, LOW, MEDIUM.
-      // This is RabbtiMQ specific feature and. Normally it's declared through
-      // the `argumetns` object (see below), but amqplib exposes this feature
+      // This is RabbitMQ specific feature and. Normally it's declared through
+      // the `arguments` object (see below), but amqplib exposes this feature
       // through an option called `maxPriority`.
       // It'll be transformed it to `x-max-priority` argument.
       maxPriority: 2, // Actually amounts to 3 levels: 0, 1, 2.
