@@ -94,7 +94,8 @@ class RabbitMQBroker extends Broker {
   publishToRoute(route, message, priority = 'STANDART') {
     // Will return undefined if requested prio is unknown.
     let priorityId = this.priorities.get(priority);
-    if (!priorityId) {
+    // We explicitly check for undefined to allow 0 as a valid value.
+    if (priorityId === undefined) {
       // All messages will be published with standart priority: 1.
       priorityId = this.priorities.get('STANDART');
     }
