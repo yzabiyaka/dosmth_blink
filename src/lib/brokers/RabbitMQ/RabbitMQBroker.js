@@ -265,6 +265,7 @@ class RabbitMQBroker extends Broker {
   async assertQueue(queueName) {
     // Explicitly define desired options.
     // See https://www.rabbitmq.com/queues.html
+    // See http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertQueue
     const options = {
       // This option allows only one connection to the queue.
       // The queue will be deleted when that connection closes.
@@ -275,14 +276,15 @@ class RabbitMQBroker extends Broker {
       // The queue will be deleted when last consumer unsubscribes.
       // Nope.
       autoDelete: false,
-      // Used by plugins and broker-specific features such as message TTL,
-      // queue length limit, etc. Also know as "x-arguments".
-      // We may want to use them in the future for
-      // declaring corresponding deadLetterExchange.
-      arguments: {
-        // Define 3 priority levels: HIGH, LOW, MEDIUM.
-        maxPriority: 2, // Actually amounts to 3 levels: 0, 1, 2
-      },
+      // See http://www.rabbitmq.com/priority.html
+      // Define 3 priority levels: HIGH, LOW, MEDIUM.
+      // This is RabbtiMQ specific feature and. Normally it's declared through
+      // the `argumetns` object (see below), but amqplib exposes this feature
+      // through an option called `maxPriority`.
+      // It'll be transformed it to `x-max-priority` argument.
+      maxPriority: 2, // Actually amounts to 3 levels: 0, 1, 2.
+      // Used by plugins and broker-specific features.
+      arguments: {},
     };
 
     try {
