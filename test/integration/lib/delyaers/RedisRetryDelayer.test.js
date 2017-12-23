@@ -64,4 +64,53 @@ test('RedisRetryDelayer.delayMessageRetry(): Should save message to redis queue'
   sandbox.restore();
 });
 
+/**
+ * RedisRetryDelayer.getReadyMessages()
+ */
+test('RedisRetryDelayer.getReadyMessages(): Ensure messages will not be returned prematurly', async (t) => {
+  // Set variables from the context.
+  const { redis, queue } = t.context;
+
+  // Sinon sandbox.
+  const sandbox = sinon.createSandbox();
+
+  // Define test parameters.
+  const redisClient = redis.getClient();
+  const delayer = new RedisRetryDelayer(redisClient, redis.settings);
+
+  // Prepare 2 messages: one to be returned immidiatelly,
+  // second to be returned in an hor.
+  const shortDelayMessage = MessageFactoryHelper.getRandomMessage(true);
+  const longDelayMessage = MessageFactoryHelper.getRandomMessage(true);
+  // Should be immidiatelly returned.
+  const shortDelayMs = 1;
+  // Assuming this test will not run for an hour :)
+  const longDelayMs = 1000 * 3600;
+
+  // Stub queue's acknowledge message: we don't need to actually acknowledge
+  // the message.
+  const ackStub = sandbox.stub(queue, 'ack').returns(undefined);
+
+  // Call the delayer.
+  await delayer.delayMessageRetry(queue, shortDelayMessage, shortDelayMs);
+  await delayer.delayMessageRetry(queue, longDelayMessage, longDelayMs);
+
+  // Ensure delayer removed both message from the queue.
+  ackStub.should.have.been.calledTwice;
+
+  // Expecting this to return short delay message.
+  const readyMessages = await delayer.getReadyMessages();
+  readyMessages.should.have.lengthOf(1);
+  // TODO: ensure it's correct message
+
+  // Ensure the message has been saved to redis.
+  // Expect short and long messages to return.
+  const redisMessagesAll = await redisClient.zrange(redis.settings.retrySet, 0, 10);
+  redisMessagesAll.should.have.lengthOf(2);
+  // TODO: ensure it's correct messages.
+
+  // Restore stubbed functions.
+  sandbox.restore();
+});
+
 // ------- End -----------------------------------------------------------------

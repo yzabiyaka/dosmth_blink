@@ -45,16 +45,21 @@ class HooksHelper {
   static async startRedis(t) {
     t.context.config = require('../../config');
     // Override retry collection name.
-    t.context.config.redis.settings.retrySet = chance.word();
-    t.context.redis = new RedisConnectionManager(t.context.config.redis);
+    const settings = Object.assign({}, t.context.config.redis.settings);
+    settings.retrySet = `test-set-${chance.word()}`;
+    t.context.redis = new RedisConnectionManager({
+      connection: t.context.config.redis.connection,
+      settings,
+    });
     await t.context.redis.connect();
   }
 
   static async stopRedis(t) {
     // Delete test collection.
-    await t.context.redis.getClient().del(t.context.config.redis.settings.retrySet);
+    await t.context.redis.getClient().del(t.context.redis.settings.retrySet);
     await t.context.redis.disconnect();
     t.context.config = false;
+    t.context.redis = false;
   }
 
   static async createRandomQueue(t) {

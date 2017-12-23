@@ -23,7 +23,10 @@ class RedisConnectionManager {
     this.redisConfig.retryStrategy = DelayLogic.constantTimeDelay(1000);
 
     // The name of the sorted set used for delaying retried messages.
-    this.settings = settings;
+    // Note: make sure not to assign `settings` by reference, but copy its values.
+    this.settings = {};
+    this.settings.retrySet = settings.retrySet;
+    this.settings.retrySetProcessLimit = settings.retrySetProcessLimit;
 
     // Bind function that use object context.
     // LogSuccess logs out connection debug info.

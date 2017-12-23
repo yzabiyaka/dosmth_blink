@@ -75,13 +75,13 @@ class RedisRetryDelayer extends RetryDelayer {
   }
 
   async getReadyMessages() {
+    const currentTime = moment().unix();
     const packedMessages = await this.redisClient.zrangebyscore(
       this.retrySet,
       0, // from 0
-      moment().unix(), // to date
+      currentTime, // to date
       ['LIMIT', 0, this.retrySetProcessLimit],
     );
-
     return packedMessages;
   }
 
