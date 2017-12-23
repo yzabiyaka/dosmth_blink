@@ -19,24 +19,6 @@ chai.use(chaiAsPromised);
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * Exchange class interface
- */
-test('RabbitMQBroker interface', () => {
-  const config = require('../../../../../config');
-  const broker = new RabbitMQBroker(config.amqp);
-
-  broker.should.respondTo('connect');
-  broker.should.respondTo('disconnect');
-  broker.should.respondTo('publishToRoute');
-  broker.should.respondTo('subscribe');
-  broker.should.respondTo('ack');
-  broker.should.respondTo('nack');
-  broker.should.respondTo('createQueue');
-  broker.should.respondTo('purgeQueue');
-  broker.should.respondTo('deleteQueue');
-});
-
-/**
  * Exchange.setup(): Test RabbitMQ connection
  */
 test('RabbitMQBroker.connect(): Test RabbitMQ connection', async () => {
