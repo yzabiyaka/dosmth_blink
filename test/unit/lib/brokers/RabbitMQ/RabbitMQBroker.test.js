@@ -537,7 +537,7 @@ test('RabbitMQBroker.publishToRoute(): Ensure LOW priority', (t) => {
   bufferArg.toString().should.be.equal(message.toString());
   optionsArg.should.be.have.property('mandatory', true);
   optionsArg.should.be.have.property('persistent', true);
-  // Ensure HIGH priority is recognized.
+  // Ensure LOW priority is recognized.
   optionsArg.should.be.have.property('priority', broker.priorities.get('LOW'));
 });
 
