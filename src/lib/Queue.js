@@ -28,10 +28,10 @@ class Queue {
   /**
    * Send a single message to the queue bypassing routing.
    */
-  publish(message) {
+  publish(message, priority = 'STANDARD') {
     // By convention, queuess are mapped to their names.
     // @see Queue.constructor().
-    this.broker.publishToRoute(this.name, message);
+    this.broker.publishToRoute(this.name, message, priority);
   }
 
   /**
