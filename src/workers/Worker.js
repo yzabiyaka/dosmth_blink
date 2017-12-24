@@ -69,8 +69,7 @@ class Worker {
     // Subscribe this.consume to listening for new messages in the queue.s
     const consumerTag = await this.queue.subscribe(
       this.consume,
-      { rateLimit, retryManager },
-      consumerName,
+      { rateLimit, retryManager, consumerName },
     );
 
     // returned consumerTag should be the same as consumerName
