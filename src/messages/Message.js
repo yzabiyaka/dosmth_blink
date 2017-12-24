@@ -41,12 +41,12 @@ class Message {
     return this.payload.meta.retryAttempt || 0;
   }
 
-  getRetryReturnToQueue() {
-    return this.payload.meta.retryReturnToQueue;
-  }
-
   setRetryReturnToQueue(queueName) {
     this.payload.meta.retryReturnToQueue = queueName;
+  }
+
+  deleteRetryReturnToQueue() {
+    delete this.payload.meta.retryReturnToQueue;
   }
 
   incrementRetryAttempt(reason) {
@@ -154,12 +154,15 @@ class Message {
   }
 
   static unpackRabbitMessage(incomingMessage) {
-    let payload = false;
-    const rawPayload = incomingMessage.content.toString();
+    return Message.unpackJson(incomingMessage.content.toString());
+  }
+
+  static unpackJson(jsonMessage) {
+    let payload;
     try {
-      payload = JSON.parse(rawPayload);
+      payload = JSON.parse(jsonMessage);
     } catch (error) {
-      throw new MessageParsingBlinkError(error, rawPayload);
+      throw new MessageParsingBlinkError(error, jsonMessage);
     }
     return payload;
   }
