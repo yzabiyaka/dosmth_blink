@@ -29,11 +29,18 @@ class Worker {
     }
     this.queue = queue;
 
+    // Ensure consume method exists and bound it to the object context
+    // to preserve access to `this` in it.
+    if (!this.consume) {
+      throw new BlinkError(`${this.workerName} should implement consume method()`);
+    }
+    this.consume = this.consume.bind(this);
+
     // Allow overriding rateLimit.
     if (Number.isInteger(rateLimit) && rateLimit > 0) {
       this.rateLimit = rateLimit;
     }
-    this.log('debug', `Rate limit set to ${rateLimit}`, 'debug_rate_limit_set');
+    this.logInternal('debug', `Rate limit set to ${rateLimit}`, 'debug_rate_limit_set');
 
     // Initialize ioredis for the delay infrastructure.
     this.retryDelayer = new RedisRetryDelayer(
@@ -46,6 +53,10 @@ class Worker {
   }
 
   async start() {
+    if (!this.queue || !this.retryManager) {
+      throw new BlinkError('You need to run Worker.setup() before Worker.start()');
+    }
+
     // Limit the number of messages simultaneously loaded into
     // worker's memory to avoid reaching memory limit.
     await this.limitMessagesInMemory(this.messagsInMemoryLimit);
@@ -63,7 +74,7 @@ class Worker {
     );
 
     // returned consumerTag should be the same as consumerName
-    this.log(
+    this.logInternal(
       'info',
       `Listening for messages in "${this.queue.name}" queue as ${consumerTag}`,
       'success_worker_start',
@@ -71,7 +82,7 @@ class Worker {
   }
 
   async limitMessagesInMemory(prefetchCount) {
-    this.log(
+    this.logInternal(
       'debug',
       `Limiting messages in memory to ${prefetchCount}`,
       'debug_prefetch_count_set',
@@ -84,7 +95,7 @@ class Worker {
     return this.blink.broker.getChannel().prefetch(prefetchCount);
   }
 
-  log(level, message, code) {
+  logInternal(level, message, code) {
     const meta = {
       env: this.blink.config.app.env,
       code,
