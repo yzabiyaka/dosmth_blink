@@ -9,23 +9,16 @@ const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 
 class CustomerIoSmsBroadcastRelayWorker extends Worker {
-  constructor(blink) {
-    super(blink);
-    this.blink = blink;
+  setup() {
+    super.setup(this.blink.queues.customerioSmsBroadcastRelayQ);
+    // Setup Twilio.
     this.twilioClient = new Twilio(
       this.blink.config.twilio.accountSid,
       this.blink.config.twilio.authToken,
     );
-
+    // Setup Gambit.
     this.baseURL = this.blink.config.gambit.converationsBaseUrl;
     this.apiKey = this.blink.config.gambit.converationsApiKey;
-
-    // Bind process method to queue context
-    this.consume = this.consume.bind(this);
-  }
-
-  setup() {
-    this.queue = this.blink.queues.customerioSmsBroadcastRelayQ;
   }
 
   async consume(message) {
