@@ -66,6 +66,7 @@ class Queue {
     if (!rateLimit) {
       rateLimit = 100;
     }
+    // TODO: move consumerTag to options.
 
     const dequeuer = new Dequeuer(this, callback, retryManager, rateLimit);
     this.dequeuer = dequeuer;
