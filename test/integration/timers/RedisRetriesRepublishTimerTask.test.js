@@ -50,13 +50,9 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
 
   // Create a worker app to consume this message from the queue.
   class RetryTestWorker extends Worker {
-    constructor() {
-      super(blink);
-      this.consume = this.consume.bind(this);
-    }
     /* eslint-disable no-unused-vars, class-methods-use-this, no-empty-function */
     setup() {
-      this.queue = this.blink.queues.retryTestQ;
+      super.setup(this.blink.queues.retryTestQ);
     }
     async consume() {}
     /* eslint-enable */
