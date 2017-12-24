@@ -15,16 +15,9 @@ const SkipTimer = require('./SkipTimer');
 // ------- Class ---------------------------------------------------------------
 
 class RedisRetriesRepublishTimerTask extends SkipTimer {
-  constructor(blink) {
-    super(blink);
-
-    // Bind process method to queue context
-    this.run = this.run.bind(this);
-  }
-
   setup() {
     // Repeat delay, ms.
-    this.delay = 1000;
+    super.setup(1000);
     // Convenience properties.
     this.redisRetryDelayer = new RedisRetryDelayer(
       this.blink.redis.getClient(),

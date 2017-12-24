@@ -32,7 +32,7 @@ class Worker {
     // Ensure consume method exists and bound it to the object context
     // to preserve access to `this` in it.
     if (!this.consume) {
-      throw new BlinkError(`${this.workerName} should implement consume method()`);
+      throw new BlinkError(`${this.workerName} should implement consume() method`);
     }
     this.consume = this.consume.bind(this);
 
