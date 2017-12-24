@@ -8,7 +8,9 @@ const Worker = require('./Worker');
 
 class TwilioSmsInboundGambitRelayWorker extends Worker {
   setup() {
-    super.setup(this.blink.queues.twilioSmsInboundGambitRelayQ);
+    super.setup({
+      queue: this.blink.queues.twilioSmsInboundGambitRelayQ,
+    });
     // Setup Gambit.
     this.baseURL = this.blink.config.gambit.converationsBaseUrl;
     this.apiKey = this.blink.config.gambit.converationsApiKey;

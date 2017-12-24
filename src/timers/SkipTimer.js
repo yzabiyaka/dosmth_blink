@@ -2,12 +2,11 @@
 
 // ------- Imports -------------------------------------------------------------
 
-// const logger = require('winston');
+const logger = require('winston');
 
 // ------- Internal imports ----------------------------------------------------
 
-// const RedisRetryDelayer = require('../lib/delayers/RedisRetryDelayer');
-// const RetryManager = require('../lib/RetryManager');
+const BlinkError = require('../errors/BlinkError');
 const Timer = require('./Timer');
 
 // ------- Class ---------------------------------------------------------------
@@ -40,7 +39,7 @@ class SkipTimer extends Timer {
     if (Number.isInteger(delay) && delay > 0) {
       this.delay = delay;
     }
-    this.logInternal('debug', `Delay limit set to ${rateLimit}`, 'debug_skip_timer_delay_set');
+    this.logInternal('debug', `Delay limit set to ${delay}`, 'debug_skip_timer_delay_set');
 
     if (!this.consume) {
       throw new BlinkError(`${this.timerName} should implement run() method`);

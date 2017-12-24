@@ -23,7 +23,7 @@ class Worker {
     this.consumerName = `${this.workerName}-${uuidV4()}`;
   }
 
-  setup(queue, rateLimit = false) {
+  setup({ queue, rateLimit = false }) {
     if (!queue) {
       throw new BlinkError('Queue must be provided to Worker.setup()');
     }

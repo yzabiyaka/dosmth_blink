@@ -53,7 +53,7 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
   class RetryTestWorker extends Worker {
     /* eslint-disable no-unused-vars, class-methods-use-this, no-empty-function */
     setup() {
-      super.setup(this.blink.queues.retryTestQ);
+      super.setup({ queue: this.blink.queues.retryTestQ });
     }
     async consume() {}
     /* eslint-enable */

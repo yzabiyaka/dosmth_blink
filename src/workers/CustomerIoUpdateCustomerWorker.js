@@ -9,7 +9,9 @@ const Worker = require('./Worker');
 
 class CustomerIoUpdateCustomerWorker extends Worker {
   setup() {
-    super.setup(this.blink.queues.customerIoUpdateCustomerQ);
+    super.setup({
+      queue: this.blink.queues.customerIoUpdateCustomerQ,
+    });
     // Setup customer.io client.
     this.cioConfig = this.blink.config.customerio;
     this.cioClient = new CIO(this.cioConfig.apiKey, this.cioConfig.siteId);

@@ -7,7 +7,9 @@ const Worker = require('./Worker');
 
 class FetchWorker extends Worker {
   setup() {
-    super.setup(this.blink.queues.fetchQ);
+    super.setup({
+      queue: this.blink.queues.fetchQ,
+    });
   }
 
   async consume(fetchMessage) {

@@ -7,8 +7,10 @@ const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 
 class CustomerIoTrackEventWorker extends Worker {
-  setup(queue) {
-    super.setup(queue);
+  setup({ queue, eventName }) {
+    super.setup({ queue });
+    // Event name: track_campaign_signup or track_campaign_signup_post.
+    this.eventName = eventName;
     // Setup customer.io client.
     this.cioConfig = this.blink.config.customerio;
     this.cioClient = new CIO(this.cioConfig.apiKey, this.cioConfig.siteId);

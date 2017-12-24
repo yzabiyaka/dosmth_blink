@@ -10,7 +10,9 @@ const Worker = require('./Worker');
 
 class CustomerIoSmsBroadcastRelayWorker extends Worker {
   setup() {
-    super.setup(this.blink.queues.customerioSmsBroadcastRelayQ);
+    super.setup({
+      queue: this.blink.queues.customerioSmsBroadcastRelayQ,
+    });
     // Setup Twilio.
     this.twilioClient = new Twilio(
       this.blink.config.twilio.accountSid,

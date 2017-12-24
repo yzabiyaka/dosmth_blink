@@ -8,7 +8,9 @@ const Worker = require('./Worker');
 
 class GambitCampaignSignupRelayWorker extends Worker {
   setup() {
-    super.setup(this.blink.queues.gambitCampaignSignupRelayQ);
+    super.setup({
+      queue: this.blink.queues.gambitCampaignSignupRelayQ,
+    });
     // Setup Gambit configuration.
     this.baseURL = this.blink.config.gambit.converationsBaseUrl;
     this.apiKey = this.blink.config.gambit.converationsApiKey;
