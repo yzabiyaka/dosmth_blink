@@ -45,13 +45,14 @@ class Worker {
     );
 
     // Initialize ioredis for the delay infrastructure.
-    const redisRetryDelayer = new RedisRetryDelayer(
+    this.retryDelayer = new RedisRetryDelayer(
       this.blink.redis.getClient(),
       this.blink.redis.settings,
     );
 
     // @todo: make retry manager configurable.
-    const retryManager = new RetryManager(this.queue, redisRetryDelayer);
+    const retryManager = new RetryManager(this.queue, this.retryDelayer);
+    this.retryManager = retryManager;
 
     // Semi-generated name
     const consumerTag = await this.queue.subscribe(

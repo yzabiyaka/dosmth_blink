@@ -8,7 +8,9 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
 const BlinkApp = require('../../../src/app/BlinkApp');
+const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
 const Queue = require('../../../src/lib/Queue');
+const FreeFormMessage = require('../../../src/messages/FreeFormMessage');
 const Worker = require('../../../src/workers/Worker');
 const HooksHelper = require('../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
@@ -27,13 +29,22 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
   const blink = t.context.blink;
 
   // Create test queue and register it in Blink app.
-  class RetryTestQ extends Queue {}
+  class RetryTestQ extends Queue {
+    constructor(...args) {
+      super(...args);
+      this.messageClass = FreeFormMessage;
+    }
+  }
   const retryTestQ = new RetryTestQ(blink.broker);
+  const ackSpy = sinon.spy(retryTestQ, 'ack');
   await retryTestQ.create();
   const registryName = BlinkApp.generateQueueRegistryKey(RetryTestQ);
   blink.queues[registryName] = retryTestQ;
 
-  // Publish message to it.
+  // Purge the queue in case it existed.
+  await retryTestQ.purge();
+
+  // 1. Publish message to the queue -------------------------------------------
   const message = MessageFactoryHelper.getRandomMessage(true);
   retryTestQ.publish(message);
 
@@ -44,24 +55,42 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
       this.consume = this.consume.bind(this);
     }
     /* eslint-disable no-unused-vars, class-methods-use-this, no-empty-function */
-    setup() {}
+    setup() {
+      this.queue = this.blink.queues.retryTestQ;
+    }
     async consume() {}
     /* eslint-enable */
   }
 
-  // Start the worker
+  // 2. Start the worker and send the message for a retry ----------------------
   const worker = new RetryTestWorker(blink);
-  const consumeStub = sinon.spy(worker, 'consume');
-  consumeStub.onCall(0).callsFake((arg) => {
-    console.dir(arg, { colors: true, showHidden: true });
+  const consumeStub = sinon.stub(worker, 'consume');
+  // First call should send the message to retries.
+  consumeStub.onCall(0).callsFake((incomingMessage) => {
+    throw new BlinkRetryError('Testing retries', incomingMessage);
   });
 
+  // Setup worker, including dealing infrastructure.
   worker.setup();
+  // Spy on the delay infrastructure API call.
+  // const delayMessageRetrySpy = sinon.spy(worker.retryDelayer, 'delayMessageRetry');
+  // Start consuming messages from the queue.
   worker.start();
 
-  // Wait and execute.
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // 3. Ensure message has been sent to redis and removed from the queue -------
+  // Wait to ensure it worked.
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  // Consume callback should have been called.
   consumeStub.should.have.been.calledOnce;
+  // Delay message retry should have been called.
+  // delayMessageRetrySpy.should.have.been.calledOnce;
+
+  // Messages should have been remvoed from the original queue.
+  ackSpy.should.have.been.calledOnce;
+  const [ackFirstCallMessageArg] = ackSpy.firstCall.args;
+  // Ensure it's the same message.
+  ackFirstCallMessageArg.getData().should.eql(message.getData());
+  // 4. Start the timer to get the message back the queue ----------------------
 });
 
 
