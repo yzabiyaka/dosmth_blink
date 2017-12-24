@@ -133,6 +133,11 @@ class BlinkApp {
     return queueRegistry;
   }
 
+  getQueueByName(name) {
+    const registryKey = BlinkApp.getQueueRegistryKey(name);
+    return this.queues[registryKey];
+  }
+
   // ------- Static helpers  ---------------------------------------------------
 
   static discoverQueueClasses() {
@@ -151,7 +156,11 @@ class BlinkApp {
   }
 
   static generateQueueRegistryKey(queueClass) {
-    return changeCase.camelCase(queueClass.name);
+    return this.getQueueRegistryKey(queueClass.name);
+  }
+
+  static getQueueRegistryKey(queueName) {
+    return changeCase.camelCase(queueName);
   }
 }
 
