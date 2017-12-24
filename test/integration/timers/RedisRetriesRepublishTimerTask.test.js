@@ -44,9 +44,10 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
   // Purge the queue in case it existed.
   await retryTestQ.purge();
 
-  // 1. Publish message to the queue -------------------------------------------
-  const message = MessageFactoryHelper.getRandomMessage(true);
-  retryTestQ.publish(message);
+  // ***************************************************************************
+  // 1. Publish message to the queue *******************************************
+  const testMessage = MessageFactoryHelper.getRandomMessage(true);
+  retryTestQ.publish(testMessage);
 
   // Create a worker app to consume this message from the queue.
   class RetryTestWorker extends Worker {
@@ -58,7 +59,8 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
     /* eslint-enable */
   }
 
-  // 2. Start the worker and send the message for a retry ----------------------
+  // ***************************************************************************
+  // 2. Start the worker and send the message for a retry **********************
   const worker = new RetryTestWorker(blink);
   const consumeStub = sinon.stub(worker, 'consume');
   // First call should send the message to retries.
@@ -69,24 +71,31 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
   // Setup worker, including dealing infrastructure.
   worker.setup();
   // Spy on the delay infrastructure API call.
-  // const delayMessageRetrySpy = sinon.spy(worker.retryDelayer, 'delayMessageRetry');
+  const delayMessageRetrySpy = sinon.spy(worker.retryDelayer, 'delayMessageRetry');
   // Start consuming messages from the queue.
   worker.start();
 
-  // 3. Ensure message has been sent to redis and removed from the queue -------
+  // ***************************************************************************
+  // 3. Ensure message has been sent to redis and removed from the queue *******
   // Wait to ensure it worked.
   await new Promise(resolve => setTimeout(resolve, 1000));
   // Consume callback should have been called.
   consumeStub.should.have.been.calledOnce;
-  // Delay message retry should have been called.
-  // delayMessageRetrySpy.should.have.been.calledOnce;
+  // Delay message retry should have been called for the test messages.
+  delayMessageRetrySpy.should.have.been.calledOnce;
+  const [delayQArg, delayMessageArg, delayMsArg] = delayMessageRetrySpy.firstCall.args;
+  delayQArg.should.equal(retryTestQ);
+  delayMessageArg.getData().should.eql(testMessage.getData());
+  delayMsArg.should.be.above(0);
 
   // Messages should have been remvoed from the original queue.
   ackSpy.should.have.been.calledOnce;
   const [ackFirstCallMessageArg] = ackSpy.firstCall.args;
   // Ensure it's the same message.
-  ackFirstCallMessageArg.getData().should.eql(message.getData());
-  // 4. Start the timer to get the message back the queue ----------------------
+  ackFirstCallMessageArg.getData().should.eql(testMessage.getData());
+
+  // ***************************************************************************
+  // 4. Start the timer to get the message back the queue **********************
 });
 
 
