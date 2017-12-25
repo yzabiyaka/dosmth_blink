@@ -25,9 +25,12 @@ chai.use(sinonChai);
 
 // ------- Tests ---------------------------------------------------------------
 
-test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t) => {
+test('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t) => {
+  // ***************************************************************************
+  // 0. Setup dependecies
   await HooksHelper.startBlinkWebApp(t);
   const blink = t.context.blink;
+  const sandbox = sinon.createSandbox();
 
   // Create test queue and register it in Blink app.
   class RetryTestQ extends Queue {
@@ -37,7 +40,7 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
     }
   }
   const retryTestQ = new RetryTestQ(blink.broker);
-  const ackSpy = sinon.spy(retryTestQ, 'ack');
+  const ackSpy = sandbox.spy(retryTestQ, 'ack');
   await retryTestQ.create();
   const registryName = BlinkApp.generateQueueRegistryKey(RetryTestQ);
   blink.queues[registryName] = retryTestQ;
@@ -45,12 +48,7 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
   // Purge the queue in case it existed.
   await retryTestQ.purge();
 
-  // ***************************************************************************
-  // 1. Publish message to the queue *******************************************
-  const testMessage = MessageFactoryHelper.getRandomMessage(true);
-  retryTestQ.publish(testMessage);
-
-  // Create a worker app to consume this message from the queue.
+  // Retry worker test class.
   class RetryTestWorker extends Worker {
     /* eslint-disable no-unused-vars, class-methods-use-this, no-empty-function */
     setup() {
@@ -61,9 +59,15 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
   }
 
   // ***************************************************************************
+  // 1. Publish message to the queue *******************************************
+  const testMessage = MessageFactoryHelper.getRandomMessage(true);
+  retryTestQ.publish(testMessage);
+
+  // ***************************************************************************
   // 2. Start the worker and send the message for a retry **********************
+  // Create a worker app to consume this message from the queue.
   const worker = new RetryTestWorker(blink);
-  const consumeStub = sinon.stub(worker, 'consume');
+  const consumeStub = sandbox.stub(worker, 'consume');
   // First call should send the message to retries.
   consumeStub.onCall(0).callsFake((incomingMessage) => {
     throw new BlinkRetryError('Testing retries', incomingMessage);
@@ -72,7 +76,7 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
   // Setup worker, including dealing infrastructure.
   worker.setup();
   // Spy on the delay infrastructure API call.
-  const delayMessageRetrySpy = sinon.spy(worker.retryDelayer, 'delayMessageRetry');
+  const delayMessageRetrySpy = sandbox.spy(worker.retryDelayer, 'delayMessageRetry');
   // Start consuming messages from the queue.
   worker.start();
 
@@ -100,6 +104,10 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
   const timer = new RedisRetriesRepublishTimerTask(blink);
   timer.setup();
   timer.start();
+
+  // ***************************************************************************
+  // 5. Cleanup
+  sandbox.restore();
 });
 
 
