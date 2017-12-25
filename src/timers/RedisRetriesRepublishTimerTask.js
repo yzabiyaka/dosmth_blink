@@ -27,50 +27,65 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
 
   async run() {
     // Get raw json messages from redis.
-    const jsonMessages = await this.redisRetryDelayer.getReadyMessages();
-    if (!jsonMessages || jsonMessages.length < 1) {
+    const packedMessages = await this.redisRetryDelayer.getReadyMessages();
+    if (!packedMessages || packedMessages.length < 1) {
       // No new messages, return.
       return;
     }
 
     // Pressess each message.
-    jsonMessages.forEach((jsonMessage) => {
-      const payload = this.extractOrDiscardPayload(jsonMessage);
-      if (!payload) {
-        return;
+    packedMessages.forEach(async (packedMessage) => {
+      try {
+        await this.republishMessage(packedMessage);
+        await this.redisRetryDelayer.removeProcessedMessage(packedMessage);
+      } catch (error) {
+        this.log(
+          'error',
+          `Unepxected error during processing ${packedMessage}`,
+          null,
+          'error_redis_republisher_unexpected_error',
+        );
       }
-
-      // Get the name of the return queue.
-      const queue = this.getReturnQueue(payload);
-      if (!queue) {
-        return;
-      }
-
-      // Build concrete message class and ensure it's valid.
-      const message = this.buildValidMessage(payload, queue);
-      if (!message) {
-        return;
-      }
-
-      // Reset Message return queue property.
-      message.unsetRetryReturnToQueue();
-
-      // Republish the message to the top of the queue.
-      queue.publish(message, 'HIGH');
-      this.log(
-        'debug',
-        `Message sucesfully returned to queue ${queue.name}, ${message.toString()}`,
-        message,
-        'success_redis_republisher_message_republished',
-      );
     });
   }
 
-  extractOrDiscardPayload(jsonMessage) {
+  republishMessage(packedMessage) {
+    const payload = this.extractOrDiscardPayload(packedMessage);
+    if (!payload) {
+      return false;
+    }
+
+    // Get the name of the return queue.
+    const queue = this.getReturnQueue(payload);
+    if (!queue) {
+      return false;
+    }
+
+    // Build concrete message class and ensure it's valid.
+    const message = this.buildValidMessage(payload, queue);
+    if (!message) {
+      return false;
+    }
+
+    // Reset Message return queue property.
+    message.unsetRetryReturnToQueue();
+
+    // Republish the message to the top of the queue.
+    queue.publish(message, 'HIGH');
+    this.log(
+      'debug',
+      `Message sucesfully returned to queue ${queue.name}, ${message.toString()}`,
+      message,
+      'success_redis_republisher_message_republished',
+    );
+    return true;
+  }
+
+  extractOrDiscardPayload(packedMessage) {
     let payload;
     try {
       // TODO: store message type in message itself.
-      payload = Message.unpackJson(jsonMessage);
+      payload = Message.unpackJson(packedMessage);
       if (!payload.data || !payload.meta) {
         throw new MessageParsingBlinkError('No data in message', payload);
       }

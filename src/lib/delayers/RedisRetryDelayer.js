@@ -96,6 +96,10 @@ class RedisRetryDelayer extends RetryDelayer {
     return packedMessages;
   }
 
+  async removeProcessedMessage(packedMessage) {
+    return this.redisClient.zrem(this.retrySet, packedMessage);
+  }
+
   static calculateRepublishTime(delayMs) {
     const republishTime = moment();
     republishTime.add(delayMs, 'milliseconds');
