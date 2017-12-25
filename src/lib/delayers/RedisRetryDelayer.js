@@ -26,7 +26,7 @@ class RedisRetryDelayer extends RetryDelayer {
 
   /**
    * Sends `message` to Redis Sorted Set, ordered by the return time,
-   * which is calculated from unix timestamp + `delayMs`.
+   * which is calculated from UNIX timestamp + `delayMs`.
    * When time has come, special Redis Retry Redelivery Worker
    * will republish it back to the `queue`.
    *
@@ -41,36 +41,47 @@ class RedisRetryDelayer extends RetryDelayer {
   async delayMessageRetry(queue, message, delayMs) {
     // Calculate return (redelivery) time.
     // This will serve as the index for the ordered set.
-    const redeliveryTime = RedisRetryDelayer.calculateReturnTime(delayMs);
+    const republishTime = RedisRetryDelayer.calculateRepublishTime(delayMs);
     // Save queue name to redeliver message to and convert message to String.
-    const messageContent = RedisRetryDelayer.packMessage(message, queue);
-    // Publish message to redis.
+    const packedMessage = RedisRetryDelayer.packMessage(message, queue);
+    // Publish message to Redis.
+    const result = await this.saveMessageToRedis(packedMessage, republishTime);
+    if (!result) {
+      return false;
+    }
+
+    // Free original message from the broker.
+    queue.ack(message);
+    return true;
+  }
+
+  async saveMessageToRedis(packedMessage, republishTime) {
     let result;
     try {
       result = await this.redisClient.zadd(
         this.retrySet,
-        redeliveryTime,
-        messageContent,
+        republishTime,
+        packedMessage,
       );
     } catch (error) {
       logger.error(`Redis zadd error: ${error}.`, {
         code: 'error_redis_retry_delayer_zadd',
       });
+      return false;
     }
 
+    // Check if this record already present in Redis.
+    // This usually shouldn't happen, but the operation still can be
+    // considered successful. Just watch out for this situations.
     if (result !== 1) {
-      logger.debug(`Redis message already present: ${message}.`, {
+      logger.debug(`Redis message already present: ${packedMessage}.`, {
         code: 'sucess_redis_retry_delayer_message_saved',
       });
     }
 
-    logger.debug(`Redis message saved: ${message}.`, {
+    logger.debug(`Redis message saved: ${packedMessage}.`, {
       code: 'sucess_redis_retry_delayer_message_saved',
     });
-
-    // Free original message from the broker.
-    queue.ack(message);
-
     return true;
   }
 
@@ -85,10 +96,10 @@ class RedisRetryDelayer extends RetryDelayer {
     return packedMessages;
   }
 
-  static calculateReturnTime(delayMs) {
-    const currentMoment = moment();
-    currentMoment.add(delayMs, 'milliseconds');
-    return currentMoment.unix();
+  static calculateRepublishTime(delayMs) {
+    const republishTime = moment();
+    republishTime.add(delayMs, 'milliseconds');
+    return republishTime.unix();
   }
 
   static packMessage(message, queue) {
