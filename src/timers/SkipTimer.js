@@ -34,14 +34,14 @@ class SkipTimer extends Timer {
     this.delay = 1000;
   }
 
-  setup(delay = false) {
+  setup({ delay = false }) {
     // Allow overriding delay.
     if (Number.isInteger(delay) && delay > 0) {
       this.delay = delay;
     }
-    this.logInternal('debug', `Delay limit set to ${delay}`, 'debug_skip_timer_delay_set');
+    this.logInternal('debug', `Internal delay set to ${delay}ms`, 'debug_skip_timer_delay_set');
 
-    if (!this.consume) {
+    if (!this.run) {
       throw new BlinkError(`${this.timerName} should implement run() method`);
     }
     // Bind `run` method to timer context, so it has access to `this`.

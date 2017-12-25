@@ -17,7 +17,7 @@ const SkipTimer = require('./SkipTimer');
 class RedisRetriesRepublishTimerTask extends SkipTimer {
   setup() {
     // Repeat delay, ms.
-    super.setup(1000);
+    super.setup({ delay: 1000 });
     // Convenience properties.
     this.redisRetryDelayer = new RedisRetryDelayer(
       this.blink.redis.getClient(),

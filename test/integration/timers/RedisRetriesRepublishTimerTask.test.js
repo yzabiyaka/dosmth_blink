@@ -11,6 +11,7 @@ const BlinkApp = require('../../../src/app/BlinkApp');
 const BlinkRetryError = require('../../../src/errors/BlinkRetryError');
 const Queue = require('../../../src/lib/Queue');
 const FreeFormMessage = require('../../../src/messages/FreeFormMessage');
+const RedisRetriesRepublishTimerTask = require('../../../src/timers/RedisRetriesRepublishTimerTask');
 const Worker = require('../../../src/workers/Worker');
 const HooksHelper = require('../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
@@ -96,6 +97,9 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async (t
 
   // ***************************************************************************
   // 4. Start the timer to get the message back the queue **********************
+  const timer = new RedisRetriesRepublishTimerTask(blink);
+  timer.setup();
+  timer.start();
 });
 
 
