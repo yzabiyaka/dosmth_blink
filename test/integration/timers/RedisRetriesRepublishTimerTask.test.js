@@ -4,7 +4,7 @@
 
 const test = require('ava');
 const chai = require('chai');
-// const Chance = require('chance');
+const Chance = require('chance');
 const moment = require('moment');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
@@ -23,17 +23,17 @@ const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 chai.should();
 chai.use(sinonChai);
 
-// const chance = new Chance();
+const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
-test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
+test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
   // ***************************************************************************
   // 0. Initial setup
   const config = require('../../../config');
   // Override redis retry set name.
   // WARNING: this could interfier with other tests in this file.
-  // config.redis.settings.retrySet = `test-full-message-${chance.word()}`;
+  config.redis.settings.retrySet = `test-full-message-${chance.word()}`;
 
   // Start blink app.
   const blink = new BlinkApp(config);
@@ -146,8 +146,6 @@ test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
 
   // ***************************************************************************
   // 4. Start the timer to get the message back the queue **********************
-  // Reset previous publish calls.
-  publishSpy.reset();
   // Create new republisher timer task.
   const timer = new RedisRetriesRepublishTimerTask(blink);
   timer.setup();
@@ -164,14 +162,27 @@ test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
   // Ensure the run function has been executed at least once.
   timerRunSpy.callCount.should.be.above(0);
   // Ensure the message has been republished to the top of the queue.
-  publishSpy.should.have.been.calledOnce;
+  publishSpy.should.have.been.calledTwice;
+  // First call was when we published message originally.
+  const [publishMessageArg, publishPriorityArg] = publishSpy.secondCall.args;
+  publishMessageArg.getData().should.eql(testMessage.getData());
+  publishPriorityArg.should.be.equal('HIGH');
+  // Ensure the message got delivered back to the consumer.
+  consumeStub.should.have.been.calledTwice;
+  const [returnedMessageArg] = publishSpy.secondCall.args;
+  returnedMessageArg.getData().should.eql(testMessage.getData());
+  returnedMessageArg.getRetryAttempt().should.be.equal(initialRetryAttempt + 1);
+  // Ensure the message eventually got acknowledged.
+  ackSpy.should.have.been.calledTwice;
+  const [ackSecondCallMessageArg] = ackSpy.secondCall.args;
+  // Ensure it's the same message.
+  ackSecondCallMessageArg.getData().should.eql(testMessage.getData());
 
   // ***************************************************************************
   // 5. Cleanup
   sandbox.restore();
-  // await blink.redis.getClient().del(blink.config.redis.settings.retrySet);
-  // await blink.stop();
+  await blink.redis.getClient().del(blink.config.redis.settings.retrySet);
+  await blink.stop();
 });
-
 
 // ------- End -----------------------------------------------------------------
