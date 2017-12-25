@@ -12,6 +12,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
   setup() {
     super.setup({
       queue: this.blink.queues.customerioSmsBroadcastRelayQ,
+      rateLimit: this.blink.config.gambit.broadcastSpeedLimit,
     });
     // Setup Twilio.
     this.twilioClient = new Twilio(
