@@ -168,6 +168,8 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async ()
   const [publishMessageArg, publishPriorityArg] = publishSpy.secondCall.args;
   publishMessageArg.getData().should.eql(testMessage.getData());
   publishPriorityArg.should.be.equal('HIGH');
+  // Ensure the message is of correct instance.
+  publishMessageArg.should.be.an.instanceOf(FreeFormMessage);
   // Ensure the message got delivered back to the consumer.
   consumeStub.should.have.been.calledTwice;
   const [returnedMessageArg] = publishSpy.secondCall.args;
