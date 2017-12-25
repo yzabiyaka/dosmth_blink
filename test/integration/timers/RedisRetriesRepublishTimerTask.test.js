@@ -39,6 +39,10 @@ test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
   const blink = new BlinkApp(config);
   await blink.start();
 
+  // Cleanup redis set in case it has unprocess data from
+  // the previous unseccesfull test
+  await blink.redis.getClient().del(blink.config.redis.settings.retrySet);
+
   // Sinon setup.
   const startTime = moment('1988-05-28');
   const sandbox = sinon.createSandbox();
@@ -91,9 +95,9 @@ test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
   // Create a worker app to consume this message from the queue.
   const worker = new RetryTestWorker(blink);
   const consumeStub = sandbox.stub(worker, 'consume');
-  // First call should send the message to retries.
-  consumeStub.onCall(0).callsFake((incomingMessage) => {
-    throw new BlinkRetryError('Testing retries', incomingMessage);
+  // First call should request a retry for this message.
+  consumeStub.onCall(0).callsFake((message) => {
+    throw new BlinkRetryError('Testing retries', message);
   });
 
   // Setup worker, including dealing infrastructure.
@@ -149,7 +153,7 @@ test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
   // 5. Cleanup
   sandbox.restore();
   // await blink.redis.getClient().del(blink.config.redis.settings.retrySet);
-  await blink.stop();
+  // await blink.stop();
 });
 
 

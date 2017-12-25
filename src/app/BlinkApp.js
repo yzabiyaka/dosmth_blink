@@ -133,9 +133,21 @@ class BlinkApp {
     return queueRegistry;
   }
 
+  /**
+   * Returns a queue with a given name from queue registry.
+   *
+   * This method perform search on all queues.
+   * It shouldn't be used in most cases, you can get the queue
+   * from the registry by its mapping key, example
+   *
+   * ```
+   * const { fetchQ } = blink.queues;
+   * ```
+   * @param  {strin} name The name of the queue to search
+   * @return {Queue|undefined} The queue found or undefined
+   */
   getQueueByName(name) {
-    const registryKey = BlinkApp.getQueueRegistryKey(name);
-    return this.queues[registryKey];
+    return Object.values(this.queues).find(queue => queue.name === name);
   }
 
   // ------- Static helpers  ---------------------------------------------------

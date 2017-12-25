@@ -49,7 +49,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
       }
 
       // Reset Message return queue property.
-      message.deleteRetryReturnToQueue();
+      message.unsetRetryReturnToQueue();
 
       // Republish the message to the top of the queue.
       queue.publish(message, 'HIGH');
@@ -136,7 +136,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
       message,
       'success_redis_republisher_message_valid',
     );
-    return true;
+    return message;
   }
 
   log(level, logMessage, message = {}, code = 'unexpected_code') {

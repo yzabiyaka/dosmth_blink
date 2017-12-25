@@ -45,7 +45,7 @@ class Message {
     this.payload.meta.retryReturnToQueue = queueName;
   }
 
-  deleteRetryReturnToQueue() {
+  unsetRetryReturnToQueue() {
     delete this.payload.meta.retryReturnToQueue;
   }
 
