@@ -28,6 +28,10 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
   async run() {
     // Get raw json messages from redis.
     const jsonMessages = await this.redisRetryDelayer.getReadyMessages();
+    if (!jsonMessages || jsonMessages.length < 1) {
+      // No new messages, return.
+      return;
+    }
 
     // Pressess each message.
     jsonMessages.forEach((jsonMessage) => {

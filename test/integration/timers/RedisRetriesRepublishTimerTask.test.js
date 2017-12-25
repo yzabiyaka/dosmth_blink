@@ -62,6 +62,7 @@ test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
   }
   const retryTestQ = new RetryTestQ(blink.broker);
   const ackSpy = sandbox.spy(retryTestQ, 'ack');
+  const publishSpy = sandbox.spy(retryTestQ, 'publish');
   await retryTestQ.create();
   const registryName = BlinkApp.generateQueueRegistryKey(RetryTestQ);
   blink.queues[registryName] = retryTestQ;
@@ -99,6 +100,8 @@ test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
   consumeStub.onCall(0).callsFake((message) => {
     throw new BlinkRetryError('Testing retries', message);
   });
+  // On second call, we accept the message.
+  consumeStub.onCall(1).resolves(true);
 
   // Setup worker, including dealing infrastructure.
   worker.setup();
@@ -143,11 +146,25 @@ test('RedisRetriesRepublishTimerTask Test full message cycle. ', async () => {
 
   // ***************************************************************************
   // 4. Start the timer to get the message back the queue **********************
+  // Reset previous publish calls.
+  publishSpy.reset();
+  // Create new republisher timer task.
   const timer = new RedisRetriesRepublishTimerTask(blink);
   timer.setup();
+  // Spy on run method.
+  const timerRunSpy = sandbox.spy(timer, 'run');
+  // Advace the clock to the expected time of returning the message.
+  // Convering it to milliseconds
+  sandbox.clock.tick((expectedRepublishTime + 1) * 1000);
   timer.start();
-  // Advace the clock to the next tick.
-  sandbox.clock.tick(timer.delay);
+  // Wait for the messages to be processed.
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  // Stop the timer.
+  timer.stop();
+  // Ensure the run function has been executed at least once.
+  timerRunSpy.callCount.should.be.above(0);
+  // Ensure the message has been republished to the top of the queue.
+  publishSpy.should.have.been.calledOnce;
 
   // ***************************************************************************
   // 5. Cleanup
