@@ -112,8 +112,8 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async ()
   worker.start();
 
   // ***************************************************************************
-  // 3. Ensure message has been saved to redis and removed from the queue *******
-  // Wait for the actuall message processing.
+  // 3. Ensure message has been saved to Redis and removed from the queue *******
+  // Wait for the actual message processing.
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   // ** Check Worker.consume() **
@@ -138,7 +138,7 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async ()
   republishTimeArg.should.be.closeTo(expectedRepublishTime, 1);
 
   // ** Check Queue.ack() **
-  // Messages should have been remvoed from the original queue.
+  // Messages should have been removed from the original queue.
   ackSpy.should.have.been.calledOnce;
   const [ackFirstCallMessageArg] = ackSpy.firstCall.args;
   // Ensure it's the same message.
@@ -151,11 +151,12 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async ()
   timer.setup();
   // Spy on run method.
   const timerRunSpy = sandbox.spy(timer, 'run');
-  // Advace the clock to the expected time of returning the message.
-  // Convering it to milliseconds
+  // Advance the clock to the expected time of returning the message.
+  // Converting it to milliseconds
   sandbox.clock.tick((expectedRepublishTime + 1) * 1000);
   timer.start();
-  // Wait for the messages to be processed.
+  // Wait for the messages to be processed from Redis.
+  // Could take a while.
   await new Promise(resolve => setTimeout(resolve, 3000));
   // Stop the timer.
   timer.stop();
