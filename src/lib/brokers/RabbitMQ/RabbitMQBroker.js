@@ -293,11 +293,11 @@ class RabbitMQBroker extends Broker {
       autoDelete: false,
       // See http://www.rabbitmq.com/priority.html
       // Define 3 priority levels: HIGH, LOW, MEDIUM.
-      // This is RabbitMQ specific feature and. Normally it's declared through
+      // This is a RabbitMQ specific feature. Normally, it's declared through
       // the `arguments` object (see below), but amqplib exposes this feature
       // through an option called `maxPriority`.
-      // It'll be transformed it to `x-max-priority` argument.
-      maxPriority: 2, // Actually amounts to 3 levels: 0, 1, 2.
+      // It'll be transformed to `x-max-priority` argument.
+      maxPriority: 2, // Amounts to 3 levels: 0, 1, 2.
       // Used by plugins and broker-specific features.
       arguments: {},
     };
