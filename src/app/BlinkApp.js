@@ -95,7 +95,7 @@ class BlinkApp {
     // Establish connection or perform authorization.
     const result = await redis.connect();
     if (!result) {
-      // Do what?
+      // TODO: Handle case when redis doesn't connect.
     }
     // Return connected redis.
     return redis;

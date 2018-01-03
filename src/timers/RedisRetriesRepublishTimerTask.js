@@ -41,7 +41,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
       } catch (error) {
         this.log(
           'error',
-          `Unepxected error during processing ${packedMessage}`,
+          `Unexpected error during processing ${packedMessage}`,
           null,
           'error_redis_republisher_unexpected_error',
         );
