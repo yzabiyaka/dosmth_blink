@@ -3,6 +3,7 @@
 :postbox: The DoSomething.org Message Bus.
 
 ## Development
+
 #### Requirements
 - [Node.js](https://nodejs.org/en/download/) v7.6+ for async/await support
 - [Docker](https://www.docker.com/products/overview) with support
@@ -41,7 +42,7 @@ $ yarn all-tests
 
 Or execute them individually:
 
-#### Code style 
+#### Code style
 
 ```
 $ yarn lint
