@@ -41,7 +41,7 @@ $ yarn all-tests
 
 Or execute them individually:
 
-#### Code style
+#### Code style 
 
 ```
 $ yarn lint
