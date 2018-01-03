@@ -10,6 +10,7 @@ const sinonChai = require('sinon-chai');
 
 // ------- Internal imports ----------------------------------------------------
 
+const Broker = require('../../../../../src/lib/brokers/Broker');
 const RabbitMQBroker = require('../../../../../src/lib/brokers/RabbitMQ/RabbitMQBroker');
 const MessageFactoryHelper = require('../../../../helpers/MessageFactoryHelper');
 const UnitHooksHelper = require('../../../../helpers/UnitHooksHelper');
@@ -33,6 +34,7 @@ test.afterEach.always(UnitHooksHelper.destroyFakeRabbitMQBroker);
  */
 test('RabbitMQBroker: Should implement Broker interface', () => {
   const broker = new RabbitMQBroker({});
+  broker.should.be.an.instanceof(Broker);
   broker.should.respondTo('connect');
   broker.should.respondTo('disconnect');
   broker.should.respondTo('publishToRoute');
