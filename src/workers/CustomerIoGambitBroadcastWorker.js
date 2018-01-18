@@ -2,80 +2,33 @@
 
 const fetch = require('node-fetch');
 const logger = require('winston');
-const Twilio = require('twilio');
-
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 
-class CustomerIoSmsBroadcastRelayWorker extends Worker {
+class CustomerIoGambitBroadcastWorker extends Worker {
   setup() {
     super.setup({
-      queue: this.blink.queues.customerioSmsBroadcastRelayQ,
+      queue: this.blink.queues.customerioGambitBroadcastQ,
       rateLimit: this.blink.config.gambit.broadcastSpeedLimit,
     });
-    // Setup Twilio.
-    this.twilioClient = new Twilio(
-      this.blink.config.twilio.accountSid,
-      this.blink.config.twilio.authToken,
-    );
     // Setup Gambit.
     this.baseURL = this.blink.config.gambit.converationsBaseUrl;
     this.apiKey = this.blink.config.gambit.converationsApiKey;
   }
 
   async consume(message) {
-    let twilioResponse;
-    const twilioRequest = this.getTwilioRequest(message);
+    // TODO: There's a slight chance a previous retry did successfully post to Twilio, but
+    // errored after the request, sending a double post.
 
-    let messageSid;
-
-    // Don't resend twilio sms on retries.
-    if (message.getMessageSid() || message.getRetryAttempt() > 0) {
-      messageSid = message.getMessageSid();
-    } else {
-      try {
-        twilioResponse = await this.twilioClient.messages.create(twilioRequest);
-        messageSid = twilioResponse.sid;
-      } catch (error) {
-        const meta = {
-          env: this.blink.config.app.env,
-          code: 'error_customerio_sms_relay_twilio_bad_client_response',
-          worker: this.constructor.name,
-          request_id: message ? message.getRequestId() : 'not_parsed',
-        };
-
-        logger.log('warning', error.toString(), meta);
-        return false;
-      }
-    }
-
-    if (!messageSid) {
-      const meta = {
-        env: this.blink.config.app.env,
-        code: 'error_customerio_sms_relay_twilio_sid_not_parsed',
-        worker: this.constructor.name,
-        request_id: message ? message.getRequestId() : 'not_parsed',
-      };
-
-      logger.log('warning', 'Message Sid is not available in Twilio response', meta);
-      return false;
-    }
-
-    // Save message sid to the message to avoid retries.
-    message.setMessageSid(messageSid);
-
-    // Fake delivery reciept.
     const data = {
-      To: message.getPhoneNumber(),
-      Body: message.getBody(),
-      MessageStatus: 'delivered',
-      MessageSid: messageSid,
+      mobile: message.getPhoneNumber(),
+      broadcastId: message.getBroadcastId(),
     };
     const body = JSON.stringify(data);
     const headers = this.getRequestHeaders(message);
     const response = await fetch(
-      `${this.baseURL}/v1/import-message?broadcastId=${message.getBroadcastId()}`,
+      `${this.baseURL}/v2/messages?origin=broadcast`,
       {
         method: 'POST',
         headers,
@@ -88,7 +41,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
         'debug',
         message,
         response,
-        'success_customerio_sms_relay_gambit_response_200',
+        'success_customerio_gambit_broadcast_gambit_response_200',
       );
       return true;
     }
@@ -98,7 +51,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
         'debug',
         message,
         response,
-        'success_customerio_sms_relay_gambit_retry_suppress',
+        'success_customerio_gambit_broadcast_relay_gambit_retry_suppress',
       );
       return true;
     }
@@ -108,7 +61,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
         'warning',
         message,
         response,
-        'error_customerio_sms_relay_gambit_response_422',
+        'error_customerio_gambit_broadcast_gambit_response_422',
       );
       return false;
     }
@@ -118,7 +71,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
       'warning',
       message,
       response,
-      'error_customerio_sms_relay_gambit_response_not_200_retry',
+      'error_customerio_gambit_broadcast_gambit_response_not_200_retry',
     );
 
     throw new BlinkRetryError(
@@ -140,14 +93,6 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
     };
     // Todo: log error?
     logger.log(level, cleanedBody, meta);
-  }
-
-  getTwilioRequest(message) {
-    return {
-      body: message.getBody(),
-      to: message.getPhoneNumber(),
-      from: this.blink.config.twilio.from,
-    };
   }
 
   getRequestHeaders(message) {
@@ -174,4 +119,4 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
   }
 }
 
-module.exports = CustomerIoSmsBroadcastRelayWorker;
+module.exports = CustomerIoGambitBroadcastWorker;
