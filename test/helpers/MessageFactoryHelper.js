@@ -253,9 +253,14 @@ class MessageFactoryHelper {
     return rabbitMessage;
   }
 
+  static getFakeMobileNumber() {
+    const result = `+1555${chance.string({ length: 7, pool: '1234567890' })}`;
+    return result;
+  }
+
   static getValidCustomerBroadcastData(broadcastId) {
     const data = {
-      To: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+      To: MessageFactoryHelper.getFakeMobileNumber(),
       Body: chance.sentence(),
       StatusCallback: `http://blink:password@blink.dosomething.org/api/v1/webhooks/twilio-sms-broadcast?broadcastId=${broadcastId}`,
     };
@@ -264,7 +269,7 @@ class MessageFactoryHelper {
 
   static getValidGambitBroadcastData(broadcastId) {
     const data = {
-      mobile: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+      mobile: MessageFactoryHelper.getFakeMobileNumber(),
       broadcastId,
     };
     return data;
