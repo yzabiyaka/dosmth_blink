@@ -261,6 +261,14 @@ class MessageFactoryHelper {
     };
     return data;
   }
+
+  static getValidGambitBroadcastData(broadcastId) {
+    const data = {
+      mobile: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+      broadcastId,
+    };
+    return data;
+  }
 }
 
 module.exports = MessageFactoryHelper;

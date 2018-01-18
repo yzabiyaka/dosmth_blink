@@ -75,7 +75,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
     const body = JSON.stringify(data);
     const headers = this.getRequestHeaders(message);
     const response = await fetch(
-      `${this.baseURL}/v1/import-message?broadcastId=${message.getBroadcastId()}`,
+      `${this.baseURL}/import-message?broadcastId=${message.getBroadcastId()}`,
       {
         method: 'POST',
         headers,
