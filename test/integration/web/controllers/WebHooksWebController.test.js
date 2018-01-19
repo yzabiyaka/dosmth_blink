@@ -155,7 +155,7 @@ test('POST /api/v1/webhooks/customerio-sms-broadcast validates incoming payload'
 test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming payload', async (t) => {
   const broadcastId = chance.word();
   const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId);
-  delete data.mobile;
+  delete data.northstarId;
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
     .set('Content-Type', 'application/x-www-form-urlencoded')
@@ -165,7 +165,7 @@ test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming paylo
   res.status.should.be.equal(422);
   res.body.should.have.property('ok', false);
   res.body.should.have.property('message')
-    .and.have.string('"mobile" is required');
+    .and.have.string('"northstarId" is required');
 });
 
 // ------- End -----------------------------------------------------------------

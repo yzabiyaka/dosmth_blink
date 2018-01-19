@@ -20,7 +20,7 @@ const chance = new Chance();
 
 class MessageFactoryHelper {
   static getValidUser() {
-    const fakeId = chance.hash({ length: 24 });
+    const fakeId = MessageFactoryHelper.getFakeUserId();
     const createdAt = chance.date({ year: chance.year({ min: 2000, max: 2010 }) }).toISOString();
     return new UserMessage({
       data: {
@@ -71,7 +71,7 @@ class MessageFactoryHelper {
   }
 
   static getValidCustomerIoIdentify() {
-    const fakeId = chance.hash({ length: 24 });
+    const fakeId = MessageFactoryHelper.getFakeUserId();
     return new CustomerIoUpdateCustomerMessage({
       data: {
         id: fakeId,
@@ -258,6 +258,11 @@ class MessageFactoryHelper {
     return result;
   }
 
+  static getFakeUserId() {
+    const result = chance.hash({ length: 24 });
+    return result;
+  }
+
   static getValidCustomerBroadcastData(broadcastId) {
     const data = {
       To: MessageFactoryHelper.getFakeMobileNumber(),
@@ -269,7 +274,7 @@ class MessageFactoryHelper {
 
   static getValidGambitBroadcastData(broadcastId) {
     const data = {
-      mobile: MessageFactoryHelper.getFakeMobileNumber(),
+      northstarId: MessageFactoryHelper.getFakeUserId(),
       broadcastId,
     };
     return data;
