@@ -13,7 +13,7 @@ class CustomerIoGambitBroadcastWorker extends Worker {
       rateLimit: this.blink.config.gambit.broadcastSpeedLimit,
     });
     // Setup Gambit.
-    this.baseURI = this.blink.config.gambit.converationsBaseUri;
+    this.baseURI = this.blink.config.gambit.conversationsBaseUri;
     this.apiKey = this.blink.config.gambit.converationsApiKey;
   }
 
@@ -22,7 +22,7 @@ class CustomerIoGambitBroadcastWorker extends Worker {
     // errored after the request, sending a double post.
 
     const data = {
-      mobile: message.getPhoneNumber(),
+      northstarId: message.getNorthstarId(),
       broadcastId: message.getBroadcastId(),
     };
     const body = JSON.stringify(data);

@@ -11,8 +11,7 @@ class CustomerioGambitBroadcastMessage extends Message {
     const whenNullOrEmpty = Joi.valid(['', null]);
     this.schema = Joi.object()
       .keys({
-        // Note: first char of To is plus, which is resolved to a space by mistake.
-        mobile: Joi.string().required().empty(whenNullOrEmpty).regex(/^\+1[0-9]+$/, 'valid phone number'),
+        northstarId: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
         broadcastId: Joi.string().required().empty(whenNullOrEmpty),
       });
   }
@@ -21,8 +20,8 @@ class CustomerioGambitBroadcastMessage extends Message {
     return this.getData().broadcastId;
   }
 
-  getPhoneNumber() {
-    return this.getData().mobile;
+  getNorthstarId() {
+    return this.getData().northstarId;
   }
 }
 
