@@ -12,7 +12,7 @@ class TwilioSmsInboundGambitRelayWorker extends Worker {
       queue: this.blink.queues.twilioSmsInboundGambitRelayQ,
     });
     // Setup Gambit.
-    this.baseURL = this.blink.config.gambit.converationsBaseUrl;
+    this.baseURI = this.blink.config.gambit.conversationsBaseUri;
     this.apiKey = this.blink.config.gambit.converationsApiKey;
   }
 
@@ -20,7 +20,7 @@ class TwilioSmsInboundGambitRelayWorker extends Worker {
     const body = JSON.stringify(message.getData());
     const headers = this.getRequestHeaders(message);
     const response = await fetch(
-      `${this.baseURL}/receive-message`,
+      `${this.baseURI}/messages?origin=twilio`,
       {
         method: 'POST',
         headers,
