@@ -29,9 +29,9 @@ class CampaignSignupPostMessage extends Message {
     const data = this.getData();
 
     /**
-     * cioKey: dataKey Mappings
+     * { cioKey: dataKey } Mappings
      *
-     * cioKeys will be assigned dataKeys and dataKeys will be deleted
+     * cioKeys will be assigned dataKey's value and dataKeys will be deleted
      * from the final eventData Object
      */
     const cioKeys = {
@@ -49,7 +49,7 @@ class CampaignSignupPostMessage extends Message {
     });
 
     /**
-     * Assign dataKey values to the corresponsing cioKey
+     * Assign dataKey values to the corresponding cioKey
      * Remove dataKey from eventData
      */
     Object.keys(cioKeys).forEach((cioKey) => {
