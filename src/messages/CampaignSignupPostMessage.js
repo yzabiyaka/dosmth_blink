@@ -35,6 +35,12 @@ class CampaignSignupPostMessage extends Message {
      * from the final eventData Object
      */
     const cioKeys = {
+
+      /**
+       * The Rogue data object's `id` property, maps to the C.io's `signup_post_id`.
+       * The final event posted to C.io contains a `signup_post_id` instead of
+       * the original `id` property.
+       */
       signup_post_id: 'id',
     };
 
