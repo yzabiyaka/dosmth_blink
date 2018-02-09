@@ -169,10 +169,7 @@ class MessageFactoryHelper {
       id: chance.integer({ min: 0 }),
       signup_id: chance.integer({ min: 0 }),
       northstar_id: chance.hash({ length: 24 }),
-      campaign_id: chance.pickone([
-        chance.integer({ min: 0 }),
-        chance.string({ length: 4, pool: '1234567890' }),
-      ]),
+      campaign_id: chance.string({ length: 4, pool: '1234567890' }),
       type: chance.pickone(['photo', 'voter-reg']),
       action: chance.pickone(['january2018-turbovote', 'january-submit-photo']),
       created_at: createdAt,
