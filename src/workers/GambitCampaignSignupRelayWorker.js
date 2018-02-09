@@ -13,7 +13,7 @@ class GambitCampaignSignupRelayWorker extends Worker {
     });
     // Setup Gambit configuration.
     this.baseURI = this.blink.config.gambit.conversationsBaseUri;
-    this.apiKey = this.blink.config.gambit.converationsApiKey;
+    this.apiKey = this.blink.config.gambit.conversationsApiKey;
   }
 
   async consume(message) {

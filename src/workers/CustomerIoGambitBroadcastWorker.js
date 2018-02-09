@@ -14,7 +14,7 @@ class CustomerIoGambitBroadcastWorker extends Worker {
     });
     // Setup Gambit.
     this.baseURI = this.blink.config.gambit.conversationsBaseUri;
-    this.apiKey = this.blink.config.gambit.converationsApiKey;
+    this.apiKey = this.blink.config.gambit.conversationsApiKey;
   }
 
   async consume(message) {
