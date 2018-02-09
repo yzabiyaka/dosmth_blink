@@ -165,7 +165,7 @@ class MessageFactoryHelper {
     const deletedAt = moment(createdAt).add(2, 'days').toISOString();
 
     const data = {
-      // Required minimunm
+      // Required minimum
       id: chance.integer({ min: 0 }),
       signup_id: chance.integer({ min: 0 }),
       northstar_id: chance.hash({ length: 24 }),
@@ -185,7 +185,7 @@ class MessageFactoryHelper {
         caption: chance.sentence({ words: 5 }),
       }]),
       why_participated: chance.pickone([null, chance.sentence()]),
-      updatead_at: chance.pickone([null, updatedAt]),
+      updated_at: chance.pickone([null, updatedAt]),
       deleted_at: chance.pickone([null, deletedAt]),
       details: chance.pickone([null, { random: 'stuff' }]),
       remote_addr: chance.pickone([null, chance.ip()]),
