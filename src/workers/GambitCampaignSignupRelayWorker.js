@@ -12,8 +12,8 @@ class GambitCampaignSignupRelayWorker extends Worker {
       queue: this.blink.queues.gambitCampaignSignupRelayQ,
     });
     // Setup Gambit configuration.
-    this.baseURI = this.blink.config.gambit.conversationsBaseUri;
-    this.apiKey = this.blink.config.gambit.converationsApiKey;
+    this.baseURL = this.blink.config.gambit.conversations.baseURL;
+    this.apiKey = this.blink.config.gambit.conversations.apiKey;
   }
 
   async consume(message) {
@@ -42,7 +42,7 @@ class GambitCampaignSignupRelayWorker extends Worker {
     const headers = this.getRequestHeaders(message);
 
     const response = await fetch(
-      `${this.baseURI}/messages?origin=signup`,
+      `${this.baseURL}/messages?origin=signup`,
       {
         method: 'POST',
         headers,
