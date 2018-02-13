@@ -78,8 +78,9 @@ class MessageFactoryHelper {
         id: fakeId,
         data: {
           email: chance.email(),
-          updated_at: chance.timestamp(),
-          created_at: chance.timestamp(),
+          updated_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
+          created_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
+          sms_paused: chance.bool(),
           sms_status: chance.pickone([
             'undeliverable',
             'active',
@@ -88,7 +89,7 @@ class MessageFactoryHelper {
             'stop',
             null,
           ]),
-          last_authenticated_at: chance.timestamp(),
+          last_authenticated_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
           last_messaged_at: chance.timestamp(),
           birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
           facebook_id: chance.fbid().toString(),

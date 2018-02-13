@@ -21,6 +21,10 @@ class CustomerIoUpdateCustomerMessage extends Message {
    */
   static fromUser(userMessage) {
     const user = userMessage.getData();
+
+    // last_messaged_at is not included because it's already being sent as an unix timestamp
+    const dates = ['created_at', 'updated_at', 'last_authenticated_at'];
+
     // Copy user fields.
     const customerData = Object.assign({}, user);
     // Remove id from data, as it's available on the top level.
@@ -32,15 +36,16 @@ class CustomerIoUpdateCustomerMessage extends Message {
       delete customerData.mobile;
     }
 
-    customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();
-    customerData.updated_at = moment(customerData.updated_at, moment.ISO_8601).unix();
-
-    if (customerData.last_authenticated_at) {
-      customerData.last_authenticated_at = moment(
-        customerData.last_authenticated_at,
-        moment.ISO_8601,
-      ).unix();
-    }
+    // Cast dates into unix timestamp if the value is a ISO_8601 string, otherwise cast to Number.
+    dates.forEach((dateKey) => {
+      const dateValue = customerData[dateKey];
+      // value exists
+      if (dateValue) {
+        customerData[dateKey] = !Number(dateValue) ?
+          moment(dateValue, moment.ISO_8601).unix() :
+          Number(dateValue);
+      }
+    });
 
     /**
      * TODO: Blink shouldn't have to figure out if the user is unsubscribed or not.
