@@ -1,0 +1,23 @@
+'use strict';
+
+const Joi = require('joi');
+
+const whenNullOrEmpty = Joi.valid(['', null]);
+
+// Required minimum
+const schema = Joi.object().keys({
+  id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
+  updated_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
+  created_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
+
+  // Remove field when provided as empty string or null.
+  email: Joi.string().empty(whenNullOrEmpty).default(undefined),
+  mobile: Joi.string().empty(whenNullOrEmpty).default(undefined),
+
+  // Allow anything as a role, but default to user.
+  role: Joi.string().empty(whenNullOrEmpty).default('user'),
+})
+  // Require presence at least one of: email, mobile.
+  .or('email', 'mobile');
+
+module.exports = schema;

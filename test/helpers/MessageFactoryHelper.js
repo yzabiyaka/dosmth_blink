@@ -58,8 +58,11 @@ class MessageFactoryHelper {
         country: chance.country(),
         drupal_id: chance.natural().toString(),
         role: chance.pickone(['user', 'admin', 'staff']),
-        // Dates are arbitrary, but it's make more sense when they are within
+        // Dates are arbitrary, but it makes more sense when they are within
         // different ranges.
+        last_messaged_at: chance.date({
+          year: chance.year({ min: 2014, max: 2015 }),
+        }).toISOString(),
         last_authenticated_at: chance.date({
           year: chance.year({ min: 2013, max: 2015 }),
         }).toISOString(),
@@ -88,6 +91,7 @@ class MessageFactoryHelper {
             null,
           ]),
           last_authenticated_at: chance.timestamp(),
+          last_messaged_at: chance.timestamp(),
           birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
           facebook_id: chance.fbid().toString(),
           first_name: chance.first(),
