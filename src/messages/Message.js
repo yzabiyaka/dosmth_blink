@@ -66,7 +66,7 @@ class Message {
    * validate - It validates the message's schema. If the minimum set of keys defined in the schema
    * is not met, the validation fails, throwing a MessageValidationBlinkError error. By default, it
    * allows all other non null keys to pass validation. In strict mode, it strips all
-   * unknown keys -- Keys not defined explicitely in the validation schema itself.
+   * unknown keys -- Keys not defined explicitly in the validation schema itself.
    *
    * This method should be overridden in children classes if the default
    * doesn't fit the desired functionality. Example: FreeFormMessage
