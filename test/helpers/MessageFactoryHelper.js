@@ -60,9 +60,7 @@ class MessageFactoryHelper {
         role: chance.pickone(['user', 'admin', 'staff']),
         // Dates are arbitrary, but it makes more sense when they are within
         // different ranges.
-        last_messaged_at: chance.date({
-          year: chance.year({ min: 2014, max: 2015 }),
-        }).toISOString(),
+        last_messaged_at: chance.timestamp(),
         last_authenticated_at: chance.date({
           year: chance.year({ min: 2013, max: 2015 }),
         }).toISOString(),
