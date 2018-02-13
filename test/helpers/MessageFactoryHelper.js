@@ -45,6 +45,7 @@ class MessageFactoryHelper {
         slack_id: chance.natural().toString(),
         mobilecommons_id: chance.natural().toString(),
         parse_installation_ids: chance.n(chance.guid, 2),
+        sms_paused: chance.bool(),
         sms_status: chance.pickone([
           'undeliverable',
           'less',
