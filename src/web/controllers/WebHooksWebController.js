@@ -1,7 +1,6 @@
 'use strict';
 
 const CustomerioGambitBroadcastMessage = require('../../messages/CustomerioGambitBroadcastMessage');
-const CustomerioSmsBroadcastMessage = require('../../messages/CustomerioSmsBroadcastMessage');
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const TwilioStatusCallbackMessage = require('../../messages/TwilioStatusCallbackMessage');
@@ -53,7 +52,6 @@ class WebHooksWebController extends WebController {
     ctx.body = {
       'customerio-email-activity': this.fullUrl('v1.webhooks.customerio-email-activity'),
       'customerio-gambit-broadcast': this.fullUrl('v1.webhooks.customerio-gambit-broadcast'),
-      'customerio-sms-broadcast': this.fullUrl('v1.webhooks.customerio-sms-broadcast'),
       'twilio-sms-broadcast': this.fullUrl('v1.webhooks.twilio-sms-broadcast'),
       'twilio-sms-inbound': this.fullUrl('v1.webhooks.twilio-sms-inbound'),
     };
@@ -77,18 +75,6 @@ class WebHooksWebController extends WebController {
       message.validate();
       const { customerioGambitBroadcastQ } = this.blink.queues;
       customerioGambitBroadcastQ.publish(message);
-      this.sendOK(ctx, message, 201);
-    } catch (error) {
-      this.sendError(ctx, error);
-    }
-  }
-
-  async customerioSmsBroadcast(ctx) {
-    try {
-      const message = CustomerioSmsBroadcastMessage.fromCtx(ctx);
-      message.validate();
-      const { customerioSmsBroadcastRelayQ } = this.blink.queues;
-      customerioSmsBroadcastRelayQ.publish(message);
       this.sendOK(ctx, message, 201);
     } catch (error) {
       this.sendError(ctx, error);

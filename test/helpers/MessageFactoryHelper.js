@@ -279,15 +279,6 @@ class MessageFactoryHelper {
     return result;
   }
 
-  static getValidCustomerBroadcastData(broadcastId) {
-    const data = {
-      To: MessageFactoryHelper.getFakeMobileNumber(),
-      Body: chance.sentence(),
-      StatusCallback: `http://blink:password@blink.dosomething.org/api/v1/webhooks/twilio-sms-broadcast?broadcastId=${broadcastId}`,
-    };
-    return data;
-  }
-
   static getValidGambitBroadcastData(broadcastId) {
     const data = {
       northstarId: MessageFactoryHelper.getFakeUserId(),
