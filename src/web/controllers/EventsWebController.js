@@ -15,7 +15,10 @@ class EventsWebController extends WebController {
   }
 
   initRouter() {
-    this.router.get('v1.events', '/api/v1/events', this.index.bind(this));
+    this.router.get('v1.events',
+      '/api/v1/events',
+      basicAuthStrategy(this.blink.config.app.auth),
+      this.index.bind(this));
     this.router.post(
       'v1.events.user-create',
       '/api/v1/events/user-create',
