@@ -100,7 +100,7 @@ test.serial('POST /api/v1/webhooks/customerio-email-activity should publish mess
 /**
  * POST /api/v1/webhooks/twilio-sms-inbound
  */
-test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-sms-inbound-gambit-relay queue', async (t) => {
+test('POST /api/v1/webhooks/twilio-sms-inbound should fail with 403 forbidden for invalid Twilio requests', async (t) => {
   const data = {
     random: 'key',
     nested: {
@@ -109,25 +109,9 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-
   };
 
   const res = await t.context.supertest.post('/api/v1/webhooks/twilio-sms-inbound')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
-  // Ensure TwiML compatible response.
-  res.status.should.be.equal(204);
-  res.res.statusMessage.toLowerCase().should.equal('no content');
-  res.header.should.not.have.property('content-type');
-  res.text.should.equal('');
-
-  // Check that the message is queued.
-  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('twilio-sms-inbound-gambit-relay', 1, false);
-  messages.should.be.an('array').and.to.have.lengthOf(1);
-
-  messages[0].should.have.property('payload');
-  const payload = messages[0].payload;
-  const messageData = JSON.parse(payload);
-  messageData.should.have.property('data');
-  messageData.data.should.be.eql(data);
+  res.status.should.be.equal(403);
 });
 
 /**
