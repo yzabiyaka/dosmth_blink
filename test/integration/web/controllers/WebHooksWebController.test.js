@@ -47,10 +47,6 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
 
   res.body.should.have.property('customerio-gambit-broadcast')
     .and.have.string('/api/v1/webhooks/customerio-gambit-broadcast');
-
-  // To be deprecated
-  res.body.should.have.property('customerio-sms-broadcast')
-    .and.have.string('/api/v1/webhooks/customerio-sms-broadcast');
 });
 
 /**
@@ -128,25 +124,6 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-
   const messageData = JSON.parse(payload);
   messageData.should.have.property('data');
   messageData.data.should.be.eql(data);
-});
-
-/**
- * POST /api/v1/webhooks/customerio-sms-broadcast
- */
-test('POST /api/v1/webhooks/customerio-sms-broadcast validates incoming payload', async (t) => {
-  const broadcastId = chance.word();
-  const data = MessageFactoryHelper.getValidCustomerBroadcastData(broadcastId);
-  delete data.To;
-
-  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-broadcast')
-    .set('Content-Type', 'application/x-www-form-urlencoded')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send(data);
-
-  res.status.should.be.equal(422);
-  res.body.should.have.property('ok', false);
-  res.body.should.have.property('message')
-    .and.have.string('"To" is required');
 });
 
 /**
