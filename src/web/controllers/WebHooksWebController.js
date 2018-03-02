@@ -29,12 +29,6 @@ class WebHooksWebController extends WebController {
       this.customerioGambitBroadcast.bind(this),
     );
     this.router.post(
-      'v1.webhooks.customerio-sms-broadcast',
-      '/api/v1/webhooks/customerio-sms-broadcast',
-      basicAuthStrategy(this.blink.config.app.auth),
-      this.customerioSmsBroadcast.bind(this),
-    );
-    this.router.post(
       'v1.webhooks.twilio-sms-broadcast',
       '/api/v1/webhooks/twilio-sms-broadcast',
       basicAuthStrategy(this.blink.config.app.auth),
