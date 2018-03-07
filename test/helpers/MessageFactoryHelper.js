@@ -113,6 +113,35 @@ class MessageFactoryHelper {
     });
   }
 
+  static getValidTwilioInboundData() {
+    const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
+    return new FreeFormMessage({
+      data: {
+        ToCountry: 'US',
+        ToState: '',
+        SmsMessageSid: sid,
+        NumMedia: '0',
+        ToCity: '',
+        FromZip: chance.zip(),
+        SmsSid: sid,
+        FromState: chance.state({ territories: true }),
+        SmsStatus: 'received',
+        FromCity: chance.city(),
+        Body: '',
+        FromCountry: 'US',
+        To: '38383',
+        MessagingServiceSid: sid,
+        ToZip: '',
+        NumSegments: '1',
+        MessageSid: sid,
+        AccountSid: sid,
+        From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        ApiVersion: '2010-04-01',
+      },
+      meta: {},
+    });
+  }
+
   static getValidMessageData() {
     // TODO: randomize
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
