@@ -6,6 +6,7 @@ const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
 const logger = require('winston');
+const Promise = require('bluebird');
 
 const ApiWebController = require('../web/controllers/ApiWebController');
 const EventsWebController = require('../web/controllers/EventsWebController');
@@ -134,27 +135,37 @@ class BlinkWebApp extends BlinkApp {
     await super.start();
     // Start HTTP server
     this.web.server = http.createServer(this.web.app.callback());
-    this.web.server.listen(
-      this.config.web.bind_port,
-      this.config.web.bind_address,
-      () => {
-        const address = this.web.server.address();
-        // TODO: Make sure random port setting gets overriden with actual resolved port.
 
-        // TODO: log process name
-        const meta = {
-          env: this.config.app.env,
-          code: 'web_started',
-          host: this.config.web.hostname,
-          protocol: 'http',
-          port: address.port,
-        };
+    return new Promise((resolve) => {
+      // @see https://nodejs.org/docs/latest-v8.x/api/net.html#net_server_listen
+      this.web.server.listen(
+        this.config.web.bind_port,
+        this.config.web.bind_address,
+        () => {
+          const address = this.web.server.address();
+          // TODO: Make sure random port setting gets overriden with actual resolved port.
 
-        const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
-        logger.debug(`Blink Web is listening on ${readableUrl}`, meta);
-      },
-    );
-    // TODO: HTTPS?
+          // TODO: log process name
+          const meta = {
+            env: this.config.app.env,
+            code: 'web_started',
+            host: this.config.web.hostname,
+            protocol: 'http',
+            port: address.port,
+          };
+
+          const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
+          logger.debug(`Blink Web is listening on ${readableUrl}`, meta);
+
+          /**
+           * Wait for listening event
+           * @see https://groups.google.com/forum/#!topic/nodejs/8huGEo1cWxg
+           */
+          return resolve(true);
+        },
+        // TODO: HTTPS?
+      );
+    });
   }
 
   async stop() {
