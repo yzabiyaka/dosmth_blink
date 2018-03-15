@@ -22,6 +22,8 @@ const GambitCampaignSignupRelayQ = require('../queues/GambitCampaignSignupRelayQ
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 const TwilioSmsBroadcastGambitRelayQ = require('../queues/TwilioSmsBroadcastGambitRelayQ');
 const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRelayQ');
+const TwilioSmsOutboundErrorRelayQ = require('../queues/TwilioSmsOutboundErrorRelayQ');
+const TwilioSmsOutboundStatusRelayQ = require('../queues/TwilioSmsOutboundStatusRelayQ');
 
 // ------- Class ---------------------------------------------------------------
 
@@ -166,6 +168,8 @@ class BlinkApp {
       QuasarCustomerIoEmailActivityQ,
       TwilioSmsBroadcastGambitRelayQ,
       TwilioSmsInboundGambitRelayQ,
+      TwilioSmsOutboundErrorRelayQ,
+      TwilioSmsOutboundStatusRelayQ,
     ];
   }
 
