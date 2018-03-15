@@ -7,7 +7,7 @@ class TwilioOutboundStatusCallbackMessage extends FreeFormMessage {
     return !!this.getData().ErrorCode;
   }
   isDelivered() {
-    return this.getData().Status === 'delivered';
+    return this.getData().MessageStatus === 'delivered';
   }
 }
 
