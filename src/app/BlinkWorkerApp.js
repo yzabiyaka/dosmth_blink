@@ -10,6 +10,7 @@ const FetchWorker = require('../workers/FetchWorker');
 const GambitCampaignSignupRelayWorker = require('../workers/GambitCampaignSignupRelayWorker');
 const TwilioSmsBroadcastGambitRelayWorker = require('../workers/TwilioSmsBroadcastGambitRelayWorker');
 const TwilioSmsInboundGambitRelayWorker = require('../workers/TwilioSmsInboundGambitRelayWorker');
+const TwilioSmsOutboundStatusRelayWorker = require('../workers/TwilioSmsOutboundStatusRelayWorker');
 const BlinkApp = require('./BlinkApp');
 
 class BlinkWorkerApp extends BlinkApp {
@@ -50,6 +51,7 @@ class BlinkWorkerApp extends BlinkApp {
       'gambit-campaign-signup-relay': GambitCampaignSignupRelayWorker,
       'twilio-sms-broadcast-gambit-relay': TwilioSmsBroadcastGambitRelayWorker,
       'twilio-sms-inbound-gambit-relay': TwilioSmsInboundGambitRelayWorker,
+      'twilio-sms-outbound-status-relay': TwilioSmsOutboundStatusRelayWorker,
     };
   }
 }
