@@ -9,4 +9,9 @@ const config = {
   broadcastSpeedLimit: process.env.GAMBIT_BROADCAST_SPEED_LIMIT || 50,
 };
 
+/**
+ * TODO: This is a hack while we fix the version and routing discrepancy in G-Conversations
+ */
+config.conversations.v1MessagesBaseURL = config.conversations.baseURL.replace(/v2/, 'v1');
+
 module.exports = config;
