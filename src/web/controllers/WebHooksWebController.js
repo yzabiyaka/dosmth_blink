@@ -1,5 +1,7 @@
 'use strict';
 
+const moment = require('moment');
+
 const CustomerioGambitBroadcastMessage = require('../../messages/CustomerioGambitBroadcastMessage');
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
@@ -89,11 +91,17 @@ class WebHooksWebController extends WebController {
       message.validate();
 
       if (message.isError()) {
+        message.setFailedAt(moment().format());
         this.blink.broker.publishToRoute(
           'sms-outbound-error.twilio.webhook',
           message,
         );
       } else if (message.isDelivered()) {
+        /**
+         * We don't get this info in the status callback payload from Twilio so we have to
+         * set ourselves
+         */
+        message.setDeliveredAt(moment().format());
         this.blink.broker.publishToRoute(
           'sms-outbound-status.twilio.webhook',
           message,
