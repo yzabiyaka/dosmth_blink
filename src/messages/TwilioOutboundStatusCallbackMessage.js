@@ -9,6 +9,12 @@ class TwilioOutboundStatusCallbackMessage extends FreeFormMessage {
   isDelivered() {
     return this.getData().MessageStatus === 'delivered';
   }
+  setDeliveredAt(date) {
+    this.payload.data.deliveredAt = date;
+  }
+  setFailedAt(date) {
+    this.payload.data.failedAt = date;
+  }
 }
 
 module.exports = TwilioOutboundStatusCallbackMessage;
