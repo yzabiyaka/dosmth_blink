@@ -170,7 +170,7 @@ test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming paylo
 });
 
 /**
- * POST /api/v1/webhooks/customerio-gambit-broadcast
+ * POST /api/v1/webhooks/twilio-sms-outbound-status
  */
 test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-status-relay when a valid x-twilio-signature is received', async (t) => {
   const message = MessageFactoryHelper.getValidOutboundDeliveredStatusData();
@@ -215,7 +215,7 @@ test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twili
 
 
 /**
- * POST /api/v1/webhooks/customerio-gambit-broadcast
+ * POST /api/v1/webhooks/twilio-sms-outbound-status
  */
 test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-error-relay when a valid x-twilio-signature is received', async (t) => {
   const message = MessageFactoryHelper.getValidOutboundErrorStatusData();
