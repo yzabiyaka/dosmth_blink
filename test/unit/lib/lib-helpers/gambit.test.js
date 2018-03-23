@@ -7,6 +7,7 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const Promise = require('bluebird');
+const moment = require('moment');
 
 // ------- Internal imports ----------------------------------------------------
 
@@ -43,7 +44,7 @@ test('gambitHelper: parseMessageIdFromBody should not throw when body is a non e
  */
 
 test('gambitHelper: getFailedAtUpdateBody should return a valid payload', () => {
-  const message = messageFactoryHelper.getValidOutboundErrorStatusData();
+  const message = messageFactoryHelper.getValidTwilioOutboundErrorStatusData(moment().format());
   const payload = gambitHelper.getFailedAtUpdateBody(message.getData());
   payload.metadata.delivery.failedAt.should.exist;
   payload.metadata.delivery.failureData.code.exist;
@@ -55,7 +56,7 @@ test('gambitHelper: getFailedAtUpdateBody should return a valid payload', () => 
  */
 
 test('gambitHelper: getDeliveredAtUpdateBody should return a valid payload', () => {
-  const message = messageFactoryHelper.getValidOutboundDeliveredStatusData();
+  const message = messageFactoryHelper.getValidTwilioOutboundStatusData(moment().format());
   const payload = gambitHelper.getDeliveredAtUpdateBody(message.getData());
   payload.metadata.delivery.deliveredAt.should.exist;
 });

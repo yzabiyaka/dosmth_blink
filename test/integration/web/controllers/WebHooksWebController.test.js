@@ -173,7 +173,7 @@ test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming paylo
  * POST /api/v1/webhooks/twilio-sms-outbound-status
  */
 test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-status-relay when a valid x-twilio-signature is received', async (t) => {
-  const message = MessageFactoryHelper.getValidOutboundDeliveredStatusData();
+  const message = MessageFactoryHelper.getValidTwilioOutboundStatusData();
   const data = message.getData();
 
   const serverAddress = t.context.blink.web.server.address();
@@ -204,12 +204,11 @@ test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twili
   messageData.should.have.property('data');
 
   /**
-   * This is funky, but because deliveredAt is a property we inject based on the current timestamp
-   * just before enqueuing the message. It would change from the one we sent in this test. IRL the
-   * payload we would get from Twilio would not have a deliveredAt property and would only have it
-   * after we injected it, before being enqueued.
+   * This is funky because deliveredAt is a property we inject based on the current timestamp
+   * just before enqueuing the message. IRL the payload we get from Twilio would not have a
+   * deliveredAt property and would only have it after we injected it, before being enqueued.
    */
-  messageData.data.deliveredAt = data.deliveredAt;
+  delete messageData.data.deliveredAt;
   messageData.data.should.be.eql(data);
 });
 
@@ -218,7 +217,7 @@ test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twili
  * POST /api/v1/webhooks/twilio-sms-outbound-status
  */
 test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-error-relay when a valid x-twilio-signature is received', async (t) => {
-  const message = MessageFactoryHelper.getValidOutboundErrorStatusData();
+  const message = MessageFactoryHelper.getValidTwilioOutboundErrorStatusData();
   const data = message.getData();
 
   const serverAddress = t.context.blink.web.server.address();
@@ -249,12 +248,11 @@ test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twili
   messageData.should.have.property('data');
 
   /**
-   * This is funky, but because failedAt is a property we inject based on the current timestamp
-   * just before enqueuing the message. It would change from the one we sent in this test. IRL the
-   * payload we would get from Twilio would not have a failedAt property and would only have it
-   * after we injected it, before being enqueued.
+   * This is funky because failedAt is a property we inject based on the current timestamp
+   * just before enqueuing the message. IRL the payload we get from Twilio would not have a
+   * failedAt property and would only have it after we injected it, before being enqueued.
    */
-  messageData.data.failedAt = data.failedAt;
+  delete messageData.data.failedAt;
   messageData.data.should.be.eql(data);
 });
 

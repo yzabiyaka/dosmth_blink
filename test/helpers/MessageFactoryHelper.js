@@ -143,9 +143,9 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidOutboundDeliveredStatusData() {
+  static getValidTwilioOutboundStatusData(deliveredAt) {
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
-    return new TwilioOutboundStatusCallbackMessage({
+    const msg = new TwilioOutboundStatusCallbackMessage({
       data: {
         SmsSid: sid,
         SmsStatus: 'delivered',
@@ -155,15 +155,18 @@ class MessageFactoryHelper {
         AccountSid: sid,
         From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
         ApiVersion: '2010-04-01',
-        deliveredAt: chance.date({ year: (new Date()).getFullYear() }).toISOString(),
       },
       meta: {},
     });
+    if (deliveredAt) {
+      msg.setDeliveredAt(deliveredAt);
+    }
+    return msg;
   }
 
-  static getValidOutboundErrorStatusData() {
+  static getValidTwilioOutboundErrorStatusData(failedAt) {
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
-    return new TwilioOutboundStatusCallbackMessage({
+    const msg = new TwilioOutboundStatusCallbackMessage({
       data: {
         SmsSid: sid,
         SmsStatus: 'delivered',
@@ -173,12 +176,15 @@ class MessageFactoryHelper {
         AccountSid: sid,
         From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
         ApiVersion: '2010-04-01',
-        failedAt: chance.date({ year: (new Date()).getFullYear() }).toISOString(),
         ErrorCode: 30006,
         ErrorMessage: 'Landline or unreachable carrier',
       },
       meta: {},
     });
+    if (failedAt) {
+      msg.setFailedAt(failedAt);
+    }
+    return msg;
   }
 
   static getValidMessageData() {
