@@ -2,7 +2,6 @@
 
 const config = {
   conversations: {
-    // TODO: rename config variable to BASE_URL for consistency.
     baseURL: process.env.GAMBIT_CONVERSATIONS_API_BASE_URL || 'http://localhost:5100/api/v2',
     apiKey: process.env.GAMBIT_CONVERSATIONS_API_KEY || 'dG90YWxseXNlY3JldA==',
   },

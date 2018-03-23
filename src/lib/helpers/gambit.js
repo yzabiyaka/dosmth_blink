@@ -10,6 +10,27 @@ const deepExtend = require('deep-extend');
 const gambitConfig = require('../../../config/gambit');
 
 /**
+ * getMessageIdBySidPath
+ *
+ * @param  {string} messageSid
+ * @return {string}             path
+ */
+module.exports.getMessageIdBySidPath = function getMessageIdBySidPath(messageSid) {
+  return `messages?query={"platformMessageId":"${messageSid}"}&select=id&limit=1`;
+};
+
+
+/**
+ * getUpdateMessagePath
+ *
+ * @param  {string} messageId
+ * @return {string}           path
+ */
+module.exports.getUpdateMessagePath = function getUpdateMessagePath(messageId) {
+  return `messages/${messageId}`;
+};
+
+/**
  * get - Sends a GET requests to the v1MessagesBaseURL host and given path
  *
  * @async
@@ -28,7 +49,7 @@ module.exports.executeGet = async function executeGet(path, opts = {}) {
  * update - Sends a PATCH request to the baseURL host and given path
  *
  * @async
- * @param  {String} path
+ * @param  {string} path
  * @param  {Object} opts = {}
  * @return {Promise}
  */
@@ -40,17 +61,17 @@ module.exports.executeUpdate = async function executeUpdate(path, opts = {}) {
 };
 
 /**
- * getMessageIdBySid - Gets a message from Gambit Conversations by the platformMessageId.
+ * getMessageIdBySid - Gets a message from Gambit Conversations by the messageSid.
  * The message contains an _id property when found.
  *
  * @async
- * @param  {String} platformMessageId
+ * @param  {string} messageSid
  * @param  {Object} opts
  * @return {Promise}
  */
-module.exports.getMessageIdBySid = async function getMessageIdBySid(platformMessageId, opts) {
+module.exports.getMessageIdBySid = async function getMessageIdBySid(messageSid, opts) {
   // @see https://www.npmjs.com/package/express-restify-mongoose
-  const path = `messages?query={"platformMessageId":"${platformMessageId}"}&select=id&limit=1`;
+  const path = exports.getMessageIdBySidPath(messageSid);
   return exports.executeGet(path, opts);
 };
 
@@ -63,7 +84,7 @@ module.exports.getMessageIdBySid = async function getMessageIdBySid(platformMess
  * @return {Promise}
  */
 module.exports.updateMessage = async function updateMessage(messageId, opts) {
-  const path = `messages/${messageId}`;
+  const path = exports.getUpdateMessagePath(messageId);
   return exports.executeUpdate(path, opts);
 };
 
@@ -102,21 +123,19 @@ module.exports.getFailedAtUpdateBody = function getFailedAtUpdateBody(message) {
 };
 
 /**
- * parseMessageIdFromResponse - Given a node-fetch response. It parses the _id out of the response
- * body we get from G-Conversations v1/messages route.
+ * parseMessageIdFromBody - It parses the _id out of the given response body
+ * from the G-Conversations v1/messages request.
  *
  *
  * WARNING: This method is coupled with G-Conversations implementation of the v1/messages route.
  * G-Conversations uses express-restify-mongoose, which sends the found tuples in an array.
  *
- * @async
- * @param  {type} response description
- * @return {type}          description
+ * @param  {array} body description
+ * @return {string}
  */
-module.exports.parseMessageIdFromResponse = async function parseMessageIdFromResponse(response) {
-  const body = await response.json();
+module.exports.parseMessageIdFromBody = function parseMessageIdFromBody(body) {
   if (!Array.isArray(body) || body.length <= 0) {
-    throw new Error('parseMessageIdFromResponse(): Non empty array expected in response');
+    throw new Error('parseMessageIdFromBody(): Non empty array expected in response');
   }
   return body[0]._id; // eslint-disable-line no-underscore-dangle
 };

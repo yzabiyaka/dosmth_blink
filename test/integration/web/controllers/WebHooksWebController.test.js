@@ -48,6 +48,9 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
 
   res.body.should.have.property('customerio-gambit-broadcast')
     .and.have.string('/api/v1/webhooks/customerio-gambit-broadcast');
+
+  res.body.should.have.property('twilio-sms-outbound-status')
+    .and.have.string('/api/v1/webhooks/twilio-sms-outbound-status');
 });
 
 /**
@@ -164,6 +167,95 @@ test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming paylo
   res.body.should.have.property('ok', false);
   res.body.should.have.property('message')
     .and.have.string('"northstarId" is required');
+});
+
+/**
+ * POST /api/v1/webhooks/customerio-gambit-broadcast
+ */
+test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-status-relay when a valid x-twilio-signature is received', async (t) => {
+  const message = MessageFactoryHelper.getValidOutboundDeliveredStatusData();
+  const data = message.getData();
+
+  const serverAddress = t.context.blink.web.server.address();
+  const readableUrl = `http://${serverAddress.address}`;
+  const path = '/api/v1/webhooks/twilio-sms-outbound-status';
+
+  const twilioSignature = twilioHelper.getTwilioSignature(
+    t.context.config.twilio.authToken,
+    `${readableUrl}${path}`,
+    data);
+
+  const res = await t.context.supertest.post(path)
+    .set('x-twilio-signature', twilioSignature)
+    .send(data);
+
+  // Ensure TwiML compatible response.
+  res.status.should.be.equal(204);
+  res.res.statusMessage.toLowerCase().should.equal('no content');
+
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  const messages = await rabbit.getMessagesFrom('twilio-sms-outbound-status-relay', 1, false);
+  messages.should.be.an('array').and.to.have.lengthOf(1);
+
+  messages[0].should.have.property('payload');
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+
+  /**
+   * This is funky, but because deliveredAt is a property we inject based on the current timestamp
+   * just before enqueuing the message. It would change from the one we sent in this test. IRL the
+   * payload we would get from Twilio would not have a deliveredAt property and would only have it
+   * after we injected it, before being enqueued.
+   */
+  messageData.data.deliveredAt = data.deliveredAt;
+  messageData.data.should.be.eql(data);
+});
+
+
+/**
+ * POST /api/v1/webhooks/customerio-gambit-broadcast
+ */
+test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-error-relay when a valid x-twilio-signature is received', async (t) => {
+  const message = MessageFactoryHelper.getValidOutboundErrorStatusData();
+  const data = message.getData();
+
+  const serverAddress = t.context.blink.web.server.address();
+  const readableUrl = `http://${serverAddress.address}`;
+  const path = '/api/v1/webhooks/twilio-sms-outbound-status';
+
+  const twilioSignature = twilioHelper.getTwilioSignature(
+    t.context.config.twilio.authToken,
+    `${readableUrl}${path}`,
+    data);
+
+  const res = await t.context.supertest.post(path)
+    .set('x-twilio-signature', twilioSignature)
+    .send(data);
+
+  // Ensure TwiML compatible response.
+  res.status.should.be.equal(204);
+  res.res.statusMessage.toLowerCase().should.equal('no content');
+
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  const messages = await rabbit.getMessagesFrom('twilio-sms-outbound-error-relay', 1, false);
+  messages.should.be.an('array').and.to.have.lengthOf(1);
+
+  messages[0].should.have.property('payload');
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+
+  /**
+   * This is funky, but because failedAt is a property we inject based on the current timestamp
+   * just before enqueuing the message. It would change from the one we sent in this test. IRL the
+   * payload we would get from Twilio would not have a failedAt property and would only have it
+   * after we injected it, before being enqueued.
+   */
+  messageData.data.failedAt = data.failedAt;
+  messageData.data.should.be.eql(data);
 });
 
 // ------- End -----------------------------------------------------------------

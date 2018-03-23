@@ -24,7 +24,7 @@ class TwilioSmsOutboundErrorRelayWorker extends GambitConversationsRelayWorker {
       headers,
       body,
     });
-    this.handleResponse(message, response);
+    return this.handleResponse(message, response);
   }
 
   async getMessageIdToUpdate(message) {
@@ -34,7 +34,7 @@ class TwilioSmsOutboundErrorRelayWorker extends GambitConversationsRelayWorker {
       headers,
     });
     this.handleResponse(message, response);
-    return gambitHelper.parseMessageIdFromResponse(response);
+    return gambitHelper.parseMessageIdFromBody(await response.json());
   }
 }
 
