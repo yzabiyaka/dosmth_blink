@@ -27,7 +27,6 @@ function twilioSignature(twilioConfig) {
      * Alternatively. TEMPORARILY, manually hardcode the correct URL here.
      */
     const url = `${urlObj.protocol}//${urlObj.hostname}${urlObj.pathname}`;
-    // const url = 'https://682ccc4d.ngrok.io/api/v1/webhooks/twilio-sms-outbound-status';
     const payload = ctx.request.body;
     const valid = twilioClient.validateRequest(authToken, signature, url, payload);
 
