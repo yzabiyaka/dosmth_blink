@@ -17,24 +17,23 @@ class TwilioSmsOutboundStatusRelayWorker extends GambitConversationsRelayWorker 
   }
 
   async consume(message) {
-    const messageId = await this.getMessageIdToUpdate(message);
+    let messageId;
+    const getMessageResponse = await gambitHelper.getMessageToUpdate(message);
+    this.handleResponse(message, getMessageResponse);
+
+    try {
+      messageId = gambitHelper.parseMessageIdFromBody(await getMessageResponse.json());
+    } catch (error) {
+      return this.logAndRetry(message, 500, error.message);
+    }
+
     const body = JSON.stringify(gambitHelper.getDeliveredAtUpdateBody(message.getData()));
-    const headers = this.getRequestHeaders(message);
-    const response = await gambitHelper.updateMessage(messageId, {
+    const headers = gambitHelper.getRequestHeaders(message);
+    const updateResponse = await gambitHelper.updateMessage(messageId, {
       headers,
       body,
     });
-    return this.handleResponse(message, response);
-  }
-
-  async getMessageIdToUpdate(message) {
-    const messageSid = message.getData().MessageSid;
-    const headers = this.getRequestHeaders(message);
-    const response = await gambitHelper.getMessageIdBySid(messageSid, {
-      headers,
-    });
-    this.handleResponse(message, response);
-    return gambitHelper.parseMessageIdFromBody(await response.json());
+    return this.handleResponse(message, updateResponse);
   }
 }
 

@@ -16,7 +16,7 @@ function twilioSignature(twilioConfig) {
   return function (ctx, next) {
     const signature = ctx.get('x-twilio-signature');
     // @see https://nodejs.org/api/url.html#url_the_whatwg_url_api
-    const urlObj = ctx.request.URL;
+    // const urlObj = ctx.request.URL;
 
     /**
      * While developing and using ngrok to tunnel requests from a real mobile to Blink's localhost.
@@ -26,7 +26,8 @@ function twilioSignature(twilioConfig) {
      *
      * Alternatively. TEMPORARILY, manually hardcode the correct URL here.
      */
-    const url = `${urlObj.protocol}//${urlObj.hostname}${urlObj.pathname}`;
+    // const url = `${urlObj.protocol}//${urlObj.hostname}${urlObj.pathname}`;
+    const url = 'https://682ccc4d.ngrok.io/api/v1/webhooks/twilio-sms-outbound-status';
     const payload = ctx.request.body;
     const valid = twilioClient.validateRequest(authToken, signature, url, payload);
 

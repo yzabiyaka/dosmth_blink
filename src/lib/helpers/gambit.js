@@ -31,7 +31,7 @@ module.exports.getUpdateMessagePath = function getUpdateMessagePath(messageId) {
 };
 
 /**
- * get - Sends a GET requests to the v1MessagesBaseURL host and given path
+ * executeGet - Sends a GET requests to the v1MessagesBaseURL host and given path
  *
  * @async
  * @param  {String} path
@@ -46,7 +46,7 @@ module.exports.executeGet = async function executeGet(path, opts = {}) {
 };
 
 /**
- * update - Sends a PATCH request to the baseURL host and given path
+ * executeUpdate - Sends a PATCH request to the baseURL host and given path
  *
  * @async
  * @param  {string} path
@@ -88,16 +88,32 @@ module.exports.updateMessage = async function updateMessage(messageId, opts) {
   return exports.executeUpdate(path, opts);
 };
 
+
+/**
+ * getMessageToUpdate
+ *
+ * @param  {type} message
+ * @return {Promise}
+ */
+module.exports.getMessageToUpdate = async function getMessageToUpdate(message) {
+  const messageSid = message.getData().MessageSid;
+  const headers = exports.getRequestHeaders(message);
+  return exports.getMessageIdBySid(messageSid, {
+    headers,
+  });
+};
+
 /**
  * getDeliveredAtUpdateBody
  *
+ * @param {Object} messageData
  * @return {Object}  The metadata update to be sent to G-Conversations
  */
-module.exports.getDeliveredAtUpdateBody = function getDeliveredAtUpdateBody(message) {
+module.exports.getDeliveredAtUpdateBody = function getDeliveredAtUpdateBody(messageData) {
   return {
     metadata: {
       delivery: {
-        deliveredAt: message.deliveredAt,
+        deliveredAt: messageData.deliveredAt,
       },
     },
   };
@@ -106,16 +122,17 @@ module.exports.getDeliveredAtUpdateBody = function getDeliveredAtUpdateBody(mess
 /**
  * getFailedAtUpdateBody
  *
- * @return {Object}  The metadata update to be sent to G-Conversations
+ * @param {Object} messageData
+ * @return {Object}             The metadata update to be sent to G-Conversations
  */
-module.exports.getFailedAtUpdateBody = function getFailedAtUpdateBody(message) {
+module.exports.getFailedAtUpdateBody = function getFailedAtUpdateBody(messageData) {
   return {
     metadata: {
       delivery: {
-        failedAt: message.failedAt,
+        failedAt: messageData.failedAt,
         failureData: {
-          code: message.ErrorCode,
-          message: message.ErrorMessage,
+          code: messageData.ErrorCode,
+          message: messageData.ErrorMessage,
         },
       },
     },
@@ -138,4 +155,23 @@ module.exports.parseMessageIdFromBody = function parseMessageIdFromBody(body) {
     throw new Error('parseMessageIdFromBody(): Non empty array expected in response');
   }
   return body[0]._id; // eslint-disable-line no-underscore-dangle
+};
+
+
+/**
+ * getRequestHeaders - Get G-Conversations specific headers for this message
+ *
+ * @param  {Object} message
+ * @return {Object}
+ */
+module.exports.getRequestHeaders = function getRequestHeaders(message) {
+  const headers = {
+    Authorization: `Basic ${gambitConfig.conversations.apiKey}`,
+    'X-Request-ID': message.getRequestId(),
+    'Content-type': 'application/json',
+  };
+  if (message.getRetryAttempt() > 0) {
+    headers['x-blink-retry-count'] = message.getRetryAttempt();
+  }
+  return headers;
 };

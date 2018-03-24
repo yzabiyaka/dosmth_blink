@@ -1,9 +1,12 @@
 'use strict';
 
 const logger = require('winston');
+const { STATUS_CODES } = require('http');
+
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
+const workerHelper = require('../lib/helpers/worker');
 
 /**
  * Represents a GambitConversationsRelay type of worker.
@@ -18,9 +21,6 @@ class GambitConversationsRelayWorker extends Worker {
       suppress: 'success_gambit_conversations_retry_suppress',
       unprocessable: 'error_gambit_conversations_response_422',
     };
-    // Setup Gambit Conversations
-    this.apiKey = this.blink.config.gambit.conversations.apiKey;
-    this.allowedStatuses = [200, 204, 422];
   }
 
   /**
@@ -32,10 +32,15 @@ class GambitConversationsRelayWorker extends Worker {
    * @return {boolean}
    */
   handleResponse(message, response) {
-    if (this.shouldRetry(response)) {
-      return this.logAndRetry(message, response);
+    if (workerHelper.shouldRetry(response)) {
+      return this.logAndRetry(message, response.status);
     }
-    return this.logResponse(message, response);
+
+    if (workerHelper.checkRetrySuppress(response)) {
+      return this.logSuppressedRetry(message, response.status);
+    }
+
+    return this.logResponse(message, response.status);
   }
 
   /**
@@ -45,44 +50,26 @@ class GambitConversationsRelayWorker extends Worker {
    * @param  {Object} response node-fetch response
    * @return {boolean}
    */
-  logResponse(message, response) {
-    if (response.status === 200 || response.status === 204) {
-      return this.logSuccess(message, response);
-    } else if (this.checkRetrySuppress(response)) {
-      return this.logSuppressedRetry(message, response);
-    } else if (response.status === 422) {
-      return this.logUnprocessableEntity(message, response);
+  logResponse(message, statusCode) {
+    if (statusCode === 200 || statusCode === 204) {
+      return this.logSuccess(message, statusCode);
+    } else if (statusCode === 422) {
+      return this.logUnprocessableEntity(message, statusCode);
     }
     return true;
   }
 
-  /**
-   * shouldRetry - The request should not retry if the status code is one of the allowed codes, or
-   * if G-Conversations returned the suppress retry header
-   *
-   * @param  {Object} response node-fetch response
-   * @return {boolean}
-   */
-  shouldRetry(response) {
-    const allowedStatus = this.allowedStatuses.includes(response.status);
-    const suppressed = this.checkRetrySuppress(response);
-
-    if (suppressed || allowedStatus) {
-      return false;
-    }
-    return true;
-  }
-
-  logAndRetry(message, response) {
+  logAndRetry(message, statusCode, text) {
     this.log(
       'warning',
       message,
-      response,
+      statusCode,
       this.logCodes.retry,
+      text,
     );
 
     throw new BlinkRetryError(
-      `${response.status} ${response.statusText}`,
+      `${statusCode} ${STATUS_CODES[statusCode]}`,
       message,
     );
   }
@@ -91,15 +78,16 @@ class GambitConversationsRelayWorker extends Worker {
    * logSuccess
    *
    * @param  {Object} message
-   * @param  {Object} response node-fetch response
+   * @param  {number} statusCode
    * @return {boolean}
    */
-  logSuccess(message, response) {
+  logSuccess(message, statusCode, text) {
     this.log(
       'debug',
       message,
-      response,
+      statusCode,
       this.logCodes.success,
+      text,
     );
     return true;
   }
@@ -108,15 +96,16 @@ class GambitConversationsRelayWorker extends Worker {
    * logSuppressedRetry
    *
    * @param  {Object} message
-   * @param  {Object} response node-fetch response
+   * @param  {number} statusCode
    * @return {boolean}
    */
-  logSuppressedRetry(message, response) {
+  logSuppressedRetry(message, statusCode, text) {
     this.log(
       'debug',
       message,
-      response,
+      statusCode,
       this.logCodes.suppress,
+      text,
     );
     return true;
   }
@@ -125,15 +114,16 @@ class GambitConversationsRelayWorker extends Worker {
    * logUnprocessableEntity
    *
    * @param  {Object} message
-   * @param  {Object} response node-fetch response
+   * @param  {number} statusCode
    * @return {boolean}
    */
-  logUnprocessableEntity(message, response) {
+  logUnprocessableEntity(message, statusCode, text) {
     this.log(
       'warning',
       message,
-      response,
+      statusCode,
       this.logCodes.unprocessable,
+      text,
     );
     return false;
   }
@@ -144,55 +134,20 @@ class GambitConversationsRelayWorker extends Worker {
    * @async
    * @param  {string} level                    log level
    * @param  {Object} message
-   * @param  {Object} response                 node-fetch response
+   * @param  {number} statusCode               statusCode
    * @param  {string} code = 'unexpected_code'
    */
-  async log(level, message, response, code = 'unexpected_code') {
+  async log(level, message, statusCode, code = 'unexpected_code', logText = '') {
     const meta = {
       env: this.blink.config.app.env,
       code,
       worker: this.constructor.name,
       request_id: message ? message.getRequestId() : 'not_parsed',
-      response_status: response.status,
-      response_status_text: `"${response.statusText}"`,
+      response_status: statusCode,
+      response_status_text: `"${STATUS_CODES[statusCode]}"`,
     };
     // Todo: log error?
-    logger.log(level, '', meta);
-  }
-
-  /**
-   * getRequestHeaders - Get G-Conversations specific headers for this message
-   *
-   * @param  {Object} message
-   * @return {Object}
-   */
-  getRequestHeaders(message) {
-    const headers = {
-      Authorization: `Basic ${this.apiKey}`,
-      'X-Request-ID': message.getRequestId(),
-      'Content-type': 'application/json',
-    };
-
-    if (message.getRetryAttempt() > 0) {
-      headers['x-blink-retry-count'] = message.getRetryAttempt();
-    }
-
-    return headers;
-  }
-
-  /**
-   * checkRetrySuppress - Looks for the suppress headers in the node-fetch response
-   *
-   * @param  {Object} response node-fetch response
-   * @return {boolean}
-   */
-  checkRetrySuppress(response) {
-    // TODO: create common helper
-    const headerResult = response.headers.get(this.blink.config.app.retrySuppressHeader);
-    if (!headerResult) {
-      return false;
-    }
-    return headerResult.toLowerCase() === 'true';
+    logger.log(level, logText, meta);
   }
 }
 

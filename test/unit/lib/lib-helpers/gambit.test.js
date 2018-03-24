@@ -16,7 +16,7 @@ const messageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
-chai.should();
+const should = chai.should();
 chai.use(sinonChai);
 const sandbox = sinon.sandbox.create();
 
@@ -65,9 +65,9 @@ test('gambitHelper: getDeliveredAtUpdateBody should return a valid payload', () 
  * updateMessage
  */
 
-test('gambitHelper: updateMessage should call executeUpdate', async () => {
+test.serial('gambitHelper: updateMessage should call executeUpdate', async () => {
   sandbox.stub(gambitHelper, 'executeUpdate')
-    .returns(Promise.resolve());
+    .returns(Promise.resolve(true));
   const messageId = 'abc123';
   const path = gambitHelper.getUpdateMessagePath(messageId);
   const opts = { whats: 'up' };
@@ -77,18 +77,46 @@ test('gambitHelper: updateMessage should call executeUpdate', async () => {
 });
 
 /**
+ * getMessageToUpdate
+ */
+
+test.serial('gambitHelper: getMessageToUpdate should call getMessageIdBySid', async () => {
+  sandbox.stub(gambitHelper, 'getMessageIdBySid')
+    .returns(Promise.resolve(true));
+  const message = messageFactoryHelper.getValidTwilioOutboundStatusData(moment().format());
+  const messageSid = message.getData().MessageSid;
+  const headers = gambitHelper.getRequestHeaders(message);
+
+  await gambitHelper.getMessageToUpdate(message);
+  gambitHelper.getMessageIdBySid.should.have.been.calledWith(messageSid, { headers });
+});
+
+/**
  * getMessageIdBySid
  */
 
-test('gambitHelper: getMessageIdBySid should call executeGet', async () => {
+test.serial('gambitHelper: getMessageIdBySid should call executeGet', async () => {
   sandbox.stub(gambitHelper, 'executeGet')
-    .returns(Promise.resolve());
+    .returns(Promise.resolve(true));
   const platformMessageId = 'abc123';
   const path = gambitHelper.getMessageIdBySidPath(platformMessageId);
   const opts = { whats: 'up' };
 
   await gambitHelper.getMessageIdBySid(platformMessageId, opts);
   gambitHelper.executeGet.should.have.been.calledWith(path, opts);
+});
+
+/**
+ * getRequestHeaders
+ */
+
+test('gambitHelper: getRequestHeaders should return valid headers', () => {
+  const message = messageFactoryHelper.getValidTwilioOutboundStatusData(moment().format());
+
+  const headers = gambitHelper.getRequestHeaders(message);
+  should.exist(headers.Authorization);
+  should.exist(headers['X-Request-ID']);
+  should.exist(headers['Content-type']);
 });
 
 // ------- End -----------------------------------------------------------------
