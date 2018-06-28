@@ -169,6 +169,24 @@ test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming paylo
 });
 
 /**
+ * POST /api/v1/webhooks/customerio-sms-status-active
+ */
+test('POST /api/v1/webhooks/customerio-sms-status-active validates incoming payload', async (t) => {
+  const data = MessageFactoryHelper.getValidSmsActiveData().getData();
+  delete data.northstarId;
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-status-active')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(422);
+  res.body.should.have.property('ok', false);
+  res.body.should.have.property('message')
+    .and.have.string('"northstarId" is required');
+});
+
+/**
  * POST /api/v1/webhooks/twilio-sms-outbound-status
  */
 test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-status-relay when a valid x-twilio-signature is received', async (t) => {
