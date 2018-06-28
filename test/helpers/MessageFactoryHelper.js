@@ -7,7 +7,7 @@ const moment = require('moment');
 
 const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage');
 const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
-const CustomerIoSmsActiveMessage = require('../../src/messages/CustomerIoSmsActiveMessage');
+const CustomerIoSmsStatusActiveMessage = require('../../src/messages/CustomerIoSmsStatusActiveMessage');
 const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const CustomerIoGambitBroadcastMessage = require('../../src/messages/CustomerIoGambitBroadcastMessage');
@@ -366,7 +366,7 @@ class MessageFactoryHelper {
   }
 
   static getValidSmsActiveData() {
-    return new CustomerIoSmsActiveMessage({
+    return new CustomerIoSmsStatusActiveMessage({
       data: {
         northstarId: MessageFactoryHelper.getFakeUserId(),
       },

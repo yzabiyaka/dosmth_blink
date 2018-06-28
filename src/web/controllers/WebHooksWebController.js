@@ -3,7 +3,7 @@
 const moment = require('moment');
 
 const CustomerIoGambitBroadcastMessage = require('../../messages/CustomerIoGambitBroadcastMessage');
-const CustomerIoSmsStatusActiveMessage = require('../../messages/CustomerIoSmsActiveMessage');
+const CustomerIoSmsStatusActiveMessage = require('../../messages/CustomerIoSmsStatusActiveMessage');
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../messages/TwilioOutboundStatusCallbackMessage');

@@ -1,12 +1,12 @@
 'use strict';
 
-const CustomerIoSmsActiveMessage = require('../messages/CustomerIoSmsActiveMessage');
+const CustomerIoSmsStatusActiveMessage = require('../messages/CustomerIoSmsStatusActiveMessage');
 const Queue = require('../lib/Queue');
 
 class CustomerIoSmsStatusActiveQ extends Queue {
   constructor(...args) {
     super(...args);
-    this.messageClass = CustomerIoSmsActiveMessage;
+    this.messageClass = CustomerIoSmsStatusActiveMessage;
     this.routes.push('sms-status-active.customer-io.webhook');
   }
 }
