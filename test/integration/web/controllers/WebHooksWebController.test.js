@@ -154,7 +154,7 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should be queued when a valid x-t
  */
 test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming payload', async (t) => {
   const broadcastId = chance.word();
-  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId);
+  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId).getData();
   delete data.northstarId;
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
