@@ -1,13 +1,13 @@
 'use strict';
 
-const CustomerioGambitBroadcastMessage = require('../messages/CustomerioGambitBroadcastMessage');
+const CustomerIoGambitBroadcastMessage = require('../messages/CustomerIoGambitBroadcastMessage');
 const Queue = require('../lib/Queue');
 
-class CustomerioGambitBroadcastQ extends Queue {
+class CustomerIoGambitBroadcastQ extends Queue {
   constructor(...args) {
     super(...args);
-    this.messageClass = CustomerioGambitBroadcastMessage;
+    this.messageClass = CustomerIoGambitBroadcastMessage;
   }
 }
 
-module.exports = CustomerioGambitBroadcastQ;
+module.exports = CustomerIoGambitBroadcastQ;

@@ -9,7 +9,7 @@ const Worker = require('./Worker');
 class CustomerIoGambitBroadcastWorker extends Worker {
   setup() {
     super.setup({
-      queue: this.blink.queues.customerioGambitBroadcastQ,
+      queue: this.blink.queues.customerIoGambitBroadcastQ,
       rateLimit: this.blink.config.gambit.broadcastSpeedLimit,
     });
     // Setup Gambit.

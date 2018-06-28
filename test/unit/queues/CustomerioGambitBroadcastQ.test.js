@@ -7,7 +7,7 @@ const chai = require('chai');
 
 const Broker = require('../../../src/lib/brokers/Broker');
 const Queue = require('../../../src/lib/Queue');
-const CustomerioGambitBroadcastQ = require('../../../src/queues/CustomerioGambitBroadcastQ');
+const CustomerIoGambitBroadcastQ = require('../../../src/queues/CustomerIoGambitBroadcastQ');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -16,12 +16,12 @@ chai.should();
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * Test CustomerioGambitBroadcastQ
+ * Test CustomerIoGambitBroadcastQ
  */
-test('CustomerioGambitBroadcastQ', () => {
-  const queue = new CustomerioGambitBroadcastQ(new Broker());
+test('CustomerIoGambitBroadcastQ', () => {
+  const queue = new CustomerIoGambitBroadcastQ(new Broker());
   queue.should.be.an.instanceof(Queue);
-  queue.routes.should.include('customerio-gambit-broadcast');
+  queue.routes.should.include('customer-io-gambit-broadcast');
 });
 
 // ------- End -----------------------------------------------------------------

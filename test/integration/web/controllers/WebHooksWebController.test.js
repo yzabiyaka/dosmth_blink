@@ -45,6 +45,9 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
   res.body.should.have.property('customerio-gambit-broadcast')
     .and.have.string('/api/v1/webhooks/customerio-gambit-broadcast');
 
+  res.body.should.have.property('customerio-sms-status-active')
+    .and.have.string('/api/v1/webhooks/customerio-sms-status-active');
+
   res.body.should.have.property('twilio-sms-outbound-status')
     .and.have.string('/api/v1/webhooks/twilio-sms-outbound-status');
 });
