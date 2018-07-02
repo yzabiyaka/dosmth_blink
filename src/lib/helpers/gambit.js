@@ -157,7 +157,6 @@ module.exports.parseMessageIdFromBody = function parseMessageIdFromBody(body) {
   return body[0]._id; // eslint-disable-line no-underscore-dangle
 };
 
-
 /**
  * getRequestHeaders - Get G-Conversations specific headers for this message
  *

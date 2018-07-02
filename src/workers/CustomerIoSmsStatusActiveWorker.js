@@ -7,11 +7,11 @@ const Worker = require('./Worker');
 const gambitHelper = require('../lib/helpers/gambit');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 
-class CustomerIoGambitBroadcastWorker extends Worker {
+
+class CustomerIoSmsStatusActiveWorker extends Worker {
   setup() {
     super.setup({
-      queue: this.blink.queues.customerIoGambitBroadcastQ,
-      rateLimit: this.blink.config.gambit.broadcastSpeedLimit,
+      queue: this.blink.queues.customerIoSmsStatusActiveQ,
     });
     // Setup Gambit.
     this.baseURL = this.blink.config.gambit.conversations.baseURL;
@@ -24,12 +24,11 @@ class CustomerIoGambitBroadcastWorker extends Worker {
 
     const data = {
       northstarId: message.getNorthstarId(),
-      broadcastId: message.getBroadcastId(),
     };
     const body = JSON.stringify(data);
     const headers = gambitHelper.getRequestHeaders(message);
     const response = await fetch(
-      `${this.baseURL}/messages?origin=broadcast`,
+      `${this.baseURL}/messages?origin=subscriptionStatusActive`,
       {
         method: 'POST',
         headers,
@@ -42,7 +41,7 @@ class CustomerIoGambitBroadcastWorker extends Worker {
         'debug',
         message,
         response,
-        'success_customerio_gambit_broadcast_gambit_response_200',
+        'success_customerio_sms_status_active_gambit_response_200',
       );
       return true;
     }
@@ -52,7 +51,7 @@ class CustomerIoGambitBroadcastWorker extends Worker {
         'debug',
         message,
         response,
-        'success_customerio_gambit_broadcast_relay_gambit_retry_suppress',
+        'success_customerio_sms_status_active_relay_gambit_retry_suppress',
       );
       return true;
     }
@@ -62,7 +61,7 @@ class CustomerIoGambitBroadcastWorker extends Worker {
         'warning',
         message,
         response,
-        'error_customerio_gambit_broadcast_gambit_response_422',
+        'error_customerio_sms_status_active_gambit_response_422',
       );
       return false;
     }
@@ -72,7 +71,7 @@ class CustomerIoGambitBroadcastWorker extends Worker {
       'warning',
       message,
       response,
-      'error_customerio_gambit_broadcast_gambit_response_not_200_retry',
+      'error_customerio_sms_status_active_gambit_response_not_200_retry',
     );
 
     throw new BlinkRetryError(
@@ -106,4 +105,4 @@ class CustomerIoGambitBroadcastWorker extends Worker {
   }
 }
 
-module.exports = CustomerIoGambitBroadcastWorker;
+module.exports = CustomerIoSmsStatusActiveWorker;
