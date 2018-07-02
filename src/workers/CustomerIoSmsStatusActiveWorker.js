@@ -22,19 +22,34 @@ class CustomerIoSmsStatusActiveWorker extends Worker {
     // TODO: There's a slight chance a previous retry did successfully post to Twilio, but
     // errored after the request, sending a double post.
 
+    let response = {};
     const data = {
       northstarId: message.getNorthstarId(),
     };
     const body = JSON.stringify(data);
     const headers = gambitHelper.getRequestHeaders(message);
-    const response = await fetch(
-      `${this.baseURL}/messages?origin=subscriptionStatusActive`,
-      {
-        method: 'POST',
-        headers,
-        body,
-      },
-    );
+
+    try {
+      response = await fetch(
+        `${this.baseURL}/messages?origin=subscriptionStatusActive`,
+        {
+          method: 'POST',
+          headers,
+          body,
+        },
+      );
+    } catch (error) {
+      gambitHelper.logFetchFailure(
+        error.toString(),
+        message,
+        this.queue.name,
+        'error_customerio_sms_status_active_gambit_response_not_200_retry',
+      );
+      throw new BlinkRetryError(
+        `${error.toString()}`,
+        message,
+      );
+    }
 
     if (response.status === 200) {
       this.log(
@@ -65,7 +80,6 @@ class CustomerIoSmsStatusActiveWorker extends Worker {
       );
       return false;
     }
-
 
     this.log(
       'warning',

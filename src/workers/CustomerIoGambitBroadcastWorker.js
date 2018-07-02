@@ -22,20 +22,35 @@ class CustomerIoGambitBroadcastWorker extends Worker {
     // TODO: There's a slight chance a previous retry did successfully post to Twilio, but
     // errored after the request, sending a double post.
 
+    let response = {};
     const data = {
       northstarId: message.getNorthstarId(),
       broadcastId: message.getBroadcastId(),
     };
     const body = JSON.stringify(data);
     const headers = gambitHelper.getRequestHeaders(message);
-    const response = await fetch(
-      `${this.baseURL}/messages?origin=broadcast`,
-      {
-        method: 'POST',
-        headers,
-        body,
-      },
-    );
+
+    try {
+      response = await fetch(
+        `${this.baseURL}/messages?origin=broadcast`,
+        {
+          method: 'POST',
+          headers,
+          body,
+        },
+      );
+    } catch (error) {
+      gambitHelper.logFetchFailure(
+        error.toString(),
+        message,
+        this.queue.name,
+        'error_customerio_gambit_broadcast_gambit_response_200_retry',
+      );
+      throw new BlinkRetryError(
+        `${error.toString()}`,
+        message,
+      );
+    }
 
     if (response.status === 200) {
       this.log(

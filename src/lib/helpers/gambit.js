@@ -1,6 +1,7 @@
 'use strict';
 
 const fetch = require('node-fetch');
+const logger = require('winston');
 /**
  * Deep Extend is used because Object.assign does shallow-copy only. Nested objects are
  * referenced instead of copied which can bring unintended consequences.
@@ -173,4 +174,23 @@ module.exports.getRequestHeaders = function getRequestHeaders(message) {
     headers['x-blink-retry-count'] = message.getRetryAttempt();
   }
   return headers;
+};
+
+/**
+ * logFetchFailure
+ *
+ * @param {String} logMessage
+ * @param {Object} message
+ * @param {String} queueName
+ * @param {String} code
+ */
+module.exports.logFetchFailure = function logFetchFailure(logMessage, message = {}, queueName,
+  code = 'unexpected_code') {
+  const meta = {
+    code,
+    queue: queueName,
+    request_id: message ? message.getRequestId() : 'not_parsed',
+  };
+
+  logger.log('error', logMessage, meta);
 };
