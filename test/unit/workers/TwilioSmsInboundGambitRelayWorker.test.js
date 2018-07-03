@@ -6,43 +6,50 @@ const chai = require('chai');
 const fetch = require('node-fetch');
 const test = require('ava');
 
-const BlinkWorkerApp = require('../../../src/app/BlinkWorkerApp');
+const gambitHelper = require('../../../src/lib/helpers/gambit');
+const workerHelper = require('../../../src/lib/helpers/worker');
+const TwilioSmsInboundGambitRelayWorker = require('../../../src/workers/TwilioSmsInboundGambitRelayWorker');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
-chai.should();
+const should = chai.should();
 const { Response } = fetch;
 
 // ------- Tests ---------------------------------------------------------------
 
-test('Gambit Broadcast relay should recieve correct retry count if message has been retried', () => {
-  const config = require('../../../config');
-  const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-inbound-gambit-relay');
-  const gambitWorker = gambitWorkerApp.worker;
+test('getLogCode should be setup and have correct logs', () => {
+  const logNames = ['retry', 'success', 'suppress', 'unprocessable'];
 
+  logNames.forEach((name) => {
+    const code = TwilioSmsInboundGambitRelayWorker.getLogCode(name);
+    should.exist(code);
+
+    if (code) {
+      code.should.contain('gambit_inbound');
+    }
+  });
+});
+
+test('Gambit Broadcast relay should receive correct retry count if message has been retried', () => {
   // No retry property:
-  gambitWorker.getRequestHeaders(MessageFactoryHelper.getValidInboundMessageData())
+  gambitHelper.getRequestHeaders(MessageFactoryHelper.getValidInboundMessageData())
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 0
   const retriedZero = MessageFactoryHelper.getValidInboundMessageData();
-  gambitWorker.getRequestHeaders(retriedZero)
+  gambitHelper.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
   const retriedOnce = MessageFactoryHelper.getValidInboundMessageData();
   retriedOnce.incrementRetryAttempt();
-  gambitWorker.getRequestHeaders(retriedOnce)
+  gambitHelper.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);
 });
 
-
+// TODO: Move this test to the helper/worker test when created
 test('Test Gambit response with x-blink-retry-suppress header', () => {
-  const config = require('../../../config');
-  const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-inbound-gambit-relay');
-  const gambitWorker = gambitWorkerApp.worker;
-
   // Gambit order retry suppression
   const retrySuppressResponse = new Response(
     'Unknown Gambit error',
@@ -56,7 +63,7 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
     },
   );
 
-  gambitWorker.checkRetrySuppress(retrySuppressResponse).should.be.true;
+  workerHelper.checkRetrySuppress(retrySuppressResponse).should.be.true;
 
 
   // Normal Gambit 422 response
@@ -70,7 +77,7 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
       },
     },
   );
-  gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
+  workerHelper.checkRetrySuppress(normalFailedResponse).should.be.false;
 });
 
 // ------- End -----------------------------------------------------------------
