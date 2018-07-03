@@ -8,7 +8,6 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const Promise = require('bluebird');
 const moment = require('moment');
-const logger = require('winston');
 
 // ------- Internal imports ----------------------------------------------------
 
@@ -124,7 +123,6 @@ test('gambitHelper: getRequestHeaders should return valid headers', () => {
 
 
 test('logFetchFailureAndRetry should log and throw a BlinkRetryError error', () => {
-  sandbox.stub(logger, 'log').returns(true);
   const message = messageFactoryHelper.getValidSmsActiveData();
   expect(() => gambitHelper.logFetchFailureAndRetry('msg', message, 'worker1')).to.throw(BlinkRetryError);
 });
