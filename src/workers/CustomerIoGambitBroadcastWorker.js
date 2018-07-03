@@ -12,21 +12,19 @@ class CustomerIoGambitBroadcastWorker extends GambitConversationsRelayBaseWorker
   }
 
   async consume(message) {
-    let response = {};
-
     const body = JSON.stringify({
       northstarId: message.getNorthstarId(),
       broadcastId: message.getBroadcastId(),
     });
 
     try {
-      response = await gambitHelper.relayBroadcastMessage(message, {
+      const response = await gambitHelper.relayBroadcastMessage(message, {
         body,
       });
+      return this.handleResponse(message, response);
     } catch (error) {
       return this.logUnreachableGambitConversationsAndRetry(error, message);
     }
-    return this.handleResponse(message, response);
   }
 
   static getLogCode(name) {

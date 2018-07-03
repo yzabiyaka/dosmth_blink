@@ -11,21 +11,18 @@ class CustomerIoSmsStatusActiveWorker extends GambitConversationsRelayBaseWorker
   }
 
   async consume(message) {
-    let response;
-
     const body = JSON.stringify({
       northstarId: message.getNorthstarId(),
     });
 
     try {
-      response = await gambitHelper.relaySmsStatusActiveMessage(message, {
+      const response = await gambitHelper.relaySmsStatusActiveMessage(message, {
         body,
       });
+      return this.handleResponse(message, response);
     } catch (error) {
       return this.logUnreachableGambitConversationsAndRetry(error, message);
     }
-
-    return this.handleResponse(message, response);
   }
 
   static getLogCode(name) {

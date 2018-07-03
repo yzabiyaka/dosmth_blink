@@ -21,7 +21,6 @@ class TwilioStatusCallbackRelayBaseWorker extends GambitConversationsRelayBaseWo
   async consume(message) {
     let messageId;
     let getMessageResponse;
-    let updateResponse;
 
     try {
       getMessageResponse = await gambitHelper.getMessageToUpdate(message);
@@ -61,14 +60,14 @@ class TwilioStatusCallbackRelayBaseWorker extends GambitConversationsRelayBaseWo
     const headers = gambitHelper.getRequestHeaders(message);
 
     try {
-      updateResponse = await gambitHelper.updateMessage(messageId, {
+      const updateResponse = await gambitHelper.updateMessage(messageId, {
         headers,
         body,
       });
+      return this.handleResponse(message, updateResponse);
     } catch (error) {
       return this.logUnreachableGambitConversationsAndRetry(error, message);
     }
-    return this.handleResponse(message, updateResponse);
   }
 }
 

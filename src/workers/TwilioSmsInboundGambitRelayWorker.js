@@ -11,18 +11,16 @@ class TwilioSmsInboundGambitRelayWorker extends GambitConversationsRelayBaseWork
   }
 
   async consume(message) {
-    let response;
-
     const body = JSON.stringify(message.getData());
 
     try {
-      response = await gambitHelper.relayTwilioInboundMessage(message, {
+      const response = await gambitHelper.relayTwilioInboundMessage(message, {
         body,
       });
+      return this.handleResponse(message, response);
     } catch (error) {
       return this.logUnreachableGambitConversationsAndRetry(error, message);
     }
-    return this.handleResponse(message, response);
   }
 
   static getLogCode(name) {

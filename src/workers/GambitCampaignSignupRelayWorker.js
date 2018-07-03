@@ -13,7 +13,6 @@ class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker
   }
 
   async consume(message) {
-    let response;
     const data = message.getData();
     // Send only delivered messages to Gambit Conversations import.
     if (GambitCampaignSignupRelayWorker.shouldSkip(message)) {
@@ -27,14 +26,13 @@ class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker
     });
 
     try {
-      response = await gambitHelper.relayCampaignSignupMessage(message, {
+      const response = await gambitHelper.relayCampaignSignupMessage(message, {
         body,
       });
+      return this.handleResponse(message, response);
     } catch (error) {
       return this.logUnreachableGambitConversationsAndRetry(error, message);
     }
-
-    return this.handleResponse(message, response);
   }
 
   static shouldSkip(message) {
