@@ -7,12 +7,13 @@ const { STATUS_CODES } = require('http');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 const workerHelper = require('../lib/helpers/worker');
+const gambitHelper = require('../lib/helpers/gambit');
 
 /**
  * Represents a GambitConversationsRelay type of worker.
  * Workers that intend to relay messages to G-Conversations should inherit from this Worker.
  */
-class GambitConversationsRelayWorker extends Worker {
+class GambitConversationsRelayBaseWorker extends Worker {
   setup({ queue }) {
     super.setup({ queue });
     this.logCodes = {
@@ -36,10 +37,15 @@ class GambitConversationsRelayWorker extends Worker {
       return this.logAndRetry(message, response.status);
     }
 
+    /**
+     * We should only go past this line if the response's status code does not trigger a retry.
+     * Example: 200, 204, and 422
+     * @see /config/app.js
+     */
+
     if (workerHelper.checkRetrySuppress(response)) {
       return this.logSuppressedRetry(message, response.status);
     }
-
     return this.logResponse(message, response.status);
   }
 
@@ -56,7 +62,16 @@ class GambitConversationsRelayWorker extends Worker {
     } else if (statusCode === 422) {
       return this.logUnprocessableEntity(message, statusCode);
     }
-    return true;
+    return false;
+  }
+
+  logUnreachableGambitConversationsAndRetry(error, message) {
+    gambitHelper.logFetchFailureAndRetry(
+      error.toString(),
+      message,
+      this.workerName,
+      this.logCodes.retry,
+    );
   }
 
   logAndRetry(message, statusCode, text) {
@@ -107,7 +122,7 @@ class GambitConversationsRelayWorker extends Worker {
       this.logCodes.suppress,
       text,
     );
-    return true;
+    return false;
   }
 
   /**
@@ -141,7 +156,7 @@ class GambitConversationsRelayWorker extends Worker {
     const meta = {
       env: this.blink.config.app.env,
       code,
-      worker: this.constructor.name,
+      worker: this.workerName,
       request_id: message ? message.getRequestId() : 'not_parsed',
       response_status: statusCode,
       response_status_text: `"${STATUS_CODES[statusCode]}"`,
@@ -151,4 +166,4 @@ class GambitConversationsRelayWorker extends Worker {
   }
 }
 
-module.exports = GambitConversationsRelayWorker;
+module.exports = GambitConversationsRelayBaseWorker;

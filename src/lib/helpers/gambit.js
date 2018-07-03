@@ -9,34 +9,16 @@ const logger = require('winston');
 const deepExtend = require('deep-extend');
 
 const gambitConfig = require('../../../config/gambit');
+const BlinkRetryError = require('../../errors/BlinkRetryError');
 
-/**
- * getMessageIdBySidPath
- *
- * @param  {string} messageSid
- * @return {string}             path
- */
-module.exports.getMessageIdBySidPath = function getMessageIdBySidPath(messageSid) {
-  return `messages?query={"platformMessageId":"${messageSid}"}&select=id&limit=1`;
-};
-
-
-/**
- * getUpdateMessagePath
- *
- * @param  {string} messageId
- * @return {string}           path
- */
-module.exports.getUpdateMessagePath = function getUpdateMessagePath(messageId) {
-  return `messages/${messageId}`;
-};
+// TODO: This helper is becoming to big, needs to be split into more defined responsibilities
 
 /**
  * executeGet - Sends a GET requests to the v1MessagesBaseURL host and given path
  *
  * @async
  * @param  {String} path
- * @param  {Object} opts = {}
+ * @param  {Object} opts = {} @see https://www.npmjs.com/package/node-fetch#options
  * @return {Promise}
  */
 module.exports.executeGet = async function executeGet(path, opts = {}) {
@@ -51,7 +33,7 @@ module.exports.executeGet = async function executeGet(path, opts = {}) {
  *
  * @async
  * @param  {string} path
- * @param  {Object} opts = {}
+ * @param  {Object} opts = {} @see https://www.npmjs.com/package/node-fetch#options
  * @return {Promise}
  */
 module.exports.executeUpdate = async function executeUpdate(path, opts = {}) {
@@ -62,11 +44,144 @@ module.exports.executeUpdate = async function executeUpdate(path, opts = {}) {
 };
 
 /**
+ * executePost - Sends a POST request to the baseURL host and given path
+ *
+ * @async
+ * @param  {string} path
+ * @param  {Object} opts = {} @see https://www.npmjs.com/package/node-fetch#options
+ * @return {Promise}
+ */
+module.exports.executePost = async function executePost(path, opts = {}) {
+  const options = Object.assign({}, deepExtend(opts, {
+    method: 'POST',
+  }));
+  return fetch(`${gambitConfig.conversations.baseURL}/${path}`, options);
+};
+
+/**
+ * getMessageIdBySidPath
+ *
+ * @param  {string} messageSid
+ * @return {string}             path
+ */
+module.exports.getMessageIdBySidPath = function getMessageIdBySidPath(messageSid) {
+  return `messages?query={"platformMessageId":"${messageSid}"}&select=id&limit=1`;
+};
+
+/**
+ * getUpdateMessagePath
+ *
+ * @param  {string} messageId
+ * @return {string}           path
+ */
+module.exports.getUpdateMessagePath = function getUpdateMessagePath(messageId) {
+  return `messages/${messageId}`;
+};
+
+/**
+ * getTwilioPath
+ *
+ * @see https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/messages.md#twilio
+ * @return {String}   G-Conversations inbound twilio message path
+ */
+module.exports.getTwilioPath = function getTwilioPath() {
+  return 'messages?origin=twilio';
+};
+
+/**
+ * getBroadcastPath
+ *
+ * @see https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/messages.md#broadcast
+ * @return {String}   G-Conversations broadcast message path
+ */
+module.exports.getBroadcastPath = function getBroadcastPath() {
+  return 'messages?origin=broadcast';
+};
+
+/**
+ * getCampaignSignupPath
+ *
+ * @see https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/messages.md#signup
+ * @return {String}   G-Conversations web campaign signup message path
+ */
+module.exports.getCampaignSignupPath = function getCampaignSignupPath() {
+  return 'messages?origin=signup';
+};
+
+/**
+ * getSubscriptionStatusActivePath
+ *
+ * @return {String}   G-Conversations web sms status active message path
+ */
+module.exports.getSubscriptionStatusActivePath = function getSubscriptionStatusActivePath() {
+  return 'messages?origin=subscriptionStatusActive';
+};
+
+/**
+ * relayMessage - relays an authenticated POST request to G-Conversations
+ *
+ * @param  {String} path        G-Conversations path to send the POST to
+ * @param  {Message} message    A message instance
+ * @param  {Object} opts        Object with properties to pass to the node-fetch client. This
+ *                              includes the body property.
+ * @see {@link https://www.npmjs.com/package/node-fetch#class-response|Response Class}
+ * @return {Promise<Response>}
+ */
+module.exports.relayMessage = function relayMessage(path, message, opts) {
+  const headers = exports.getRequestHeaders(message);
+  return exports.executePost(path, Object.assign({ headers }, opts));
+};
+
+/**
+ * relayTwilioInboundMessage - Relays Inbound Twilio messages to G-Conversations
+ *
+ * @param  {Message} message
+ * @param  {Object} opts
+ * @return {Promise<Response>}
+ */
+module.exports.relayTwilioInboundMessage = function relayTwilioInboundMessage(message, opts) {
+  return exports.relayMessage(exports.getTwilioPath(), message, opts);
+};
+
+/**
+ * relayBroadcastMessage - Relays Broadcast messages to G-Conversations
+ *
+ * @param  {Message} message
+ * @param  {Object} opts
+ * @return {Promise<Response>}
+ */
+module.exports.relayBroadcastMessage = function relayBroadcastMessage(message, opts) {
+  return exports.relayMessage(exports.getBroadcastPath(), message, opts);
+};
+
+/**
+ * relayCampaignSignupMessage - Relays Web Campaign Signup messages to G-Conversations
+ *
+ * @param  {Message} message
+ * @param  {Object} opts
+ * @return {Promise<Response>}
+ */
+module.exports.relayCampaignSignupMessage = function relayCampaignSignupMessage(message, opts) {
+  return exports.relayMessage(exports.getCampaignSignupPath(), message, opts);
+};
+
+/**
+ * relaySmsStatusActiveMessage - Relays Sms Status Active welcome messages to G-Conversations
+ *
+ * @param  {Message} message
+ * @param  {Object} opts
+ * @return {Promise<Response>}
+ */
+module.exports.relaySmsStatusActiveMessage = function relaySmsStatusActiveMessage(message, opts) {
+  return exports.relayMessage(exports.getSubscriptionStatusActivePath(), message, opts);
+};
+
+/**
  * getMessageIdBySid - Gets a message from Gambit Conversations by the messageSid.
  * The message contains an _id property when found.
  *
  * @async
- * @param  {string} messageSid
+ * @param  {string} messageSid           A Twilio message Sid.
  * @param  {Object} opts
  * @return {Promise}
  */
@@ -80,8 +195,8 @@ module.exports.getMessageIdBySid = async function getMessageIdBySid(messageSid, 
  * updateMessage - Updates a message in Gambit Conversations by the messageId.
  *
  * @async
- * @param  {String} messageId
- * @param  {Object} opts
+ * @param  {String} messageId         Not a message instance. Just the message id.
+ * @param  {Object} opts              Already includes the headers in the object.
  * @return {Promise}
  */
 module.exports.updateMessage = async function updateMessage(messageId, opts) {
@@ -93,7 +208,7 @@ module.exports.updateMessage = async function updateMessage(messageId, opts) {
 /**
  * getMessageToUpdate
  *
- * @param  {type} message
+ * @param  {type} message         A message instance.
  * @return {Promise}
  */
 module.exports.getMessageToUpdate = async function getMessageToUpdate(message) {
@@ -184,13 +299,17 @@ module.exports.getRequestHeaders = function getRequestHeaders(message) {
  * @param {String} queueName
  * @param {String} code
  */
-module.exports.logFetchFailure = function logFetchFailure(logMessage, message = {}, queueName,
-  code = 'unexpected_code') {
+module.exports.logFetchFailureAndRetry = function logFetchFailureAndRetry(logMessage,
+  message = {}, workerName, code = 'unexpected_code') {
   const meta = {
     code,
-    queue: queueName,
+    worker: workerName,
     request_id: message ? message.getRequestId() : 'not_parsed',
   };
-
   logger.log('error', logMessage, meta);
+
+  throw new BlinkRetryError(
+    logMessage,
+    message,
+  );
 };
