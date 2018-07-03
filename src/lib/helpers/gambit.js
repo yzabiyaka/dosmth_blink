@@ -16,45 +16,42 @@ const BlinkRetryError = require('../../errors/BlinkRetryError');
 /**
  * executeGet - Sends a GET requests to the v1MessagesBaseURL host and given path
  *
- * @async
  * @param  {String} path
  * @param  {Object} opts = {} @see https://www.npmjs.com/package/node-fetch#options
  * @return {Promise}
  */
-module.exports.executeGet = async function executeGet(path, opts = {}) {
-  const options = Object.assign({}, deepExtend(opts, {
+module.exports.executeGet = function executeGet(path, opts = {}) {
+  const options = deepExtend({}, opts, {
     method: 'GET',
-  }));
+  });
   return fetch(`${gambitConfig.conversations.v1MessagesBaseURL}/${path}`, options);
 };
 
 /**
  * executeUpdate - Sends a PATCH request to the baseURL host and given path
  *
- * @async
  * @param  {string} path
  * @param  {Object} opts = {} @see https://www.npmjs.com/package/node-fetch#options
  * @return {Promise}
  */
-module.exports.executeUpdate = async function executeUpdate(path, opts = {}) {
-  const options = Object.assign({}, deepExtend(opts, {
+module.exports.executeUpdate = function executeUpdate(path, opts = {}) {
+  const options = deepExtend({}, opts, {
     method: 'PATCH',
-  }));
+  });
   return fetch(`${gambitConfig.conversations.baseURL}/${path}`, options);
 };
 
 /**
  * executePost - Sends a POST request to the baseURL host and given path
  *
- * @async
  * @param  {string} path
  * @param  {Object} opts = {} @see https://www.npmjs.com/package/node-fetch#options
  * @return {Promise}
  */
-module.exports.executePost = async function executePost(path, opts = {}) {
-  const options = Object.assign({}, deepExtend(opts, {
+module.exports.executePost = function executePost(path, opts = {}) {
+  const options = deepExtend({}, opts, {
     method: 'POST',
-  }));
+  });
   return fetch(`${gambitConfig.conversations.baseURL}/${path}`, options);
 };
 
