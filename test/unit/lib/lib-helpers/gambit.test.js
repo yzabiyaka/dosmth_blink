@@ -8,15 +8,18 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const Promise = require('bluebird');
 const moment = require('moment');
+const logger = require('winston');
 
 // ------- Internal imports ----------------------------------------------------
 
 const gambitHelper = require('../../../../src/lib/helpers/gambit');
 const messageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
+const BlinkRetryError = require('../../../../src/errors/BlinkRetryError');
 
 // ------- Init ----------------------------------------------------------------
 
 const should = chai.should();
+const expect = chai.expect;
 chai.use(sinonChai);
 const sandbox = sinon.sandbox.create();
 
@@ -117,6 +120,13 @@ test('gambitHelper: getRequestHeaders should return valid headers', () => {
   should.exist(headers.Authorization);
   should.exist(headers['X-Request-ID']);
   should.exist(headers['Content-type']);
+});
+
+
+test('logFetchFailureAndRetry should log and throw a BlinkRetryError error', () => {
+  sandbox.stub(logger, 'log').returns(true);
+  const message = messageFactoryHelper.getValidSmsActiveData();
+  expect(() => gambitHelper.logFetchFailureAndRetry('msg', message, 'worker1')).to.throw(BlinkRetryError);
 });
 
 // ------- End -----------------------------------------------------------------

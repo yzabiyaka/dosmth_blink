@@ -11,7 +11,7 @@ const deepExtend = require('deep-extend');
 const gambitConfig = require('../../../config/gambit');
 const BlinkRetryError = require('../../errors/BlinkRetryError');
 
-// TODO: This helper is becoming to big, needs to be split into more defined responsibilities
+// TODO: This helper is becoming too big, needs to be split into more defined responsibilities
 
 /**
  * executeGet - Sends a GET requests to the v1MessagesBaseURL host and given path
