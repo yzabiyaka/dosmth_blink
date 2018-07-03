@@ -8,12 +8,6 @@ class CustomerIoSmsStatusActiveWorker extends GambitConversationsRelayBaseWorker
     super.setup({
       queue: this.blink.queues.customerIoSmsStatusActiveQ,
     });
-    this.logCodes = {
-      retry: 'error_customerio_sms_status_active_gambit_response_not_200_retry',
-      success: 'success_customerio_sms_status_active_gambit_response_200',
-      suppress: 'success_customerio_sms_status_active_relay_gambit_retry_suppress',
-      unprocessable: 'error_customerio_sms_status_active_gambit_response_422',
-    };
   }
 
   async consume(message) {
@@ -32,6 +26,16 @@ class CustomerIoSmsStatusActiveWorker extends GambitConversationsRelayBaseWorker
     }
 
     return this.handleResponse(message, response);
+  }
+
+  static getLogCode(name) {
+    const logCodes = {
+      retry: 'error_customerio_sms_status_active_gambit_response_not_200_retry',
+      success: 'success_customerio_sms_status_active_gambit_response_200',
+      suppress: 'success_customerio_sms_status_active_relay_gambit_retry_suppress',
+      unprocessable: 'error_customerio_sms_status_active_gambit_response_422',
+    };
+    return logCodes[name];
   }
 }
 

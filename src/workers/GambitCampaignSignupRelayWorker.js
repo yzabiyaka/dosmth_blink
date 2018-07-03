@@ -10,13 +10,6 @@ class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker
     super.setup({
       queue: this.blink.queues.gambitCampaignSignupRelayQ,
     });
-    this.logCodes = {
-      retry: 'error_gambit_campaign_signup_relay_response_not_200_retry',
-      success: 'success_gambit_campaign_signup_relay_response_200',
-      suppress: 'success_gambit_campaign_signup_relay_retry_suppress',
-      unprocessable: 'error_gambit_campaign_signup_relay_response_422',
-      skip: 'success_gambit_campaign_signup_relay_expected_skip',
-    };
   }
 
   async consume(message) {
@@ -55,12 +48,23 @@ class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker
   logSkip(message) {
     const meta = {
       env: this.blink.config.app.env,
-      code: this.logCodes.skip,
+      code: this.constructor.getLogCode('skip'),
       worker: this.workerName,
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
     logger.log('debug', JSON.stringify(message.getData()), meta);
     return true;
+  }
+
+  static getLogCode(name) {
+    const logCodes = {
+      retry: 'error_gambit_campaign_signup_relay_response_not_200_retry',
+      success: 'success_gambit_campaign_signup_relay_response_200',
+      suppress: 'success_gambit_campaign_signup_relay_retry_suppress',
+      unprocessable: 'error_gambit_campaign_signup_relay_response_422',
+      skip: 'success_gambit_campaign_signup_relay_expected_skip',
+    };
+    return logCodes[name];
   }
 }
 

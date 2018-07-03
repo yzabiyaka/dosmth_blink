@@ -8,12 +8,6 @@ class TwilioSmsInboundGambitRelayWorker extends GambitConversationsRelayBaseWork
     super.setup({
       queue: this.blink.queues.twilioSmsInboundGambitRelayQ,
     });
-    this.logCodes = {
-      retry: 'error_gambit_inbound_relay_response_not_200_retry',
-      success: 'success_gambit_inbound_relay_response_200',
-      suppress: 'success_gambit_inbound_relay_retry_suppress',
-      unprocessable: 'error_gambit_inbound_relay_response_422',
-    };
   }
 
   async consume(message) {
@@ -29,6 +23,16 @@ class TwilioSmsInboundGambitRelayWorker extends GambitConversationsRelayBaseWork
       return this.logUnreachableGambitConversationsAndRetry(error, message);
     }
     return this.handleResponse(message, response);
+  }
+
+  static getLogCode(name) {
+    const logCodes = {
+      retry: 'error_gambit_inbound_relay_response_not_200_retry',
+      success: 'success_gambit_inbound_relay_response_200',
+      suppress: 'success_gambit_inbound_relay_retry_suppress',
+      unprocessable: 'error_gambit_inbound_relay_response_422',
+    };
+    return logCodes[name];
   }
 }
 

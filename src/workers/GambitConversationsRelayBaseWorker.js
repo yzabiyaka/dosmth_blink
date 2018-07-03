@@ -16,12 +16,6 @@ const gambitHelper = require('../lib/helpers/gambit');
 class GambitConversationsRelayBaseWorker extends Worker {
   setup({ queue }) {
     super.setup({ queue });
-    this.logCodes = {
-      retry: 'error_gambit_conversations_response_not_200_retry',
-      success: 'success_gambit_conversations_response_200',
-      suppress: 'success_gambit_conversations_retry_suppress',
-      unprocessable: 'error_gambit_conversations_response_422',
-    };
   }
 
   /**
@@ -70,7 +64,7 @@ class GambitConversationsRelayBaseWorker extends Worker {
       error.toString(),
       message,
       this.workerName,
-      this.logCodes.retry,
+      this.constructor.getLogCode('retry'),
     );
   }
 
@@ -79,7 +73,7 @@ class GambitConversationsRelayBaseWorker extends Worker {
       'warning',
       message,
       statusCode,
-      this.logCodes.retry,
+      this.constructor.getLogCode('retry'),
       text,
     );
 
@@ -101,7 +95,7 @@ class GambitConversationsRelayBaseWorker extends Worker {
       'debug',
       message,
       statusCode,
-      this.logCodes.success,
+      this.constructor.getLogCode('success'),
       text,
     );
     return true;
@@ -119,7 +113,7 @@ class GambitConversationsRelayBaseWorker extends Worker {
       'debug',
       message,
       statusCode,
-      this.logCodes.suppress,
+      this.constructor.getLogCode('suppress'),
       text,
     );
     return false;
@@ -137,7 +131,7 @@ class GambitConversationsRelayBaseWorker extends Worker {
       'warning',
       message,
       statusCode,
-      this.logCodes.unprocessable,
+      this.constructor.getLogCode('unprocessable'),
       text,
     );
     return false;
@@ -163,6 +157,16 @@ class GambitConversationsRelayBaseWorker extends Worker {
     };
     // Todo: log error?
     logger.log(level, logText, meta);
+  }
+
+  static getLogCode(name) {
+    const logCodes = {
+      retry: 'error_gambit_conversations_response_not_200_retry',
+      success: 'success_gambit_conversations_response_200',
+      suppress: 'success_gambit_conversations_retry_suppress',
+      unprocessable: 'error_gambit_conversations_response_422',
+    };
+    return logCodes[name];
   }
 }
 
