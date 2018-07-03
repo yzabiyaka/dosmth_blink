@@ -14,8 +14,8 @@ const gambitHelper = require('../lib/helpers/gambit');
  * Workers that intend to relay messages to G-Conversations should inherit from this Worker.
  */
 class GambitConversationsRelayBaseWorker extends Worker {
-  setup({ queue }) {
-    super.setup({ queue });
+  setup({ queue, rateLimit }) {
+    super.setup({ queue, rateLimit });
   }
 
   /**
