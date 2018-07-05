@@ -14,15 +14,15 @@ class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker
 
   async consume(message) {
     const data = message.getData();
-    // Send only delivered messages to Gambit Conversations import.
+
     if (GambitCampaignSignupRelayWorker.shouldSkip(message)) {
       return this.logSkip(message);
     }
-    // See https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/send-message.md
+    // @see https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/messages.md#signup
     const body = JSON.stringify({
       northstarId: data.northstar_id,
       campaignId: data.campaign_id,
-      source: data.source,
+      platform: data.source,
     });
 
     try {
