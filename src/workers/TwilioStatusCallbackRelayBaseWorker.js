@@ -9,7 +9,7 @@ const gambitHelper = require('../lib/helpers/gambit');
  *
  * This class is intended to be extended by the TwilioStatusOutbound*RelayWorker class.
  * Since both the Status and the Error workers use virtually the same consume method.
- * It made sense to abstract that out and let the childern setup the small differences.
+ * It made sense to abstract that out and let the children setup the small differences.
  */
 class TwilioStatusCallbackRelayBaseWorker extends GambitConversationsRelayBaseWorker {
   setup({ queue, getUpdatePayloadFn }) {
