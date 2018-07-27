@@ -8,6 +8,7 @@ const parsedRedisUrl = new URL(redisUrl);
 
 const config = {
   connection: {
+    // host and port are overridden by the Wercker CI job
     host: process.env.BLINK_REDIS_HOST || parsedRedisUrl.hostname,
     port: process.env.BLINK_REDIS_PORT || parsedRedisUrl.port,
     user: process.env.BLINK_REDIS_USER || parsedRedisUrl.username,
