@@ -47,9 +47,8 @@ class CustomerIoUpdateCustomerMessage extends Message {
       }
     });
 
-    const isNew = customerData.created_at === customerData.updated_at;
-
     if (typeof customerData.unsubscribed === 'undefined') {
+      const isNew = customerData.created_at === customerData.updated_at;
       /**
        * If a user is newly created (created_at & updated_at are the same)
        * and unsubscribed is not included in the payload, then set them as "subscribed"
