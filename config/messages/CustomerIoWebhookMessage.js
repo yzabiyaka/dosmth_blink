@@ -1,8 +1,6 @@
 'use strict';
 
 const config = {};
-
-
 /**
  * Keys should match event names in C.io.
  *
