@@ -11,8 +11,8 @@ const config = {};
  */
 config.events = {
   /**
-   * This is a catch all "generic" events that we will fallback to if we don't have a specific
-   * C.io event config here.
+   * This is the catch all "generic" event that we will fallback to if we don't have a defined
+   * C.io event config for it here.
    */
   generic: {
     routingKey: '*.event.quasar',
