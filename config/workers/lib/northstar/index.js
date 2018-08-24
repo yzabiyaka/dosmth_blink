@@ -13,10 +13,7 @@ module.exports = {
         renewWindow: 60, // seconds
       },
       /**
-       * admin write - required to create signups with client credentials flow, otherwise signups
-       *               will be created with an empty northstar_id. This is an edgecase that the
-       *               Rogue team is already aware of.
-       * activity    - required to retrieve user's signup activity.
+       * admin user write - required to update users with client credentials flow.
        */
       scopes: process.env.DS_NORTHSTAR_API_OAUTH_SCOPES,
       /**
