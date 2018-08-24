@@ -11,7 +11,7 @@ const moment = require('moment');
 
 // ------- Internal imports ----------------------------------------------------
 
-const gambitHelper = require('../../../../src/lib/helpers/gambit');
+const gambitHelper = require('../../../../src/workers/lib/helpers/gambit-conversations');
 const messageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
 const BlinkRetryError = require('../../../../src/errors/BlinkRetryError');
 

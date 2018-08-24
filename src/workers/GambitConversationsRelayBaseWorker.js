@@ -7,7 +7,7 @@ const { STATUS_CODES } = require('http');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 const workerHelper = require('../lib/helpers/worker');
-const gambitHelper = require('../lib/helpers/gambit');
+const gambitHelper = require('./lib/helpers/gambit-conversations');
 
 /**
  * Represents a GambitConversationsRelay type of worker.

@@ -1,7 +1,7 @@
 'use strict';
 
 const TwilioStatusCallbackRelayBaseWorker = require('./TwilioStatusCallbackRelayBaseWorker');
-const gambitHelper = require('../lib/helpers/gambit');
+const gambitHelper = require('./lib/helpers/gambit-conversations');
 
 class TwilioSmsOutboundErrorRelayWorker extends TwilioStatusCallbackRelayBaseWorker {
   setup() {
