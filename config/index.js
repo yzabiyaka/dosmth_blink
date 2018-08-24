@@ -14,7 +14,7 @@ config.web = require('./web');
 config.amqp = require('./amqp');
 config.amqpManagement = require('./amqpManagement');
 config.customerio = require('./customerio');
-config.gambit = require('./gambit');
+config.gambit = require('./workers/lib/helpers/gambit-conversations');
 config.twilio = require('./twilio');
 config.redis = require('./redis');
 
