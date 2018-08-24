@@ -7,7 +7,7 @@ class CustomerIoGambitBroadcastWorker extends GambitConversationsRelayBaseWorker
   setup() {
     super.setup({
       queue: this.blink.queues.customerIoGambitBroadcastQ,
-      rateLimit: this.blink.config.gambit.broadcastSpeedLimit,
+      rateLimit: this.blink.config.workers.gambitConversations.broadcastSpeedLimit,
     });
   }
 
