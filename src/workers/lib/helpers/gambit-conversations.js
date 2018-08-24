@@ -8,8 +8,8 @@ const logger = require('winston');
  */
 const deepExtend = require('deep-extend');
 
-const gambitConfig = require('../../../config/gambit');
-const BlinkRetryError = require('../../errors/BlinkRetryError');
+const gambitConfig = require('../../../../config/workers/lib/helpers/gambit-conversations');
+const BlinkRetryError = require('../../../errors/BlinkRetryError');
 
 // TODO: This helper is becoming too big, needs to be split into more defined responsibilities
 
