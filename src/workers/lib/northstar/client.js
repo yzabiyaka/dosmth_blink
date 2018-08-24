@@ -31,7 +31,7 @@ class NorthstarClient extends EventEmitter {
     this.setup();
 
     // Endpoints
-    this.users = new NorthstarEndpointUsers(this);
+    this.Users = new NorthstarEndpointUsers(this);
   }
   /**
    * request - Gets a request client that is authorized by the strategy named in the strategyName

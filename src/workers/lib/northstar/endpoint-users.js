@@ -11,13 +11,13 @@ class NorthstarEndpointUsers extends NorthstarEndpoint {
    * update - Update a single User
    *
    * @see https://github.com/DoSomething/northstar/blob/master/documentation/README.md#users
-   * @param  {string|number} id
+   * @param  {string|number} userId
    * @param  {Object} query
    * @return {Promise}
    */
-  update(id, update) {
+  update(userId, update) {
     return this
-      .executePut(`${this.endpoint}/${id}`, update)
+      .executePut(`${this.endpoint}/${userId}`, update)
       .then(responseBody => responseBody);
   }
 }
