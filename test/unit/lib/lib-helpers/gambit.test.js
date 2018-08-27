@@ -103,12 +103,6 @@ test('getRequestHeaders should return valid headers', () => {
   should.exist(headers['Content-type']);
 });
 
-// logFetchFailureAndRetry
-test('logFetchFailureAndRetry should log and throw a BlinkRetryError error', () => {
-  const message = messageFactoryHelper.getValidSmsActiveData();
-  expect(() => gambitHelper.logFetchFailureAndRetry('msg', message, 'worker1')).to.throw(BlinkRetryError);
-});
-
 // relaySmsStatusActiveMessage
 test.serial('relaySmsStatusActiveMessage should relay the message to the correct path', async () => {
   sandbox.stub(gambitHelper, 'relayMessage')

@@ -1,7 +1,6 @@
 'use strict';
 
 const fetch = require('node-fetch');
-const logger = require('winston');
 /**
  * Deep Extend is used because Object.assign does shallow-copy only. Nested objects are
  * referenced instead of copied which can bring unintended consequences.
@@ -9,7 +8,6 @@ const logger = require('winston');
 const deepExtend = require('deep-extend');
 
 const gambitConfig = require('../../../../config/workers/lib/helpers/gambit-conversations');
-const BlinkRetryError = require('../../../errors/BlinkRetryError');
 
 // TODO: This helper is becoming too big, needs to be split into more defined responsibilities
 
@@ -286,27 +284,4 @@ module.exports.getRequestHeaders = function getRequestHeaders(message) {
     headers['x-blink-retry-count'] = message.getRetryAttempt();
   }
   return headers;
-};
-
-/**
- * logFetchFailure
- *
- * @param {String} logMessage
- * @param {Object} message
- * @param {String} queueName
- * @param {String} code
- */
-module.exports.logFetchFailureAndRetry = function logFetchFailureAndRetry(logMessage,
-  message = {}, workerName, code = 'unexpected_code') {
-  const meta = {
-    code,
-    worker: workerName,
-    request_id: message ? message.getRequestId() : 'not_parsed',
-  };
-  logger.log('error', logMessage, meta);
-
-  throw new BlinkRetryError(
-    logMessage,
-    message,
-  );
 };
