@@ -58,7 +58,7 @@ class NorthstarRelayBaseWorker extends Worker {
     return false;
   }
 
-  logUnreachableGambitConversationsAndRetry(error, message) {
+  logUnreachableNorthstarAndRetry(error, message) {
     workerHelper.logFetchFailureAndRetry(
       error.toString(),
       message,
