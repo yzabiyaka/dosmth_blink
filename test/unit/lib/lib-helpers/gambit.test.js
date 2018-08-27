@@ -13,12 +13,10 @@ const moment = require('moment');
 
 const gambitHelper = require('../../../../src/workers/lib/helpers/gambit-conversations');
 const messageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
-const BlinkRetryError = require('../../../../src/errors/BlinkRetryError');
 
 // ------- Init ----------------------------------------------------------------
 
 const should = chai.should();
-const expect = chai.expect;
 chai.use(sinonChai);
 const sandbox = sinon.sandbox.create();
 
