@@ -1,9 +1,6 @@
 'use strict';
 
 module.exports = {
-  baseUri: process.env.DS_NORTHSTAR_API_BASEURI,
-  // TODO: use to throttle requests to the NS API
-  userUpdateSpeedLimit: process.env.DS_NORTHSTAR_API_USER_UPDATE_SPEED_LIMIT || 10,
   authStrategies: {
     clientCredentials: {
       defaults: {

@@ -3,7 +3,6 @@
 const oauth2 = require('simple-oauth2');
 const logger = require('winston');
 const EventEmitter = require('events');
-const superagent = require('superagent-use')(require('superagent'));
 const differenceInSeconds = require('date-fns/difference_in_seconds');
 
 /**
@@ -11,7 +10,7 @@ const differenceInSeconds = require('date-fns/difference_in_seconds');
  * Rogue and Northstar will use the same strategy so it should be moved outside of the client's
  * implementation.
  */
-const config = require('../../../../../config/workers/lib/northstar').authStrategies.clientCredentials;
+const config = require('../../../../../config/workers/lib/identity-service').authStrategies.clientCredentials;
 
 /**
  * ClientCredentials
@@ -81,15 +80,14 @@ class ClientCredentials extends EventEmitter {
     return this.renewToken();
   }
   /**
-   * getAuthorizedClient - Sets the Authorization header and Bearer token in the superagent client.
-   *                       All the requests sent through this client will use this header.
+   * getAuthHeader - Returns the Authorization header and Bearer token.
    *
-   * @return {Object}  authenticated superagent client
+   * @return {Object}
    */
-  getAuthorizedClient() {
-    return superagent.use((req) => {
-      req.set('Authorization', `Bearer ${this.token.access_token}`);
-    });
+  getAuthHeader() {
+    return {
+      Authorization: `Bearer ${this.token.access_token}`,
+    };
   }
   /**
    * @static getNewInstance

@@ -17,7 +17,8 @@ config.amqp = require('./amqp');
 config.amqpManagement = require('./amqpManagement');
 config.customerio = require('./customerio');
 config.workers.gambitConversations = require('./workers/lib/helpers/gambit-conversations');
-config.workers.northstar = require('./workers/lib/northstar');
+config.workers.northstar = require('./workers/lib/helpers/northstar');
+config.workers.identity = require('./workers/lib/identity-service');
 config.twilio = require('./twilio');
 config.redis = require('./redis');
 
