@@ -22,7 +22,7 @@ module.exports.executeGet = function executeGet(path, opts = {}) {
   const options = deepExtend({}, opts, {
     method: 'GET',
   });
-  return fetch(`${gambitConfig.conversations.v1MessagesBaseURL}/${path}`, options);
+  return fetch(`${gambitConfig.v1MessagesBaseURL}/${path}`, options);
 };
 
 /**
@@ -36,7 +36,7 @@ module.exports.executeUpdate = function executeUpdate(path, opts = {}) {
   const options = deepExtend({}, opts, {
     method: 'PATCH',
   });
-  return fetch(`${gambitConfig.conversations.baseURL}/${path}`, options);
+  return fetch(`${gambitConfig.baseURL}/${path}`, options);
 };
 
 /**
@@ -50,7 +50,7 @@ module.exports.executePost = function executePost(path, opts = {}) {
   const options = deepExtend({}, opts, {
     method: 'POST',
   });
-  return fetch(`${gambitConfig.conversations.baseURL}/${path}`, options);
+  return fetch(`${gambitConfig.baseURL}/${path}`, options);
 };
 
 /**
@@ -276,7 +276,7 @@ module.exports.parseMessageIdFromBody = function parseMessageIdFromBody(body) {
  */
 module.exports.getRequestHeaders = function getRequestHeaders(message) {
   const headers = {
-    Authorization: `Basic ${gambitConfig.conversations.apiKey}`,
+    Authorization: `Basic ${gambitConfig.apiKey}`,
     'X-Request-ID': message.getRequestId(),
     'Content-type': 'application/json',
   };
