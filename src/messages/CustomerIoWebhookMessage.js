@@ -20,8 +20,7 @@ class CustomerIoWebhookMessage extends Message {
 
   // @see https://customer.io/docs/developer-documentation/webhooks.html#list-of-webhook-attributes
   getUserId() {
-    const data = this.getData().data;
-    return data.customer_id;
+    return this.getData().data.customer_id;
   }
 
   getEventType() {
