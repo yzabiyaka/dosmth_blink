@@ -3,7 +3,6 @@
 const GambitConversationsRelayBaseWorker = require('./GambitConversationsRelayBaseWorker');
 const gambitHelper = require('./lib/helpers/gambit-conversations');
 
-
 /**
  * TwilioStatusCallbackRelayBaseWorker
  *

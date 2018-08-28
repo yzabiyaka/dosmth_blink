@@ -8,6 +8,13 @@ const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 const workerHelper = require('../lib/helpers/worker');
 
+const logCodes = {
+  retry: 'error_gambit_conversations_response_not_200_retry',
+  success: 'success_gambit_conversations_response_200',
+  suppress: 'success_gambit_conversations_retry_suppress',
+  unprocessable: 'error_gambit_conversations_response_422',
+};
+
 /**
  * Represents a GambitConversationsRelay type of worker.
  * Workers that intend to relay messages to G-Conversations should inherit from this Worker.
@@ -159,12 +166,6 @@ class GambitConversationsRelayBaseWorker extends Worker {
   }
 
   static getLogCode(name) {
-    const logCodes = {
-      retry: 'error_gambit_conversations_response_not_200_retry',
-      success: 'success_gambit_conversations_response_200',
-      suppress: 'success_gambit_conversations_retry_suppress',
-      unprocessable: 'error_gambit_conversations_response_422',
-    };
     return logCodes[name];
   }
 }
