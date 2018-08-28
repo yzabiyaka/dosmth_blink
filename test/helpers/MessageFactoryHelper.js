@@ -383,7 +383,7 @@ class MessageFactoryHelper {
         subject: chance.sentence({ words: 5 }),
         template_id: chance.integer({ min: 0 }),
       },
-      event_id: chance.integer({ min: 0 }),
+      event_id: chance.string({ length: 10 }),
       event_type: chance.word(),
       timestamp: chance.timestamp(),
     };
