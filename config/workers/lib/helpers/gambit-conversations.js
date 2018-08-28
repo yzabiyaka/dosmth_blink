@@ -10,6 +10,6 @@ const config = {
 /**
  * TODO: This is a hack while we fix the version and routing discrepancy in G-Conversations
  */
-config.v1MessagesBaseURL = config.baseURL.replace(/v2/, 'v1');
+config.v1MessagesBaseURL = config.baseURL.replace(/\/v2/, '/v1');
 
 module.exports = config;

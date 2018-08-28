@@ -5,11 +5,6 @@ const logger = require('winston');
 const EventEmitter = require('events');
 const differenceInSeconds = require('date-fns/difference_in_seconds');
 
-/**
- * TODO: When removing to use Gateway-js: the auth strategy should be agnostic of the client. Both,
- * Rogue and Northstar will use the same strategy so it should be moved outside of the client's
- * implementation.
- */
 const config = require('../../../../../config/workers/lib/identity-service').authStrategies.clientCredentials;
 
 /**

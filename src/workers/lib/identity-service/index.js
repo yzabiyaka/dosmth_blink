@@ -12,13 +12,14 @@ const clientCredentialsStrategy = require('./auth-strategies/client-credentials'
  */
 class IdentityService {
   /**
-   * Create a new client
+   * Create a new service client
    *
-   * @param  {Object} opts
-   * @param  {Array} strategies - Auth strategies the client will support
+   * @param  {ClientCredentials|EventEmitter} [strategy=ClientCredentials] - Auth strategy
+   * @param  {Function} strategy.setup - Start the strategy state
+   * @param  {Function} strategy.getAuthHeader - Returns the Authorization header w/ valid token
    */
-  constructor(strategy) {
-    this.strategy = strategy || clientCredentialsStrategy;
+  constructor(strategy = clientCredentialsStrategy) {
+    this.strategy = strategy;
     this.config = config;
     this.strategy.setup();
   }
