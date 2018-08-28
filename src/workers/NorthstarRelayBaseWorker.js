@@ -143,15 +143,14 @@ class NorthstarRelayBaseWorker extends Worker {
   }
 
   /**
-   * async log - description
+   * log - description
    *
-   * @async
    * @param  {string} level                    log level
    * @param  {Object} message
    * @param  {number} statusCode               statusCode
    * @param  {string} code = 'unexpected_code'
    */
-  async log(level, message, statusCode, code = 'unexpected_code', logText = '') {
+  log(level, message, statusCode, code = 'unexpected_code', logText = '') {
     const meta = {
       env: this.blink.config.app.env,
       code,
