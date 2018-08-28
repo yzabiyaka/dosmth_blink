@@ -184,7 +184,7 @@ class ClientCredentials extends EventEmitter {
     }
   }
 
-  async requestToken() {
+  requestToken() {
     return this.oauthClient.clientCredentials.getToken(this.tokenConfig);
   }
 
