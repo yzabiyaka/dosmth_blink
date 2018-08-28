@@ -3,7 +3,6 @@
 const logger = require('winston');
 const { STATUS_CODES } = require('http');
 
-
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 const workerHelper = require('../lib/helpers/worker');
