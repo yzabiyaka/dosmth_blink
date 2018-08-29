@@ -38,8 +38,8 @@ function isAllowedHttpStatus(statusCode) {
  * @return {boolean}
  */
 function shouldRetry(response) {
-  const allowedStatus = exports.isAllowedHttpStatus(response.status);
-  const suppressed = exports.checkRetrySuppress(response);
+  const allowedStatus = module.exports.isAllowedHttpStatus(response.status);
+  const suppressed = module.exports.checkRetrySuppress(response);
 
   if (suppressed || allowedStatus) {
     return false;

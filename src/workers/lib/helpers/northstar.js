@@ -50,10 +50,11 @@ async function updateUserById(userId, opts) {
  * @param  {Object} message
  * @return {Object}
  */
-function getRequestHeaders(message) {
+async function getRequestHeaders(message) {
   const identityServiceClient = module.exports.getIdentityService();
+  const authorizationHeader = await identityServiceClient.getAuthHeader();
   const headers = {
-    ...identityServiceClient.getAuthHeader(),
+    ...authorizationHeader,
     'X-Request-ID': message.getRequestId(),
     'Content-type': 'application/json',
   };

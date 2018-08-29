@@ -57,7 +57,7 @@ class ClientCredentials extends EventEmitter {
   setup() {
     // token-set listener
     this.on('token-set', () => {
-      logger.info('ClientCredentials.setup: token has been set');
+      logger.info('ClientCredentials strategy: new token has been set');
       // TODO: Maybe create a separate token refresh class that encapsulates renewing tokens.
       if (this.autoRenewToken && !this.ticker) {
         this.setTicker(this.renewExpiredToken.bind(this));
@@ -67,7 +67,7 @@ class ClientCredentials extends EventEmitter {
     });
     // token-error listener
     this.on('token-error', (error) => {
-      logger.error(`ClientCredentials.setup: Access Token Error. Error Message: ${error.message}`);
+      logger.error(`ClientCredentials strategy: Access Token Error. Error Message: ${error.message}`);
       this.reconnect();
     });
 

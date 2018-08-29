@@ -25,7 +25,7 @@ class IdentityService {
   constructor(strategy = getNewClientCredentialsStrategy()) {
     this.strategy = strategy;
     this.config = config;
-    this.strategy.setup();
+    this.ready = this.strategy.setup();
   }
   /**
    * getAuthHeader - Gets the Authorization header by the strategy sent in the strategyName
@@ -33,7 +33,8 @@ class IdentityService {
    *
    * @return {Object} Authorization headers
    */
-  getAuthHeader() {
+  async getAuthHeader() {
+    await this.ready;
     return this.strategy.getAuthHeader();
   }
 }

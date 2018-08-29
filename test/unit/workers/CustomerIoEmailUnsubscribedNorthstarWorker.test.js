@@ -33,21 +33,22 @@ test('getLogCode should be setup and have correct logs', () => {
   });
 });
 
-test('Northstar should receive correct retry count if message has been retried', () => {
+test('Northstar should receive correct retry count if message has been retried', async () => {
   // No retry property:
-  northstarHelper.getRequestHeaders(MessageFactoryHelper.getValidCustomerIoWebhookMessage())
-    .should.not.have.property('x-blink-retry-count');
+  const headers = await northstarHelper
+    .getRequestHeaders(MessageFactoryHelper.getValidCustomerIoWebhookMessage());
+  headers.should.not.have.property('x-blink-retry-count');
 
   // retry = 0
   const retriedZero = MessageFactoryHelper.getValidCustomerIoWebhookMessage();
-  northstarHelper.getRequestHeaders(retriedZero)
-    .should.not.have.property('x-blink-retry-count');
+  const headersRetry0 = await northstarHelper.getRequestHeaders(retriedZero);
+  headersRetry0.should.not.have.property('x-blink-retry-count');
 
   // retry = 1
   const retriedOnce = MessageFactoryHelper.getValidCustomerIoWebhookMessage();
   retriedOnce.incrementRetryAttempt();
-  northstarHelper.getRequestHeaders(retriedOnce)
-    .should.have.property('x-blink-retry-count').and.equal(1);
+  const headersRetry1 = await northstarHelper.getRequestHeaders(retriedOnce);
+  headersRetry1.should.have.property('x-blink-retry-count').and.equal(1);
 });
 
 // ------- End -----------------------------------------------------------------

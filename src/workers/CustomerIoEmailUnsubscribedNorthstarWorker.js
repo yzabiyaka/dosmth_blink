@@ -25,7 +25,7 @@ class CustomerIoEmailUnsubscribedNorthstarWorker extends NorthstarRelayBaseWorke
     const body = {
       [this.emailUnsubscribedProperty]: this.emailUnsubscribedValue,
     };
-    const headers = northstarHelper.getRequestHeaders(message);
+    const headers = await northstarHelper.getRequestHeaders(message);
 
     try {
       const response = await northstarHelper.updateUserById(userId, {
