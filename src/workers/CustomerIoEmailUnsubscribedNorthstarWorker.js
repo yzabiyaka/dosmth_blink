@@ -6,7 +6,7 @@ const northstarHelper = require('./lib/helpers/northstar');
 const logCodes = {
   retry: 'error_customerio_email_unsubscribed_northstar_response_not_200_retry',
   success: 'success_customerio_email_unsubscribed_northstar_response_200',
-  suppress: 'success_customerio_email_unsubscribed_relay_northstar_retry_suppress',
+  suppress: 'success_customerio_email_unsubscribed_northstar_retry_suppress',
   unprocessable: 'error_customerio_email_unsubscribed_northstar_response_422',
 };
 

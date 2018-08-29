@@ -41,7 +41,7 @@ function executeUpdate(path, opts = {}) {
  * @return {Promise}
  */
 async function updateUserById(userId, opts) {
-  return exports.executeUpdate(`users/${userId}`, opts);
+  return module.exports.executeUpdate(`users/${userId}`, opts);
 }
 
 /**
@@ -51,7 +51,7 @@ async function updateUserById(userId, opts) {
  * @return {Object}
  */
 function getRequestHeaders(message) {
-  const identityServiceClient = exports.getIdentityService();
+  const identityServiceClient = module.exports.getIdentityService();
   const headers = {
     ...identityServiceClient.getAuthHeader(),
     'X-Request-ID': message.getRequestId(),
