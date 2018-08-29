@@ -1,11 +1,15 @@
 'use strict';
 
 const config = require('../../../../config/workers/lib/identity-service');
-const clientCredentialsStrategy = require('./auth-strategies/client-credentials').getNewInstance({
-  tokenConfig: {
-    scope: config.authStrategies.clientCredentials.scopes,
-  },
-});
+const ClientCredentialsStrategy = require('./auth-strategies/client-credentials');
+
+function getNewClientCredentialsStrategy() {
+  return ClientCredentialsStrategy.getNewInstance({
+    tokenConfig: {
+      scope: config.authStrategies.clientCredentials.scopes,
+    },
+  });
+}
 
 /**
  * NorthstarClient
@@ -18,7 +22,7 @@ class IdentityService {
    * @param  {Function} strategy.setup - Start the strategy state
    * @param  {Function} strategy.getAuthHeader - Returns the Authorization header w/ valid token
    */
-  constructor(strategy = clientCredentialsStrategy) {
+  constructor(strategy = getNewClientCredentialsStrategy()) {
     this.strategy = strategy;
     this.config = config;
     this.strategy.setup();
