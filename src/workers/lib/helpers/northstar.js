@@ -47,8 +47,9 @@ async function updateUserById(userId, opts) {
 /**
  * getRequestHeaders - Get Northstar specific headers for this message
  *
+ * @async
  * @param  {Object} message
- * @return {Object}
+ * @return {Promise<Object>}
  */
 async function getRequestHeaders(message) {
   const identityServiceClient = module.exports.getIdentityService();

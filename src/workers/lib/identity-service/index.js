@@ -31,9 +31,11 @@ class IdentityService {
    * getAuthHeader - Gets the Authorization header by the strategy sent in the strategyName
    * argument. Each strategy MUST implement the getAuthHeader method.
    *
-   * @return {Object} Authorization headers
+   * @async
+   * @return {Promise<Object>} Authorization headers
    */
   async getAuthHeader() {
+    // Check to make sure the strategy.setup has completed setting up
     await this.ready;
     return this.strategy.getAuthHeader();
   }
