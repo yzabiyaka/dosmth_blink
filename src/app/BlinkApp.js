@@ -56,7 +56,11 @@ class BlinkApp {
     this.queues = await this.setupQueues(BlinkApp.discoverQueueClasses());
 
     // Log success.
-    logger.info('Blink app is loaded.', { code: 'success_blink_app_loaded' });
+    logger.info('Blink app is loaded.', {
+      meta: {
+        code: 'success_blink_app_loaded',
+      },
+    });
 
     // TODO: Error handling?
     return true;

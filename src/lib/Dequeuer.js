@@ -2,7 +2,6 @@
 
 const PromiseThrottle = require('promise-throttle');
 
-
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const logger = require('../../config/logger');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');

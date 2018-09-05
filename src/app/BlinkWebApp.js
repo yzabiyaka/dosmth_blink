@@ -160,7 +160,7 @@ class BlinkWebApp extends BlinkApp {
           };
 
           const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
-          logger.debug(`Blink Web is listening on ${readableUrl}`, meta);
+          logger.debug(`Blink Web is listening on ${readableUrl}`, { meta });
 
           /**
            * Wait for listening event
@@ -186,7 +186,7 @@ class BlinkWebApp extends BlinkApp {
         port: address.port,
       };
 
-      logger.debug('Blink Web is stopped', meta);
+      logger.debug('Blink Web is stopped', { meta });
     });
   }
 }
