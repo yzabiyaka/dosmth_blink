@@ -7,7 +7,7 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const logger = require('winston');
+const logger = require('../../../config/logger');
 const moment = require('moment');
 
 // ------- Internal imports ----------------------------------------------------

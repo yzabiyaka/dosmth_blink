@@ -3,7 +3,7 @@
 // ------- Imports -------------------------------------------------------------
 
 const changeCase = require('change-case');
-const logger = require('winston');
+const logger = require('../../config/logger');
 
 // ------- Internal imports ----------------------------------------------------
 

@@ -2,7 +2,7 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const logger = require('winston');
+const logger = require('../../../../config/logger');
 
 // ------- Internal imports ----------------------------------------------------
 

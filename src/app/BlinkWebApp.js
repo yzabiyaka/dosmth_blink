@@ -5,7 +5,7 @@ const http = require('http');
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
-const logger = require('winston');
+const logger = require('../../config/logger');
 const Promise = require('bluebird');
 
 const ApiWebController = require('../web/controllers/ApiWebController');

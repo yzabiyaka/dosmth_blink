@@ -3,7 +3,7 @@
 // ------- Imports -------------------------------------------------------------
 
 const Redis = require('ioredis');
-const logger = require('winston');
+const logger = require('../../config/logger');
 
 // ------- Internal imports ----------------------------------------------------
 
