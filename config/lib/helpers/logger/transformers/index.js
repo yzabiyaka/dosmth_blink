@@ -18,7 +18,13 @@ config.removePII.northstarPIIKeys = [
   'addr_city',
   'addr_state',
 ];
-// Keys containing PII (Personal Identifiable Information) in payload coming from C.io
+/**
+ * Keys containing PII (Personal Identifiable Information) in payload coming from C.io
+ *
+ * All messages have this internal payload structure `{ data: {}, meta: {} }`.
+ * Customer.io sends us their data wrapped in a data object, creating the `data.data` nested
+ * object. So, starting the key with `data` here, it's intentional.
+ */
 config.removePII.customerIoPIIKeys = [
   'data.email_address',
   'data.variables.customer.email',
