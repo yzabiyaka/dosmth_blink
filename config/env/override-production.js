@@ -10,4 +10,6 @@
 
 module.exports = (config) => {
   config.app.forceHttps = true;
+  // logger transformers
+  config.logger.transformers.removePII.enabled = true;
 };
