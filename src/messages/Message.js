@@ -59,7 +59,7 @@ class Message {
   }
 
   toString(transformer) {
-    let payload = this.payload;
+    let payload = Object.assign({}, this.payload);
     if (typeof transformer === 'function') {
       payload = transformer(payload);
     }
