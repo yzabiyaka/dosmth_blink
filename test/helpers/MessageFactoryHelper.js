@@ -359,6 +359,7 @@ class MessageFactoryHelper {
       data: {
         northstarId: MessageFactoryHelper.getFakeUserId(),
         broadcastId,
+        phone: MessageFactoryHelper.getFakeMobileNumber(),
       },
       meta: {},
     });
