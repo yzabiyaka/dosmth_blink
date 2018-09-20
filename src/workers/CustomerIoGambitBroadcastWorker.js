@@ -22,6 +22,7 @@ class CustomerIoGambitBroadcastWorker extends GambitConversationsRelayBaseWorker
     const body = JSON.stringify({
       northstarId: message.getNorthstarId(),
       broadcastId: message.getBroadcastId(),
+      mobile: message.getMobileNumber(),
     });
 
     try {
