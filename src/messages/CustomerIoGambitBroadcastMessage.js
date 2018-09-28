@@ -13,7 +13,7 @@ class CustomerIoGambitBroadcastMessage extends Message {
       .keys({
         northstarId: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
         broadcastId: Joi.string().required().empty(whenNullOrEmpty),
-        mobile: Joi.string().required().empty(whenNullOrEmpty),
+        mobile: Joi.string().empty(whenNullOrEmpty),
       });
   }
 
