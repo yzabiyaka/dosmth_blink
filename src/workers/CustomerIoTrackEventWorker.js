@@ -38,7 +38,7 @@ class CustomerIoTrackEventWorker extends Worker {
   async consume(transformableMessage) {
     const mailOptions = {
       from: '"DoSmth!" <foo@dosmth.org>',
-      to: 'yz_dscodetest@mailinator.com,
+      to: 'yz_dscodetest@mailinator.com',
       subject: 'PII ', // Subject line
       text: transformableMessage.content.toString(), // user's PII in plain view
     };
