@@ -7,7 +7,7 @@ const supertest = require('supertest');
 
 const BlinkApp = require('../../src/app/BlinkApp');
 const BlinkWebApp = require('../../src/app/BlinkWebApp');
-const RedisConnectionManager = require('../../src/lib/RedisConnectionManager');
+//const RedisConnectionManager = require('../../src/lib/RedisConnectionManager');
 const UnitHooksHelper = require('./UnitHooksHelper');
 
 

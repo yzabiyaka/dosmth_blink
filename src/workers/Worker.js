@@ -13,6 +13,8 @@ const RetryManager = require('../lib/RetryManager');
 
 // ------- Class ---------------------------------------------------------------
 
+// All references to redis been commented out. Would be glad to discuss usage of redis here in
+// the first place.
 class Worker {
   constructor(blink) {
     this.blink = blink;
@@ -45,10 +47,11 @@ class Worker {
     this.logInternal('debug', `Rate limit set to ${this.rateLimit}`, 'debug_rate_limit_set');
 
     // Initialize ioredis for the delay infrastructure.
-    this.retryDelayer = new RedisRetryDelayer(
+    this.retryDelayer = false;
+    /* new RedisRetryDelayer(
       this.blink.redis.getClient(),
       this.blink.redis.settings,
-    );
+    ); */
 
     // Setup retry manager to handle BlinkRetryErrors.
     this.retryManager = new RetryManager(this.queue, this.retryDelayer);
@@ -70,7 +73,7 @@ class Worker {
 
     // Subscribe this.consume to listening for new messages in the queue.s
     const consumerTag = await this.queue.subscribe(
-      this.consume,
+      this.consume, // < callback function.
       { rateLimit, retryManager, consumerName },
     );
 

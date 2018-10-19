@@ -129,6 +129,11 @@ class Message {
 
   static fromRabbitMessage(rabbitMessage) {
     const payload = this.unpackRabbitMessage(rabbitMessage);
+    console.log(typeof rabbitMessage)
+    console.log(typeof payload);
+    if (payload.first_name) {
+      console.log(payload.first_name);
+    }
     if (!payload.data || !payload.meta) {
       throw new MessageParsingBlinkError('No data in message', payload);
     }
@@ -185,7 +190,7 @@ class Message {
   static unpackJson(jsonMessage) {
     let payload;
     try {
-      payload = JSON.parse(jsonMessage);
+      payload = JSON.parse(JSON.stringify(jsonMessage));
     } catch (error) {
       throw new MessageParsingBlinkError(error, jsonMessage);
     }

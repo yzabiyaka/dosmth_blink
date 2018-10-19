@@ -146,6 +146,7 @@ class RabbitMQBroker extends Broker {
       // When omitted, RabbitMQ generates semi-random consumer name.
       options.consumerTag = consumerTag;
     }
+    // Supposedly consuming message here
     const response = await this.getChannel().consume(queueName, callback, options);
     // Todo: handle errors? return true/false?
     return response.consumerTag;

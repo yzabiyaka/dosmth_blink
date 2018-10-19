@@ -43,6 +43,8 @@ class RedisConnectionManager {
   async connect() {
     // Create Redis connection.
     // This will automatically initiate the connection.
+    // shortcircuit redis
+    return true;
     this.client = new Redis(this.redisConfig);
 
     // Attach event handles

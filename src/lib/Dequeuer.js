@@ -25,10 +25,9 @@ class Dequeuer {
   }
 
   async dequeue(rabbitMessage) {
-    const message = this.extractOrDiscard(rabbitMessage);
-    if (message) {
+    if (rabbitMessage) {
       // Throttle amount of messages processed per second.
-      this.promiseThrottle.add(() => this.executeCallback(message));
+      this.promiseThrottle.add(() => this.executeCallback(rabbitMessage));
     }
   }
 
@@ -46,8 +45,10 @@ class Dequeuer {
 
   processCallbackResult(message, result) {
     // Acknowledge message and log result.
-    this.queue.ack(message);
+    // Only Ack message if the result is true, if the result is false, leave unacked, so we retry
+    // later.
     if (result) {
+      this.queue.ack(message);
       this.log(
         'debug',
         'Message acknowledged, processed true',
@@ -55,9 +56,10 @@ class Dequeuer {
         'success_process_message_acknowledged_result_true',
       );
     } else {
+      // Here we could still ack and use your retryManager.
       this.log(
         'debug',
-        'Message acknowledged, processed false',
+        'Message unacknowledged, processed false',
         message,
         'success_process_message_acknowledged_result_false',
       );
@@ -108,7 +110,7 @@ class Dequeuer {
       if (error instanceof MessageParsingBlinkError) {
         this.log(
           'warning',
-          `payload='${error.badPayload}' Can't parse payload: ${error}`,
+          `payload='${error.badPayload}' and ${rabbitMessage}  and Can't parse payload: ${error}`,
           null,
           'warning_dequeue_cant_parse_message',
         );
@@ -167,7 +169,7 @@ class Dequeuer {
       // Todo: log env
       code,
       queue: this.queue.name,
-      request_id: message ? message.getRequestId() : 'not_parsed',
+      request_id: 'not_parsed',
     };
 
     logger.log(level, logMessage, { meta });

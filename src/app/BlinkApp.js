@@ -9,7 +9,7 @@ const logger = require('../../config/logger');
 
 // Blink Libs.
 const RabbitMQBroker = require('../lib/brokers/RabbitMQ/RabbitMQBroker');
-const RedisConnectionManager = require('../lib/RedisConnectionManager');
+//const RedisConnectionManager = require('../lib/RedisConnectionManager');
 
 // Queues.
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
@@ -46,7 +46,7 @@ class BlinkApp {
     this.broker = await this.setupBroker();
 
     // Setup connection to redis.
-    this.redis = await this.setupRedis();
+    //this.redis = await this.setupRedis();
 
     // Assert queues and add them to queue registry.
     // IMPORTANT: if the broker goes away and returns with no queues,
@@ -71,7 +71,7 @@ class BlinkApp {
     // Flush queues.
     this.queues = [];
     await this.broker.disconnect();
-    await this.redis.disconnect();
+    //await this.redis.disconnect();
     return true;
   }
 

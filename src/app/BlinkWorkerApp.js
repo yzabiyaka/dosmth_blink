@@ -46,7 +46,7 @@ class BlinkWorkerApp extends BlinkApp {
     return {
       fetch: FetchWorker,
       'customer-io-campaign-signup': CustomerIoCampaignSignupWorker,
-      'customer-io-campaign-signup-post': CustomerIoCampaignSignupPostWorker,
+      /*'customer-io-campaign-signup-post': CustomerIoCampaignSignupPostWorker,
       'customer-io-campaign-signup-post-review': CustomerIoCampaignSignupPostReviewWorker,
       'customer-io-gambit-broadcast': CustomerIoGambitBroadcastWorker,
       'customer-io-sms-status-active': CustomerIoSmsStatusActiveWorker,
@@ -55,7 +55,7 @@ class BlinkWorkerApp extends BlinkApp {
       'gambit-campaign-signup-relay': GambitCampaignSignupRelayWorker,
       'twilio-sms-inbound-gambit-relay': TwilioSmsInboundGambitRelayWorker,
       'twilio-sms-outbound-status-relay': TwilioSmsOutboundStatusRelayWorker,
-      'twilio-sms-outbound-error-relay': TwilioSmsOutboundErrorRelayWorker,
+      'twilio-sms-outbound-error-relay': TwilioSmsOutboundErrorRelayWorker,*/
     };
   }
 }

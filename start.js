@@ -14,7 +14,7 @@ const yargs = require('yargs');
 const config = require('./config');
 const BlinkWebApp = require('./src/app/BlinkWebApp.js');
 const BlinkWorkerApp = require('./src/app/BlinkWorkerApp.js');
-const BlinkTimerApp = require('./src/app/BlinkTimerApp.js');
+// const BlinkTimerApp = require('./src/app/BlinkTimerApp.js');
 
 // ------- Args parse ----------------------------------------------------------
 
@@ -54,9 +54,7 @@ switch (command) {
     blinkApp.start();
     break;
   case 'timer':
-    blinkApp = new BlinkTimerApp(config, argv.name);
-    blinkApp.start();
-    break;
+    throw new Error('Not supporting Blink Timer App');
   default:
     throw new Error('Argument parsing integrity violation');
 }

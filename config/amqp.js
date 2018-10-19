@@ -4,12 +4,12 @@
 module.exports = {
   // AMQP connection settings.
   connection: {
-    protocol: process.env.BLINK_AMQP_PROTOCOL || 'amqp',
-    hostname: process.env.BLINK_AMQP_HOST || 'localhost',
-    port: process.env.BLINK_AMQP_PORT || '5672',
-    username: process.env.BLINK_AMQP_USER || 'blink',
-    password: process.env.BLINK_AMQP_PASSWORD || 'blink',
-    vhost: process.env.BLINK_AMQP_VHOST || 'blink',
+    protocol: 'amqp',
+    hostname: 'rhino.rmq.cloudamqp.com',
+    port: '5672',
+    username: 'lcwcwqql',
+    password: 'v8uI7vRvPPzfvMoHs0YqBt1-zjVyHlJa',
+    vhost: 'lcwcwqql',
   },
   settings: {
     topicExchange: process.env.BLINK_AMQP_TOPIC_EXCHANGE || 'blink-topic',
